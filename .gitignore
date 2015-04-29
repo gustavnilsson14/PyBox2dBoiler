@@ -1,0 +1,4 @@
+res/maps/compile.py
+*.xcf
+pybox2d/*
+pybox2d
