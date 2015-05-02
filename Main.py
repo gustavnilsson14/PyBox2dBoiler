@@ -21,7 +21,12 @@ class Game (Framework):
             return False
         with open (map_file, "r") as myfile :
             map_data = myfile.read().replace('\n', '')
-            self.current_scene = Scene( self.world, json.loads( map_data ) )
+            self.current_scene = Scene( self, self.world, json.loads( map_data ) )
 
+    def Step(self, settings):
+        super(Game, self).Step(settings)
+        self.current_scene.Step()
+        #self.viewCenter = (self.car.position.x, 20)
+        
 if __name__=="__main__":
      main(Game)
