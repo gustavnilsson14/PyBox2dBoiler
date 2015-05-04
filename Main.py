@@ -23,8 +23,18 @@ class Game (Framework):
             map_data = myfile.read().replace('\n', '')
             self.current_scene = Scene( self, self.world, json.loads( map_data ) )
 
+    def reset_zoom( self, amount ) :
+        self.viewZoom = 10.0
+        
+    def zoom_in( self, amount ) :
+        self.viewZoom *= amount
+        
+    def zoom_out( self, amount ) :
+        self.viewZoom /= amount
+
     def Step(self, settings):
         super( Game, self ).Step( settings )
+        self.zoom_in( 1.01 )
         
         if self.current_scene != 0 :
             self.current_scene.Step()

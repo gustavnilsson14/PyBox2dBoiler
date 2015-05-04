@@ -4,10 +4,10 @@ from Util import *
 class Unit :
     
     def __init__( self, scene, pos ) :
-        self.body = scene.world.CreateKinematicBody(
+        self.body = scene.world.CreateDynamicBody(
             position=pos,
             fixtures=b2FixtureDef(
-                shape=b2PolygonShape(box=(0.2,0.2)),
+                shape=b2CircleShape(radius=0.4),
                 density=0.5,
             )
         )
@@ -15,7 +15,7 @@ class Unit :
         self.pos = pos
         self.current_path = 0
         self.current_order = 0
-        self.speed = 0.2
+        self.speed = 10
         
     def set_order( self, order ) :
         if self.current_order == 0 :
@@ -40,17 +40,20 @@ class Unit :
         if self.current_path != 0 :
             next_tile = self.current_path[ 0 ]
             next_tile_distance = get_distance_between_points( self.body.transform.position, next_tile )
-            if next_tile_distance > 0.5 :
+            if next_tile_distance > 0.3 :
                 #MOVE ME
                 #get_new_position( self.body.transform.position, next_tile )
                 radians_to_tile = get_radians_between_points( self.body.transform.position, next_tile )
                 movement_vector = get_movement_vector( radians_to_tile, self.speed )
-                new_position = ( self.body.transform.position[0] + movement_vector[0], self.body.transform.position[1] + movement_vector[1] )
-                self.body.transform = [ new_position, 0 ]
+                self.body.linearVelocity = movement_vector
+                #new_position = ( self.body.transform.position[0] + movement_vector[0], self.body.transform.position[1] + movement_vector[1] )
+                #self.body.transform = [ new_position, 0 ]
+                
                 return True
             self.current_path.pop( 0 )
             if len( self.current_path ) == 0 :
                 self.current_path = 0
+                self.body.linearVelocity = ( 0, 0 )
                 return False
             #self.set_rotation( get_angle_between_points( self.body.transform.position, self.current_path[ self.current_tile ] ) )
             return True
