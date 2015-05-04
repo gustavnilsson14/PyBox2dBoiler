@@ -19,7 +19,7 @@ class Map() :
             x += 1
             
     def create_block( self, pos ) :
-        return self.world.CreateStaticBody(
+        return self.world.CreateKinematicBody(
             position = pos,
             fixedRotation=True,
             allowSleep=False,

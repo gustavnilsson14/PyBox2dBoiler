@@ -36,7 +36,6 @@ class Pathfinder :
             if path.is_valid( current_time ) == False :
                 self.path_list.remove( path )
                 continue
-            print start[0], path.start[0], start[1], path.start[1]
             if start[0] != path.start[0] or start[1] != path.start[1] :
                 continue
             if goal[0] != path.goal[0] or goal[1] != path.goal[1] :

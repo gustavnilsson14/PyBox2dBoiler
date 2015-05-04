@@ -9,7 +9,7 @@ from Scene import *
 class Game (Framework):
     
     def __init__( self ) :
-        self.defaultZoom = 20.0
+        self.defaultZoom = 40.0
         super(Game, self).__init__()
         self.current_scene = 0
         self.world.gravity = (0,0)
@@ -34,6 +34,17 @@ class Game (Framework):
         
         if self.current_scene != 0 :
             self.current_scene.Step()
+        
+        # Traverse the contact results. Apply a force on shapes
+        # that overlap the sensor.
+        for contact in self.world.contacts:
+            fixtureA = contact.fixtureA
+            fixtureB = contact.fixtureB
+            if fixtureA.sensor == True :
+                fixtureA.body.userData.handle_collision( fixtureA, fixtureB )
+            if fixtureB.sensor == True :
+                fixtureB.body.userData.handle_collision( fixtureB, fixtureA )
+
         
         #self.DrawStringAt(500, 100, "LULZLULZLULZLULZLULZLULZLULZLULZ", ( 255, 0, 0, 255 ) )
         #self.viewCenter = (self.car.position.x, 20)

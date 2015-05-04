@@ -20,9 +20,9 @@ class Scene() :
         
         self.screen = Screen( game )
         self.screen.center_position = unit.body.transform.position
-        self.add_update( Update( self.screen.screen_shake, 150, 10, 2 ) )
+        self.add_update( Update( self.screen.screen_shake, 250, 10, 2 ) )
         
-        self.orders.append( MoveOrder( [ unit ], ( 23,25 ) ) )
+        self.orders.append( MoveOrder( [ unit ], ( 30,25 ) ) )
         
         #unit.move( (23,20) )
     

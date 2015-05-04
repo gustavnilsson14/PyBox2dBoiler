@@ -1,20 +1,33 @@
-from framework import *
 from Util import *
 
-class Unit :
+class Unit() :
     
     def __init__( self, scene, pos ) :
+        '''
         self.body = scene.world.CreateDynamicBody(
             position=pos,
-            fixtures=b2FixtureDef(
-                shape=b2CircleShape(radius=0.4),
-                density=0.5,
-            )
+            fixedRotation=True,
+            fixtures=[b2FixtureDef(
+                shape=b2CircleShape(radius=0.3),
+                density=0.5
+            ),
+            b2FixtureDef(
+                shape=b2PolygonShape(vertices=[(-0.1, 0), (0.1, 0), (0, 1.5)]),
+                density=0,
+                isSensor=True
+            )]
         )
+        '''
         self.scene = scene
+        self.body = create_humanoid( self, self.scene.world, pos, 0.5 )
+        self.body.userData = self
         self.current_path = 0
         self.current_order = 0
         self.speed = 10
+        
+    def handle_collision( self, my_fixture, colliding_fixture ) :
+        print my_fixture
+        self.scene.world.DestroyBody( colliding_fixture.body )
         
     def set_order( self, order ) :
         if self.current_order == 0 :
@@ -24,6 +37,7 @@ class Unit :
             self.current_order = order
             return True
         return False
+        
         
     def update( self, update ) :
         if self.current_order != 0 :
@@ -38,7 +52,7 @@ class Unit :
         if self.current_path != 0 :
             next_tile = self.current_path[ 0 ]
             next_tile_distance = get_distance_between_points( self.body.transform.position, next_tile )
-            if next_tile_distance > 0.3 :
+            if next_tile_distance > 0.5 :
                 #MOVE ME
                 #get_new_position( self.body.transform.position, next_tile )
                 radians_to_tile = get_radians_between_points( self.body.transform.position, next_tile )
