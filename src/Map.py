@@ -13,7 +13,6 @@ class Map() :
                 tile = row[ y ]
                 if tile.get( 'collision' ) != None :
                     tile[ "content" ] = self.create_block( (x,y) )
-                    print tile
                 y += 1
             x += 1
             
