@@ -1,10 +1,12 @@
 from framework import *
+from pathfinding import *
 
 class Map() :
     
     def __init__( self, world, grid ) :
         self.world = world
         self.grid = grid
+        self.pathfinder = Pathfinder( grid )
         x = 0
         while x < len( grid ) :
             row = grid[ x ]
@@ -23,3 +25,11 @@ class Map() :
             allowSleep=False,
             fixtures=b2FixtureDef(shape=b2PolygonShape(box=(0.5, 0.5)), density=20.0),
         )
+        
+    def find_path( self, start, goal ) :
+        path = self.pathfinder.find( start, goal )
+        if path != False :
+            return path
+        return False
+            
+        

@@ -21,16 +21,16 @@ class Game (Framework):
             return False
         with open (map_file, "r") as myfile :
             map_data = myfile.read().replace('\n', '')
-            self.current_scene = Scene( self.world, json.loads( map_data ) )
-        print "DRAWSTRING"
-        print "DRAWSTRING END"
+            self.current_scene = Scene( self, self.world, json.loads( map_data ) )
+
+    def Step(self, settings):
+        super( Game, self ).Step( settings )
         
-    def Step(self, settings) :
         if self.current_scene != 0 :
             self.current_scene.Step()
-        Framework.Step(self, settings)
-        self.DrawStringAt(500, 100, "LULZLULZLULZLULZLULZLULZLULZLULZ", ( 255, 0, 0, 255 ) )
-        pass
-
+        
+        #self.DrawStringAt(500, 100, "LULZLULZLULZLULZLULZLULZLULZLULZ", ( 255, 0, 0, 255 ) )
+        #self.viewCenter = (self.car.position.x, 20)
+        
 if __name__=="__main__":
      main(Game)

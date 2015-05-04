@@ -1,15 +1,29 @@
 from Map import *
+from Unit import *
+from Order import *
 
 class Scene() :
     
-    def __init__( self, world, scene_data ) :
+    def __init__( self, game, world, scene_data ) :
+        self.units = []
+        self.orders = []
+        self.game = game
         self.world = world
         self.map = Map( world, scene_data.get( 'grid' ) )
-
-    def Step( self ) :
-        pass
         
+        unit = Unit( self, ( 0,0 ) )
+        self.units.append( unit )
+        
+        self.orders.append( MoveOrder( [ unit ], ( 23,25 ) ) )
+        
+        #unit.move( (23,20) )
+        
+    
+    def Step( self ) :
+        for unit in self.units :
+            unit.Step()
+    
     def destroy( self ) :
         self.world.ClearForces()
-        while len( self.world.bodies = != 0 :
+        while len( self.world.bodies ) != 0 :
             self.world.destroyBody( self.world.bodies[0] )
