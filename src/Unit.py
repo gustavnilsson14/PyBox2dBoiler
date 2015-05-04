@@ -21,8 +21,7 @@ class Unit :
         if self.current_order == 0 :
             self.current_order = order
             return True
-        if self.current_order.interruptable == True :
-            self.current_order.remove_unit( self )
+        if self.current_order.remove_unit( self ) == True :
             self.current_order = order
             return True
         return False
