@@ -1,12 +1,11 @@
 class Order :
     
-    def __init__( self, units ) :
+    def __init__( self, unit_list ) :
         self.interruptable = True
-        for unit in units :
+        for unit in unit_list :
             if unit.set_order( self ) == False :
-                units.remove( unit )
-        self.units = units
-        
+                unit_list.remove( unit )
+        self.unit_list = unit_list
         
     def add_unit( self, unit ) :
         if self.unit_list.__contains__( unit ) :
@@ -23,20 +22,20 @@ class Order :
         return False
         
     def destroy( self ) :
-        for unit in self.units :
+        for unit in self.unit_list :
             unit.current_order = 0
-        self.units = 0
+        self.unit_list = 0
         
     def Step( self ) :
         pass
         
 class MoveOrder( Order ) :
     
-    def __init__( self, units, goal ) :
-        Order.__init__( self, units )
+    def __init__( self, unit_list, goal ) :
+        Order.__init__( self, unit_list )
         self.goal = goal
     
     def Step( self ) :
         Order.Step( self )
-        for unit in self.units :
+        for unit in self.unit_list :
             unit.move( self.goal )

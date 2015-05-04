@@ -9,10 +9,12 @@ from Scene import *
 class Game (Framework):
     
     def __init__( self ) :
+        self.defaultZoom = 20.0
         super(Game, self).__init__()
         self.current_scene = 0
         self.world.gravity = (0,0)
         self.change_scene( "res/maps/compiled_example.js" )
+        self.reset_zoom()
         
     def change_scene( self, map_file ) :
         if self.current_scene != 0 :
@@ -23,18 +25,12 @@ class Game (Framework):
             map_data = myfile.read().replace('\n', '')
             self.current_scene = Scene( self, self.world, json.loads( map_data ) )
 
-    def reset_zoom( self, amount ) :
-        self.viewZoom = 10.0
+    def reset_zoom( self ) :
+        #This property manages zoom level
+        self.viewZoom = self.defaultZoom
         
-    def zoom_in( self, amount ) :
-        self.viewZoom *= amount
-        
-    def zoom_out( self, amount ) :
-        self.viewZoom /= amount
-
     def Step(self, settings):
         super( Game, self ).Step( settings )
-        self.zoom_in( 1.01 )
         
         if self.current_scene != 0 :
             self.current_scene.Step()

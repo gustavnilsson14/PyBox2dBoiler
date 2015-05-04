@@ -1,5 +1,6 @@
 from framework import *
 from Util import *
+from Core import *
 
 class Unit :
     
@@ -12,7 +13,6 @@ class Unit :
             )
         )
         self.scene = scene
-        self.pos = pos
         self.current_path = 0
         self.current_order = 0
         self.speed = 10
@@ -26,7 +26,7 @@ class Unit :
             return True
         return False
         
-    def Step( self ) :
+    def update( self, update ) :
         if self.current_order != 0 :
             if self.current_order.Step() == False :
                 return False
@@ -56,7 +56,6 @@ class Unit :
                 return False
             #self.set_rotation( get_angle_between_points( self.body.transform.position, self.current_path[ self.current_tile ] ) )
             return True
-        print self.body.transform.position
         self.current_path = self.scene.map.find_path( self.body.transform.position, new_pos )
         #self.body.
         
