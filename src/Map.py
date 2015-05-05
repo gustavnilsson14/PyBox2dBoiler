@@ -11,7 +11,7 @@ class Map() :
         self.grid = grid
         self.fovbits = []
         self.pathfinder = Pathfinder( grid )
-        self.fov = Fov( grid )
+        self.fov = FovChecker( grid )
         x = 0
         while x < len( grid ) :
             row = grid[ x ]
@@ -38,7 +38,7 @@ class Map() :
         return False
             
     def get_visible_tiles( self, pos ) :
-        fov = self.fov.check( pos )
+        fov = self.fov.check( pos, 5 )
         for fovbit in self.fovbits :
             self.scene.game.garbage_body_list.append( fovbit )
         self.fovbits = []
