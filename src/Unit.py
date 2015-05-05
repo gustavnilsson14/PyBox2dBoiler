@@ -1,5 +1,4 @@
 from Util import *
-import time
 
 class Unit() :
     
@@ -52,10 +51,7 @@ class Unit() :
         
         if self.current_path != 0 :
             next_tile = self.current_path[ 0 ]
-            print next_tile
-            print self.body.transform.position
             next_tile_distance = get_distance_between_points( self.body.transform.position, next_tile )
-            print next_tile_distance
             if next_tile_distance > ( 0.07 * self.speed ) :
                 #MOVE ME
                 #get_new_position( self.body.transform.position, next_tile )
@@ -67,7 +63,7 @@ class Unit() :
                 
                 return True
             self.current_path.pop( 0 )
-            
+            self.scene.map.get_visible_tiles( self.body.transform.position )
             if len( self.current_path ) == 0 :
                 self.current_path = 0
                 self.body.linearVelocity = ( 0, 0 )

@@ -10,7 +10,7 @@ class Scene() :
         self.orders = []
         self.game = game
         self.world = world
-        self.map = Map( world, scene_data.get( 'grid' ) )
+        self.map = Map( self, world, scene_data.get( 'grid' ) )
         self.update_list = []
         
         

@@ -9,6 +9,7 @@ from Scene import *
 class Game (Framework):
     
     def __init__( self ) :
+        self.garbage_body_list = []
         self.defaultZoom = 40.0
         super(Game, self).__init__()
         self.current_scene = 0
@@ -30,6 +31,10 @@ class Game (Framework):
         self.viewZoom = self.defaultZoom
         
     def Step(self, settings):
+        for garbage_body in self.garbage_body_list :
+            self.world.DestroyBody( garbage_body )
+            self.garbage_body_list.remove( garbage_body )
+            
         super( Game, self ).Step( settings )
         
         if self.current_scene != 0 :
@@ -41,13 +46,29 @@ class Game (Framework):
             fixtureA = contact.fixtureA
             fixtureB = contact.fixtureB
             if fixtureA.sensor == True :
-                fixtureA.body.userData.handle_collision( fixtureA, fixtureB )
+                pass
+                #fixtureA.body.userData.handle_collision( fixtureA, fixtureB )
             if fixtureB.sensor == True :
-                fixtureB.body.userData.handle_collision( fixtureB, fixtureA )
+                pass
+                #fixtureB.body.userData.handle_collision( fixtureB, fixtureA )
 
         
         #self.DrawStringAt(500, 100, "LULZLULZLULZLULZLULZLULZLULZLULZ", ( 255, 0, 0, 255 ) )
         #self.viewCenter = (self.car.position.x, 20)
         
+    def add_garbage_body( self, garbage_body ) :
+        if garbage_body == None :
+            return False
+        if self.garbage_body_list.__contains__( garbage_body ) :
+            return False
+        self.garbage_body_list.append( garbage_body )
+        return True
+        
+    def remove_garbage_body( self, garbage_body ) :
+        if self.garbage_body_list.__contains__( garbage_body ) :
+            self.garbage_body_list.remove( garbage_body )
+            return True
+        return False
+    
 if __name__=="__main__":
      main(Game)
