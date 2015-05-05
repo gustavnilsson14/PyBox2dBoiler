@@ -14,13 +14,13 @@ class Scene() :
         self.update_list = []
         
         
-        unit = Unit( self, ( 0,0 ) )
+        unit = Unit( self, ( 5,5 ) )
         self.add_update( Update( unit.update ) )
         self.unit_list.append( unit )
         
         self.screen = Screen( game )
         self.screen.center_position = unit.body.transform.position
-        self.add_update( Update( self.screen.screen_shake, 250, 10, 2 ) )
+        #self.add_update( Update( self.screen.screen_shake, 250, 10, 2 ) )
         
         self.orders.append( MoveOrder( [ unit ], ( 30,25 ) ) )
         

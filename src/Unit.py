@@ -1,4 +1,5 @@
 from Util import *
+import time
 
 class Unit() :
     
@@ -23,7 +24,7 @@ class Unit() :
         self.body.userData = self
         self.current_path = 0
         self.current_order = 0
-        self.speed = 10
+        self.speed = 5
         
     def handle_collision( self, my_fixture, colliding_fixture ) :
         print my_fixture
@@ -51,8 +52,11 @@ class Unit() :
         
         if self.current_path != 0 :
             next_tile = self.current_path[ 0 ]
+            print next_tile
+            print self.body.transform.position
             next_tile_distance = get_distance_between_points( self.body.transform.position, next_tile )
-            if next_tile_distance > 0.5 :
+            print next_tile_distance
+            if next_tile_distance > ( 0.07 * self.speed ) :
                 #MOVE ME
                 #get_new_position( self.body.transform.position, next_tile )
                 radians_to_tile = get_radians_between_points( self.body.transform.position, next_tile )
@@ -63,6 +67,7 @@ class Unit() :
                 
                 return True
             self.current_path.pop( 0 )
+            
             if len( self.current_path ) == 0 :
                 self.current_path = 0
                 self.body.linearVelocity = ( 0, 0 )

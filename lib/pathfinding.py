@@ -84,6 +84,14 @@ class Pathfinder :
                     if 0 <= neighbor[ 1 ] < self.map.shape[ 1 ]: 
                         if self.map[ neighbor[ 0 ] ][ neighbor[ 1 ] ].get( 'collision' ) != None :
                             continue
+                        if i != 0 and j != 0 :
+                            edge_neightbor_y = current[0], current[1] + j
+                            edge_neightbor_x = current[0] + i, current[1]
+                            if self.map[ edge_neightbor_y[ 0 ] ][ edge_neightbor_y[ 1 ] ].get( 'collision' ) != None :
+                                continue
+                            if self.map[ edge_neightbor_x[ 0 ] ][ edge_neightbor_x[ 1 ] ].get( 'collision' ) != None :
+                                continue
+                                
                     else:
                         # array bound y walls
                         continue
