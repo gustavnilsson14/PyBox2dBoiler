@@ -15,8 +15,9 @@ class Path :
         self.goal = self.path[ -1 ]
         self.computed = int( time.time() )
         
-    def is_valid( self, time ) :
-        if self.computed + self.lifetime > time :
+    def is_valid( self, current_time ) :
+        if self.computed + self.lifetime > current_time :
+            self.computed = int( time.time() )
             return self.path
         return False
 
