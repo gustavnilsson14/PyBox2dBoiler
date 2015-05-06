@@ -22,7 +22,7 @@ class Scene() :
         self.screen.center_position = unit.body.transform.position
         #self.add_update( Update( self.screen.screen_shake, 250, 10, 2 ) )
         
-        self.orders.append( MoveOrder( [ unit ], ( 30,25 ) ) )
+        self.orders.append( PatrolOrder( [ unit ], ( 16,6 ), ( 22,6 ) ) )
         
         #unit.move( (23,20) )
     

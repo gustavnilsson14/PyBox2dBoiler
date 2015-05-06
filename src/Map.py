@@ -38,12 +38,14 @@ class Map() :
         return False
             
     def get_visible_tiles( self, pos ) :
-        fov = self.fov.check( pos, 5 )
+        fov = self.fov.check_tiles( pos, 5 )
+        return fov
+        '''
+        #Displays visible tiles as sensor blocks
         for fovbit in self.fovbits :
             self.scene.game.garbage_body_list.append( fovbit )
         self.fovbits = []
         for fovbit in fov :
-            print fovbit
             newbit = self.world.CreateKinematicBody(
                 position = fovbit,
                 fixedRotation=True,
@@ -57,6 +59,6 @@ class Map() :
                 ),
             )
             self.fovbits.append(newbit)
-        
+        '''
             
         

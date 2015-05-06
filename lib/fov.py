@@ -41,7 +41,7 @@ class FovChecker :
             return fov
         return 0
         
-    def check( self, pos, radius ) :
+    def check_tiles( self, pos, radius ) :
         old_fov = self.match_fov( pos, radius )
         if old_fov != 0 :
             return old_fov.data[:]
@@ -55,6 +55,25 @@ class FovChecker :
             i = i + 10
         self.fov_list.append( Fov( pos, radius, visible_tiles ) )
         return visible_tiles[:]
+        
+    def is_pos_visible( self, point1, point2, radius ) :
+        distance = sqrt( (point2[0] - point1[0])**2 + (point2[1] - point1[1])**2 )
+        if distance > radius :
+            return False
+        delta = (point2[0] - point1[0], point2[1] - point1[1])
+        radians = atan2( delta[ 1 ], delta[ 0 ] )
+        vector_accuracy = 1
+        vector = ( vector_accuracy * cos(radians), vector_accuracy * sin(radians) )
+        i = vector_accuracy
+        checked = []
+        
+        while i < distance :
+            check = ( int( round( point1[0] + ( vector[0] * i ) ) ), int( round( point1[1] + ( vector[1] * i ) ) ) )
+            checked.append([check,self.map[ check[0] ][ check[1] ].get( 'collision' )])
+            if self.map[ check[0] ][ check[1] ].get( 'collision' ) != None :
+                return False
+            i = i + vector_accuracy
+        return True
         
     def cast_ray( self, pos, radius, x, y ) :
         ox = pos[0] + 0.5;

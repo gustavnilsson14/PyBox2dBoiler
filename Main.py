@@ -45,12 +45,12 @@ class Game (Framework):
         for contact in self.world.contacts:
             fixtureA = contact.fixtureA
             fixtureB = contact.fixtureB
+            if fixtureA.body.userData == None or fixtureB.body.userData == None :
+                continue
             if fixtureA.sensor == True :
-                pass
-                #fixtureA.body.userData.handle_collision( fixtureA, fixtureB )
+                fixtureA.body.userData.handle_collision( fixtureA, fixtureB )
             if fixtureB.sensor == True :
-                pass
-                #fixtureB.body.userData.handle_collision( fixtureB, fixtureA )
+                fixtureB.body.userData.handle_collision( fixtureB, fixtureA )
 
         
         #self.DrawStringAt(500, 100, "LULZLULZLULZLULZLULZLULZLULZLULZ", ( 255, 0, 0, 255 ) )

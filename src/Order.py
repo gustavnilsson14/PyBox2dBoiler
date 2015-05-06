@@ -39,3 +39,18 @@ class MoveOrder( Order ) :
         Order.Step( self )
         for unit in self.unit_list :
             unit.move( self.goal )
+   
+class PatrolOrder( Order ) :
+    
+    def __init__( self, unit_list, start, goal ) :
+        Order.__init__( self, unit_list )
+        self.start = start
+        self.goal = goal
+    
+    def Step( self ) :
+        Order.Step( self )
+        for unit in self.unit_list :
+            if unit.current_tile == self.start :
+                unit.move( self.goal )
+            else :
+                unit.move( self.start )
