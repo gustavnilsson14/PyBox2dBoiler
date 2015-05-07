@@ -74,18 +74,18 @@ class Game (Framework):
         #self.DrawStringAt(500, 100, "LULZLULZLULZLULZLULZLULZLULZLULZ", ( 255, 0, 0, 255 ) )
         
     def draw_image( self, settings, pos, image ) :
-        posX = pos[0]  * self.viewZoom
-        posY = pos[1]  * self.viewZoom
+        posX = pos[0] * self.viewZoom
+        posY = pos[1] * self.viewZoom
         zoom = self.viewZoom/self.defaultZoom
-        self.newimg = pygame.transform.scale( image, ( int( self.testimg.get_width() * zoom ), int( self.testimg.get_height() * zoom ) ) )
-        imgX = -( self.newimg.get_width() / 2 ) - self.viewOffset[0]
-        imgY = self.viewOffset[1] - self.newimg.get_height() 
+        newimg = pygame.transform.scale( image, ( int( self.testimg.get_width() * zoom ), int( self.testimg.get_height() * zoom ) ) )
+        imgX = -( newimg.get_width() / 2 ) - self.viewOffset[0]
+        imgY = self.viewOffset[1] - newimg.get_height() 
         if imgY >= 0 :
             imgY = settings.screenSize[ 1 ] - imgY
         else :
             imgY = settings.screenSize[ 1 ] - math.fabs( imgY )
         imgpos = ( imgX + posX, imgY - posY )
-        self.screen.blit( self.newimg, imgpos )
+        self.screen.blit( newimg, imgpos )
         
     def add_garbage_body( self, garbage_body ) :
         if garbage_body == None :
