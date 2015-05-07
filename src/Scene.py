@@ -25,7 +25,7 @@ class Scene() :
         self.orders.append( PatrolOrder( [ unit ], ( 16,6 ), ( 22,6 ) ) )
         
         #unit.move( (23,20) )
-        self.target_unit = Unit( self, ( 25,1 ) )
+        self.target_unit = Unit( self, ( 20,1 ) )
     
     
     def add_update( self, update ) :

@@ -5,6 +5,8 @@ sys.path.append( 'lib' )
 sys.path.append( 'src' )
 from framework import *
 from Scene import *
+import pygame
+import math
 
 class Game (Framework):
     
@@ -16,6 +18,7 @@ class Game (Framework):
         self.world.gravity = (0,0)
         self.change_scene( "res/maps/compiled_example.js" )
         self.reset_zoom()
+        self.testimg = pygame.image.load("image.png")
         
     def change_scene( self, map_file ) :
         if self.current_scene != 0 :
@@ -51,10 +54,38 @@ class Game (Framework):
                 fixtureA.body.userData.handle_collision( fixtureA, fixtureB )
             if fixtureB.sensor == True :
                 fixtureB.body.userData.handle_collision( fixtureB, fixtureA )
-
-        
+        '''
+        for image in self.draw_list :
+            p = logo_shape.body.position
+            p = Vec2d(p.x, flipy(p.y))
+            
+            # we need to rotate 180 degrees because of the y coordinate flip
+            angle_degrees = math.degrees(logo_shape.body.angle) + 180 
+            rotated_logo_img = pygame.transform.rotate(logo_img, angle_degrees)
+            
+            offset = Vec2d(rotated_logo_img.get_size()) / 2.
+            p = p - offset
+            
+            self.screen.blit(rotated_logo_img, p)
+        '''
+        #print settings.screenSize
+        self.draw_image( settings, (20,1), self.testimg )
+        #print imgpos
         #self.DrawStringAt(500, 100, "LULZLULZLULZLULZLULZLULZLULZLULZ", ( 255, 0, 0, 255 ) )
-        #self.viewCenter = (self.car.position.x, 20)
+        
+    def draw_image( self, settings, pos, image ) :
+        posX = pos[0]  * self.viewZoom
+        posY = pos[1]  * self.viewZoom
+        zoom = self.viewZoom/self.defaultZoom
+        self.newimg = pygame.transform.scale( image, ( int( self.testimg.get_width() * zoom ), int( self.testimg.get_height() * zoom ) ) )
+        imgX = -( self.newimg.get_width() / 2 ) - self.viewOffset[0]
+        imgY = self.viewOffset[1] - self.newimg.get_height() 
+        if imgY >= 0 :
+            imgY = settings.screenSize[ 1 ] - imgY
+        else :
+            imgY = settings.screenSize[ 1 ] - math.fabs( imgY )
+        imgpos = ( imgX + posX, imgY - posY )
+        self.screen.blit( self.newimg, imgpos )
         
     def add_garbage_body( self, garbage_body ) :
         if garbage_body == None :
