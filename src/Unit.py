@@ -1,5 +1,6 @@
 from Util import *
 import time
+import pygame
 
 class Unit() :
     
@@ -26,7 +27,7 @@ class Unit() :
         self.current_tile = ()
         self.current_order = 0
         self.speed = 5
-        
+        self.image = pygame.image.load("image.png")
         
     def handle_collision( self, my_fixture, colliding_fixture ) :
         self.scene.world.DestroyBody( colliding_fixture.body )

@@ -14,7 +14,7 @@ class Scene() :
         self.update_list = []
         
         
-        unit = Unit( self, ( 5,5 ) )
+        unit = Unit( self, ( 5,7 ) )
         self.add_update( Update( unit.update ) )
         self.unit_list.append( unit )
         
