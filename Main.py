@@ -5,7 +5,6 @@ sys.path.append( 'lib' )
 sys.path.append( 'src' )
 from framework import *
 from Scene import *
-import pygame
 import math
 from Constants import *
 
@@ -13,7 +12,7 @@ class Game (Framework):
     
     def __init__( self ) :
         self.garbage_body_list = []
-        self.defaultZoom = 40.0
+        self.defaultZoom = 80.0
         super(Game, self).__init__()
         self.current_scene = 0
         self.world.gravity = (0,0)
@@ -48,12 +47,11 @@ class Game (Framework):
         for contact in self.world.contacts:
             fixtureA = contact.fixtureA
             fixtureB = contact.fixtureB
+            
             if fixtureA.body.userData == None or fixtureB.body.userData == None :
                 continue
-            if fixtureA.sensor == True :
-                fixtureA.body.userData.handle_collision( fixtureA, fixtureB )
-            if fixtureB.sensor == True :
-                fixtureB.body.userData.handle_collision( fixtureB, fixtureA )
+            fixtureA.body.userData.handle_collision( fixtureA, fixtureB )
+            fixtureB.body.userData.handle_collision( fixtureB, fixtureA )
         for body in self.world.bodies :
             if body.userData :
                 try :
@@ -65,7 +63,7 @@ class Game (Framework):
         posX = pos[0] * self.viewZoom
         posY = pos[1] * self.viewZoom
         zoom = self.viewZoom/self.defaultZoom
-        new_image = pygame.transform.scale( image, ( int( image.get_width() * zoom ), int( image.get_height() * zoom ) ) )
+        new_image = image.get_current_image( zoom )
         alignment = self.get_alignment( new_image, align )
         imgX = alignment[0] - self.viewOffset[0]
         imgY = self.viewOffset[1] + alignment[1]
@@ -75,7 +73,6 @@ class Game (Framework):
         else :
             imgY = settings.screenSize[ 1 ] - math.fabs( imgY )
         imgpos = ( imgX + posX, imgY - posY )
-        print "EY"
         self.screen.blit( new_image, imgpos )
         
     def get_alignment( self, image, align ) :

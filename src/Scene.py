@@ -12,21 +12,36 @@ class Scene() :
         self.world = world
         self.map = Map( self, world, scene_data.get( 'grid' ) )
         self.update_list = []
-        
-        
-        unit = Unit( self, ( 5,7 ) )
-        self.add_update( Update( unit.update ) )
-        self.unit_list.append( unit )
-        
         self.screen = Screen( game )
-        self.screen.center_position = unit.body.transform.position
         #self.add_update( Update( self.screen.screen_shake, 250, 10, 2 ) )
         
-        self.orders.append( PatrolOrder( [ unit ], ( 16,6 ), ( 22,6 ) ) )
-        
         #unit.move( (23,20) )
-        self.target_unit = Unit( self, ( 20,1 ) )
+        
+        unit = Character( self, ( 20,0 ) )
+        self.add_update( Update( unit, unit.shoot, 22 ) )
+        self.screen.center_position = unit.body.transform.position
+        self.orders.append( PatrolOrder( [ unit ], ( 16,5 ), ( 22,5 ) ) )
+        
+        self.target_unit = Character( self, ( 20,1 ) )
+        self.add_unit( unit )
+        self.add_unit( self.target_unit )
+        unit.set_target(self.target_unit)
     
+    def add_unit( self, unit ) :
+        if self.unit_list.__contains__( unit ) :
+            return False
+        self.unit_list.append( unit )
+        self.add_update( Update( unit, unit.update ) )
+        
+    def remove_unit( self, unit ) :
+        if self.unit_list.__contains__( unit ) == False :
+            print unit.__class__.__name__ + " ALREADY GONE"
+            return False
+        self.unit_list.remove( unit )
+        for update in self.update_list :
+            if update.owner == unit :
+                self.remove_update( update )
+        self.game.add_garbage_body( unit.body )
     
     def add_update( self, update ) :
         if update == None :
@@ -74,8 +89,9 @@ class Screen :
 
 class Update :
     
-    def __init__( self, function, interval = 1, burst = 1, burst_interval = 1, looping = True ) :
+    def __init__( self, owner, function, interval = 1, burst = 1, burst_interval = 1, looping = True ) :
         #This game_objects update function runs when interval is at 0, must be a GameObject
+        self.owner = owner
         self.function = function
         
         #The function runs these many times when interval is at 0

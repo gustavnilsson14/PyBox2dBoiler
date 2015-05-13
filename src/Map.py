@@ -1,6 +1,7 @@
 from framework import *
 from fov import *
 from pathfinding import *
+from Constants import *
 import time
 
 class Map() :
@@ -19,18 +20,10 @@ class Map() :
             while y < len( row ) :
                 tile = row[ y ]
                 if tile.get( 'collision' ) != None :
-                    tile[ "content" ] = self.create_block( (x,y) )
+                    tile[ "content" ] = Block( world, (x,y) )
                 y += 1
             x += 1
             
-    def create_block( self, pos ) :
-        return self.world.CreateKinematicBody(
-            position = pos,
-            fixedRotation=True,
-            allowSleep=False,
-            fixtures=b2FixtureDef(shape=b2PolygonShape(box=(0.5, 0.5)), density=20.0),
-        )
-        
     def find_path( self, start, goal ) :
         path = self.pathfinder.find( start, goal )
         if path != False :
@@ -61,4 +54,27 @@ class Map() :
             self.fovbits.append(newbit)
         '''
             
+class Block :
+    
+    def __init__( self, world, pos ) :
+        self.body = world.CreateKinematicBody(
+            position = pos,
+            fixedRotation=True,
+            allowSleep=False,
+            fixtures=b2FixtureDef(
+                filter=b2Filter(
+                    groupIndex = 0,
+                    categoryBits = FILTER_DEFAULT[0],
+                    maskBits = FILTER_DEFAULT[1]
+                ),
+                shape=b2PolygonShape(
+                    box=(0.5, 0.5)
+                ), 
+                density=20.0
+                
+            ),
+        )
+        self.body.userData = self
         
+    def handle_collision( self, my_fixture, colliding_fixture ) :
+        pass

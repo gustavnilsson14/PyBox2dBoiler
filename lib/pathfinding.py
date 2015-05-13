@@ -49,7 +49,7 @@ class Pathfinder :
         goal = ( round( goal[0] ), round( goal[1] ) )
         
         if self.map[ goal[0] ][ goal[1] ].get( 'collision' ) != None :
-            return False
+            return 0
         
         old_path = self.match_path( start, goal )
         if old_path != 0 :
@@ -109,4 +109,4 @@ class Pathfinder :
                     fscore[neighbor] = tentative_g_score + self.heuristic(neighbor, goal)
                     heappush(oheap, (fscore[neighbor], neighbor))
                     
-        return False
+        return 0

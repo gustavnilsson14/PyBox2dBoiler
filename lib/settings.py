@@ -33,7 +33,7 @@ class fwSettings(object):
     
     # Drawing
     screenSize=(1280,720)
-    drawStats=True
+    drawStats=False
     drawShapes=True
     drawJoints=True
     drawCoreShapes=False
@@ -43,8 +43,8 @@ class fwSettings(object):
     drawContactPoints=False
     maxContactPoints=100
     drawContactNormals=False
-    drawFPS=True
-    drawMenu=True             # toggle by pressing F1
+    drawFPS=False
+    drawMenu=False             # toggle by pressing F1
     drawCOMs=False            # Centers of mass
     pointSize=2.5             # pixel radius for drawing points
 
