@@ -17,15 +17,14 @@ class Scene() :
         
         #unit.move( (23,20) )
         
-        unit = Character( self, ( 20,0 ) )
-        self.add_update( Update( unit, unit.shoot, 22 ) )
+        unit = Character( self, ( 20,2 ) )
         self.screen.center_position = unit.body.transform.position
-        self.orders.append( PatrolOrder( [ unit ], ( 16,5 ), ( 22,5 ) ) )
         
-        self.target_unit = Character( self, ( 20,1 ) )
+        self.target_unit = Character( self, ( 20,41 ) )
         self.add_unit( unit )
         self.add_unit( self.target_unit )
-        unit.set_target(self.target_unit)
+        self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
+        #unit.set_target(self.target_unit)
     
     def add_unit( self, unit ) :
         if self.unit_list.__contains__( unit ) :

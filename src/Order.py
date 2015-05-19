@@ -39,7 +39,24 @@ class MoveOrder( Order ) :
         Order.Step( self )
         for unit in self.unit_list :
             unit.move( self.goal )
-   
+          
+class AttackOrder( Order ) :
+    
+    def __init__( self, unit_list, target ) :
+        Order.__init__( self, unit_list )
+        self.target = target
+    
+    def Step( self ) :
+        Order.Step( self )
+        for unit in self.unit_list :
+            if unit.aim( self.target ) :
+                if unit.attack( self.target ) :
+                    print "TRUE"
+                    unit.stop()
+                    return
+                unit.move( self.target.body.transform.position )
+            unit.move( self.target.body.transform.position )
+    
 class PatrolOrder( Order ) :
     
     def __init__( self, unit_list, start, goal ) :

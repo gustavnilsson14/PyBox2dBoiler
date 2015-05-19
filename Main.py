@@ -12,6 +12,7 @@ class Game (Framework):
     
     def __init__( self ) :
         self.garbage_body_list = []
+        self.garbage_joint_list = []
         self.defaultZoom = 80.0
         super(Game, self).__init__()
         self.current_scene = 0
@@ -36,6 +37,9 @@ class Game (Framework):
         for garbage_body in self.garbage_body_list :
             self.world.DestroyBody( garbage_body )
             self.garbage_body_list.remove( garbage_body )
+        for garbage_joint in self.garbage_joint_list :
+            self.world.DestroyJoint( garbage_joint )
+            self.garbage_joint_list.remove( garbage_joint )
             
         super( Game, self ).Step( settings )
         
@@ -50,19 +54,23 @@ class Game (Framework):
             
             if fixtureA.body.userData == None or fixtureB.body.userData == None :
                 continue
-            fixtureA.body.userData.handle_collision( fixtureA, fixtureB )
-            fixtureB.body.userData.handle_collision( fixtureB, fixtureA )
+            if fixtureA.body.userData.get( 'owner' ) == None or fixtureB.body.userData.get( 'owner' ) == None :
+                continue
+            fixtureA.body.userData.get( 'owner' ).handle_collision( fixtureA, fixtureB )
+            fixtureB.body.userData.get( 'owner' ).handle_collision( fixtureB, fixtureA )
         for body in self.world.bodies :
-            if body.userData :
-                try :
-                    self.draw_image( settings, body.transform.position, body.userData.image )
-                except AttributeError: 
-                    pass
+            if body.userData == None :
+                continue
+            try :
+                self.draw_image( settings, body.transform.position, body.userData.get( 'image' ) )
+            except AttributeError: 
+                pass
     
-    def draw_image( self, settings, pos, image, align = ALIGN_BOTTOM_CENTER ) :
+    def draw_image( self, settings, pos, image ) :
+        align = image.align
         posX = pos[0] * self.viewZoom
         posY = pos[1] * self.viewZoom
-        zoom = self.viewZoom/self.defaultZoom
+        zoom = self.viewZoom/self.defaultZoom/2
         new_image = image.get_current_image( zoom )
         alignment = self.get_alignment( new_image, align )
         imgX = alignment[0] - self.viewOffset[0]
@@ -71,7 +79,8 @@ class Game (Framework):
         if imgY >= 0 :
             imgY = settings.screenSize[ 1 ] - imgY
         else :
-            imgY = settings.screenSize[ 1 ] - math.fabs( imgY )
+            imgY = settings.screenSize[ 1 ] --imgY
+        
         imgpos = ( imgX + posX, imgY - posY )
         self.screen.blit( new_image, imgpos )
         
@@ -98,6 +107,20 @@ class Game (Framework):
     def remove_garbage_body( self, garbage_body ) :
         if self.garbage_body_list.__contains__( garbage_body ) :
             self.garbage_body_list.remove( garbage_body )
+            return True
+        return False
+        
+    def add_garbage_joint( self, garbage_joint ) :
+        if garbage_joint == None :
+            return False
+        if self.garbage_joint_list.__contains__( garbage_joint ) :
+            return False
+        self.garbage_joint_list.append( garbage_joint )
+        return True
+        
+    def remove_garbage_joint( self, garbage_joint ) :
+        if self.garbage_joint_list.__contains__( garbage_joint ) :
+            self.garbage_joint_list.remove( garbage_joint )
             return True
         return False
     

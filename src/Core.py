@@ -1,10 +1,12 @@
 import pygame
 import pygame.display
+from Constants import *
 
 class Image :
 	
-	def __init__( self, image ) :
+	def __init__( self, image, align = ALIGN_BOTTOM_CENTER ) :
 		self.current_image = pygame.image.load( image )
+		self.align = align
 		self.tint_duration = 0
 		self.tint_color = 0
 		

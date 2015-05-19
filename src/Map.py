@@ -74,7 +74,9 @@ class Block :
                 
             ),
         )
-        self.body.userData = self
+        self.body.userData = {
+            'owner' : self
+        }
         
     def handle_collision( self, my_fixture, colliding_fixture ) :
         pass
