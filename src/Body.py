@@ -1,17 +1,24 @@
 from framework import *
 from Core import *
 from Constants import *
+from Util import *
+import math
+import random
+import time
 
 class Body :
 	
-	def __init__( self ) :
+	def __init__( self, scene ) :
 		self.main_body = 0
 		self.all_bodies = []
 		self.item_slots = []
 		self.joints = []
+		self.scene = scene
+		self.aimdelay = 10
+		self.dexterity = 2
 		
 	def create_humanoid( self, owner, scene, pos, size, filter ) :
-		head = scene.world.CreateDynamicBody(
+		main_body = self.scene.world.CreateDynamicBody(
 			position=pos,
 			userData={
 				'owner' : owner
@@ -20,7 +27,7 @@ class Body :
 			fixtures=[
 				b2FixtureDef(
 					shape=b2CircleShape(radius=0.3*size),
-					density=10,
+					density=100,
 					filter=b2Filter(
 						groupIndex = 0,
 						categoryBits = filter[0],
@@ -29,8 +36,34 @@ class Body :
 				)
 			]
 		)
+		head = self.scene.world.CreateDynamicBody(
+			position=pos,
+			userData={
+				'owner' : owner
+			},
+			fixtures=[
+				b2FixtureDef(
+					shape=b2CircleShape(radius=0.3*size),
+					density=100,
+					filter=b2Filter(
+						groupIndex = 0,
+						categoryBits = filter[0],
+						maskBits = filter[1]
+					)
+				)
+			]
+		)
+		main_body_joint = self.scene.world.CreateRevoluteJoint(
+			bodyA=main_body,
+			bodyB=head,
+			localAnchorA=(0,0),
+			localAnchorB=(0,0),
+			enableLimit=True,
+			#lowerAngle=1230.0 * b2_pi / 180.0,
+            #upperAngle=2230.0 * b2_pi / 180.0
+		)
 		l_s_pos = ( pos[0], pos[1] + 0.4*size )
-		left_shoulder = scene.world.CreateDynamicBody(
+		left_shoulder = self.scene.world.CreateDynamicBody(
 			position = l_s_pos,
 			userData={
 				'owner' : owner
@@ -44,16 +77,16 @@ class Body :
 				shape=b2PolygonShape(
 					box=(0.15*size, 0.15*size)
 				), 
-				density=5 * size
+				density=100 * size
 			),
 		)
-		left_shoulder_joint = scene.world.CreateWeldJoint(
+		left_shoulder_joint = self.scene.world.CreateWeldJoint(
 			bodyA=head,
 			bodyB=left_shoulder,
 			anchor=l_s_pos,
 		)
 		r_s_pos = ( pos[0], pos[1] - 0.4*size )
-		right_shoulder = scene.world.CreateDynamicBody(
+		right_shoulder = self.scene.world.CreateDynamicBody(
 			position = r_s_pos,
 			userData={
 				'owner' : owner
@@ -67,17 +100,19 @@ class Body :
 				shape=b2PolygonShape(
 					box=(0.15*size, 0.15*size)
 				), 
-				density=5 * size
+				density=100 * size
 			),
 		)
-		right_shoulder_joint = scene.world.CreateWeldJoint(
+		right_shoulder_joint = self.scene.world.CreateWeldJoint(
 			bodyA=head,
 			bodyB=right_shoulder,
 			anchor=r_s_pos,
 		)
 		
+		arm_joint_lower_angle=130.0 * b2_pi / 180.0
+		arm_joint_upper_angle=230.0 * b2_pi / 180.0
 		l_a_pos = ( pos[0] + 0.2*size, pos[1] + 0.5*size )
-		left_arm = scene.world.CreateDynamicBody(
+		left_arm = self.scene.world.CreateDynamicBody(
 			position = l_a_pos,
 			userData={
 				'owner' : owner
@@ -91,20 +126,24 @@ class Body :
 				shape=b2PolygonShape(
 					box=(0.2*size, 0.1*size)
 				), 
-				density=5 * size
+				density=100 * size
 			),
 		)
-		left_arm_joint = scene.world.CreateRevoluteJoint(
+		left_arm_joint = self.scene.world.CreateRevoluteJoint(
 			bodyA=left_shoulder,
 			bodyB=left_arm,
             localAnchorA=(0,0),
             localAnchorB=(0.15*size,0),
-            lowerAngle=210.0 * b2_pi / 180.0,
-            upperAngle=150.0 * b2_pi / 180.0,
+            lowerAngle=-arm_joint_lower_angle,
+            upperAngle=-arm_joint_upper_angle,
+            userData={
+				"lowerAngle":arm_joint_lower_angle,
+				"upperAngle":arm_joint_upper_angle,
+			},
             enableLimit=True,
 		)
 		r_a_pos = ( pos[0] + 0.2*size, pos[1] - 0.5*size )
-		right_arm = scene.world.CreateDynamicBody(
+		right_arm = self.scene.world.CreateDynamicBody(
 			position = r_a_pos,
 			userData={
 				'owner' : owner
@@ -118,21 +157,27 @@ class Body :
 				shape=b2PolygonShape(
 					box=(0.2*size, 0.1*size)
 				), 
-				density=5 * size
+				density=100 * size
 			),
 		)
-		right_arm_joint = scene.world.CreateRevoluteJoint(
+		right_arm_joint = self.scene.world.CreateRevoluteJoint(
 			bodyA=right_shoulder,
 			bodyB=right_arm,
             localAnchorA=(0,0),
             localAnchorB=(0.15*size,0),
-            lowerAngle=210.0 * b2_pi / 180.0,
-            upperAngle=150.0 * b2_pi / 180.0,
+            lowerAngle=arm_joint_lower_angle,
+            upperAngle=arm_joint_upper_angle,
+            userData={
+				"lowerAngle":arm_joint_lower_angle,
+				"upperAngle":arm_joint_upper_angle,
+			},
             enableLimit=True,
 		)
 		
-		self.main_body = head
-		self.all_bodies = { 
+		self.main_body = main_body
+		self.main_body_joint = main_body_joint
+		self.all_bodies = {
+			"main_body": main_body,
 			"head": head, 
 			"right_shoulder": right_shoulder, 
 			"left_shoulder": left_shoulder, 
@@ -140,10 +185,11 @@ class Body :
 			"left_arm": left_arm 
 		}
 		self.item_slots = {
-			"right_arm": ItemSlot( scene, right_arm, ( 0.2*size, 0 ) ), 
-			"left_arm": ItemSlot( scene, left_arm, ( 0.2*size, 0 ) ) 
+			"right_arm": ItemSlot( scene, right_arm, right_arm_joint, ( 0.2*size, 0 ) ), 
+			"left_arm": ItemSlot( scene, left_arm, right_arm_joint, ( 0.2*size, 0 ) ) 
 		}
 		self.joints = { 
+			"main_body_joint": main_body_joint,
 			"right_shoulder_joint": right_shoulder_joint, 
 			"left_shoulder_joint": left_shoulder_joint, 
 			"right_arm_joint": right_arm_joint, 
@@ -151,8 +197,8 @@ class Body :
 		}
 		return self.main_body
 	
-	def create_projectile( self, owner, world, pos, size, filter ) :
-		main = world.CreateDynamicBody(
+	def create_projectile( self, owner, pos, size, filter ) :
+		main = self.scene.world.CreateDynamicBody(
 			position=pos,
 			userData={
 				'owner' : owner
@@ -192,9 +238,6 @@ class Body :
 			return False
 		slot.detach_item()
 		
-	def use( self ) :
-		pass
-		
 	def update( self, update ) :
 		for key in self.item_slots :
 			self.item_slots.get( key ).update( update )
@@ -217,12 +260,61 @@ class Body :
 			if type in slot.item.types :
 				return slot.item
 		return False
+		
+	def turn( self, radians ) :
+		main_joint = self.joints.get( "main_body_joint" )
+		self.turn_joint( main_joint, radians, None, 4 )
+		
+	def aim( self, item, target, accuracy ) :
+		joint = item.holder.body_joint
+		main_joint = self.joints.get( "main_body_joint" )
+		if joint == 0 :
+			return False
+		desired_angle = get_radians_between_points( target.transform.position, item.holder.body.transform.position )
+		if main_joint.angle > 0 :
+			desired_angle = main_joint.angle - desired_angle
+		else :
+			desired_angle = desired_angle - main_joint.angle
+		degrees = math.degrees( desired_angle ) + random.randint( -accuracy, accuracy )
+		desired_angle = math.radians( degrees )
+		limits = ( joint.userData.get( "upperAngle" ), joint.userData.get( "lowerAngle" ) )
+		return self.turn_joint( joint, desired_angle, limits, 1 )
+		
+	def turn_joint( self, joint, desired_angle, limits = None, speed = 1 ) :
+		turn_per_timestep = ( math.radians(160. * ( speed * self.dexterity ) ) / 60.0 )
+		angle_now = joint.angle
+			
+		angle_to_turn = ( ( 180 + math.degrees( desired_angle - angle_now ) ) % 360 ) - 180
+			
+		if angle_to_turn < -10:
+			angle_to_turn = -turn_per_timestep
+		elif angle_to_turn > 10:
+			angle_to_turn = turn_per_timestep
+		else :
+			angle_to_turn = math.radians( angle_to_turn )
+		new_angle = angle_now + angle_to_turn
+		
+		if limits != None :
+			upperLimit = limits[0]
+			lowerLimit = limits[1]
+			bool_return = True
+			if new_angle > upperLimit :
+				new_angle = upperLimit
+				bool_return = False
+			elif new_angle < lowerLimit :
+				new_angle = lowerLimit
+				bool_return = False
+			joint.SetLimits( new_angle, new_angle )
+			return bool_return
+		joint.SetLimits( new_angle, new_angle )
+		return True
 	
 class ItemSlot :
 	
-	def __init__( self, scene, body, local_anchor ) :
+	def __init__( self, scene, body, body_joint, local_anchor ) :
 		self.scene = scene
 		self.body = body
+		self.body_joint = body_joint
 		self.local_anchor = local_anchor
 		self.joint = 0
 		self.item = 0

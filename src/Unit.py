@@ -7,7 +7,7 @@ from framework import *
 class Unit() :
     
     def __init__( self, scene, pos ) :
-        self.body_handler = Body()
+        self.body_handler = Body( scene )
         self.scene = scene
         self.current_path = 0
         self.current_tile = ()
@@ -47,7 +47,6 @@ class Unit() :
     def has_vision_of_point( self, pos ) :
         if self.vision_range > 0 :
             if self.scene.map.fov.is_pos_visible( self.body.transform.position, pos, self.vision_range ) :
-                print "VISIBLE"
                 return True
         return False
     
@@ -61,8 +60,11 @@ class Unit() :
         if self.body == 0 :
             self.pos = new_pos
             return True
-        self.move_along_path( new_pos )
-        #self.move_towards_target( self.scene.target_unit, 1 )
+        if self.has_vision_of_point( new_pos ) == False :
+            self.move_along_path( new_pos )
+            return True
+        self.move_towards_target( new_pos, 1 )
+        return True
         
     def stop( self ) :
         if self.body == 0 :
@@ -72,9 +74,9 @@ class Unit() :
         
     def move_towards_target( self, target, final_distance ) :
         my_pos = self.body.transform.position
-        target_pos = target.body.transform.position
-        if get_distance_between_points( my_pos, target_pos ) > final_distance :
-            radians_to_target = get_radians_between_points( my_pos, target_pos )
+        self.current_path = 0
+        if get_distance_between_points( my_pos, target ) > final_distance :
+            radians_to_target = get_radians_between_points( my_pos, target )
             movement_vector = get_movement_vector( radians_to_target, self.speed )
             self.body.linearVelocity = movement_vector
             return False
@@ -104,9 +106,8 @@ class Unit() :
         
     def move_to_tile( self, tile ) :
         radians_to_tile = get_radians_between_points( self.body.transform.position, tile )
+        self.body_handler.turn( radians_to_tile )
         movement_vector = get_movement_vector( radians_to_tile, self.speed )
-        
-        self.body.transform = [ self.body.transform.position, radians_to_tile ]
         self.body.linearVelocity = movement_vector
         
     def take_damage( self, origin, damage ) :
@@ -131,11 +132,12 @@ class Character( Unit ) :
     def __init__( self, scene, pos ) :
         Unit.__init__( self, scene, pos )
         self.body = self.body_handler.create_humanoid( self, scene, pos, 0.3, FILTER_CHARACTER )
-        self.speed = 4
-        self.vision_range = 10
-        self.health = 10
-        self.body_handler.set_image_at( 'head', 'image.png' )
-        
+        self.speed = 1 * self.body.mass
+        self.accuracy = 0
+        self.vision_range = 40
+        self.health = 100000
+        #self.body_handler.set_image_at( 'head', 'image.png' )
+        self.current_item = 0
         self.body_handler.attach_item( "right_arm", ProjectileWeapon( scene ) )
         #self.body_handler.detach_item( "right_arm" )
         self.target = 0
@@ -143,20 +145,24 @@ class Character( Unit ) :
     
     def update( self, update ) :
         Unit.update( self, update )
-        self.handle_item( update )
+        
+    def set_current_item( self, type ) :
+        self.current_item = self.body_handler.find_item( type )
+        return True
         
     def aim( self, target ) :
-        if self.has_vision_of_point( target.body.transform.position ) :
-            return True
-        return False
-        
-    def handle_item( self, update ) :
-        self.body_handler.use()
-        
-    def attack( self, target ) :
-        weapon = self.body_handler.find_item( 'weapon' )
-        if weapon :
-            return weapon.use( target )
+        if self.current_item == 0 :
+            return False
+        if self.has_vision_of_point( target.body.transform.position ) == False :
+            return False
+        radians_to_target = get_radians_between_points( self.body.transform.position, target.body.transform.position )
+        self.body_handler.turn( radians_to_target )
+        self.body_handler.aim( self.current_item, target.body, self.accuracy )
+        return True
+                
+    def use_current_item( self, target ) :
+        if self.current_item != 0 :
+            return self.current_item.use( target )
         return False
         
 class Projectile( Unit ) :
@@ -164,14 +170,14 @@ class Projectile( Unit ) :
     def __init__( self, scene, origin, offset = -0.8 ) :
         pos = origin.position + get_movement_vector( origin.angle, offset )
         Unit.__init__( self, scene, origin.position )
-        self.body = self.body_handler.create_projectile( self, scene.world, pos, 0.5, FILTER_PROJECTILE )
+        self.body = self.body_handler.create_projectile( self, pos, 0.1, FILTER_PROJECTILE )
         self.origin = origin
-        self.speed = 50
+        self.speed = 250 * self.body.mass
         self.lifetime = 15
         vector = get_movement_vector( origin.angle, -self.speed )
         self.body.ApplyForce( vector, self.body.worldCenter, True)
         self.damage = 1
-        self.body_handler.set_image_at( 'main', 'image.png' )
+        #self.body_handler.set_image_at( 'main', 'image.png' )
         self.types += [ "projectile" ]
     
     def update( self, update ) :
@@ -230,7 +236,7 @@ class Weapon( Item ) :
             
 class ProjectileWeapon( Weapon ) :
     
-    def __init__( self, scene, cooldown = 5, local_anchor = (0.45,0), attack_range = 10 ) :
+    def __init__( self, scene, cooldown = 5, local_anchor = (0.45,0), attack_range = 5 ) :
         Weapon.__init__( self, scene, cooldown, local_anchor, attack_range )
         self.attack_range = attack_range
         self.types += [ "projectile_weapon" ]
@@ -265,7 +271,7 @@ class ProjectileWeapon( Weapon ) :
                 shape=b2PolygonShape(
                     box=(0.2, 0.03)
                 ), 
-                density=0.00001
+                density=0.0001
             )
         )
         return self.body

@@ -69,7 +69,6 @@ class Pathfinder :
             if current == goal:
                 data = []
                 while current in came_from:
-                    #PREPEND
                     data[:0] = [current]
                     current = came_from[current]
                 data[:0] = [start]
@@ -110,3 +109,22 @@ class Pathfinder :
                     heappush(oheap, (fscore[neighbor], neighbor))
                     
         return 0
+        
+    def is_pos_visible( self, point1, point2, radius ) :
+        distance = sqrt( (point2[0] - point1[0])**2 + (point2[1] - point1[1])**2 )
+        if distance > radius :
+            return False
+        delta = (point2[0] - point1[0], point2[1] - point1[1])
+        radians = atan2( delta[ 1 ], delta[ 0 ] )
+        vector_accuracy = 1
+        vector = ( vector_accuracy * cos(radians), vector_accuracy * sin(radians) )
+        i = vector_accuracy
+        checked = []
+        
+        while i < distance :
+            check = ( int( round( point1[0] + ( vector[0] * i ) ) ), int( round( point1[1] + ( vector[1] * i ) ) ) )
+            checked.append([check,self.map[ check[0] ][ check[1] ].get( 'collision' )])
+            if self.map[ check[0] ][ check[1] ].get( 'collision' ) != None :
+                return False
+            i = i + vector_accuracy
+        return True

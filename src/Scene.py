@@ -17,10 +17,10 @@ class Scene() :
         
         #unit.move( (23,20) )
         
-        unit = Character( self, ( 20,2 ) )
+        unit = Character( self, ( 40,25 ) )
         self.screen.center_position = unit.body.transform.position
         
-        self.target_unit = Character( self, ( 20,41 ) )
+        self.target_unit = Character( self, ( 44,40 ) )
         self.add_unit( unit )
         self.add_unit( self.target_unit )
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )

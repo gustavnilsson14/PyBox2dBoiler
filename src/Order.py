@@ -43,6 +43,10 @@ class MoveOrder( Order ) :
 class AttackOrder( Order ) :
     
     def __init__( self, unit_list, target ) :
+        for unit in unit_list :
+            if unit.set_current_item( 'weapon' ) :
+                continue
+            unit_list.remove( unit )
         Order.__init__( self, unit_list )
         self.target = target
     
@@ -50,12 +54,13 @@ class AttackOrder( Order ) :
         Order.Step( self )
         for unit in self.unit_list :
             if unit.aim( self.target ) :
-                if unit.attack( self.target ) :
-                    print "TRUE"
+                if unit.use_current_item( self.target ) :
                     unit.stop()
-                    return
+                    continue
                 unit.move( self.target.body.transform.position )
+                continue
             unit.move( self.target.body.transform.position )
+            continue
     
 class PatrolOrder( Order ) :
     
