@@ -1,4 +1,4 @@
-from math import atan2, sqrt, cos, sin
+from math import atan2, sqrt, cos, sin, fabs
 from Constants import *
 from framework import *
 
@@ -15,3 +15,9 @@ def get_distance_between_points( point1, point2 ) :
 def get_movement_vector( radians, speed ) :
     change = b2Vec2(speed * cos(radians), speed * sin(radians))
     return change
+
+def convert_y_axis( y, screen_size ) :
+    new_y = y - screen_size
+    if new_y < 0 :
+        new_y = fabs( new_y )
+    return new_y

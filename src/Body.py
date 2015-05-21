@@ -270,7 +270,7 @@ class Body :
 		main_joint = self.joints.get( "main_body_joint" )
 		if joint == 0 :
 			return False
-		desired_angle = get_radians_between_points( target.transform.position, item.holder.body.transform.position )
+		desired_angle = get_radians_between_points( target, item.holder.body.transform.position )
 		if main_joint.angle > 0 :
 			desired_angle = main_joint.angle - desired_angle
 		else :

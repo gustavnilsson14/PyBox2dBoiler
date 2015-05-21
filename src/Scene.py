@@ -1,9 +1,11 @@
 from Map import *
 from Unit import *
 from Order import *
+from PlayerHandler import *
 from random import randint
+import pygame
 
-class Scene() :
+class Scene :
     
     def __init__( self, game, world, scene_data ) :
         self.unit_list = []
@@ -17,13 +19,25 @@ class Scene() :
         
         #unit.move( (23,20) )
         
-        unit = Character( self, ( 40,25 ) )
-        self.screen.center_position = unit.body.transform.position
         
-        self.target_unit = Character( self, ( 44,40 ) )
+        self.target_unit = PlayerCharacter( self, ( 44,40 ) )
+        self.screen.center_position = self.target_unit.body.transform.position
+        player1 = Player( self.game, self.target_unit )
+        self.game.player_handler.add_player( player1 )
+        self.game.player_handler.add_input( Input( player1, Keys.K_w, player1.move_up ) )
+        self.game.player_handler.add_input( Input( player1, Keys.K_s, player1.move_down ) )
+        self.game.player_handler.add_input( Input( player1, Keys.K_a, player1.move_left ) )
+        self.game.player_handler.add_input( Input( player1, Keys.K_d, player1.move_right ) )
+        self.game.player_handler.add_input( Input( player1, -100, player1.turn ) )
+        self.game.player_handler.add_input( Input( player1, -101, player1.use_item ) )
+        
+        
+        unit = Character( self, ( 40,25 ) )
         self.add_unit( unit )
         self.add_unit( self.target_unit )
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
+        
+        
         #unit.set_target(self.target_unit)
     
     def add_unit( self, unit ) :
@@ -73,19 +87,16 @@ class Screen :
         self.shake_offset = (0,0)
         self.shake_magnitude = shake_magnitude
         self.center_position = 0
+        self.shake_time = 0
         
     def update_camera_center( self ) :
         self.game.setCenter( self.center_position )
-        self.game._viewOffset[ 0 ] += self.shake_offset[0]
-        self.game._viewOffset[ 1 ] += self.shake_offset[1]
+        if self.shake_time > 0 :
+            self.shake_offset = ( randint(-self.shake_magnitude,self.shake_magnitude), randint(-self.shake_magnitude,self.shake_magnitude) )
+            self.game._viewOffset[ 0 ] += self.shake_offset[0]
+            self.game._viewOffset[ 1 ] += self.shake_offset[1]
+            self.shake_time -= 1
         
-    def screen_shake( self, update ) :
-        if update.burst == 0 :
-            self.shake_offset = (0,0)
-            return
-        self.shake_offset = ( randint(-self.shake_magnitude,self.shake_magnitude), randint(-self.shake_magnitude,self.shake_magnitude) )
-        
-
 class Update :
     
     def __init__( self, owner, function, interval = 1, burst = 1, burst_interval = 1, looping = True ) :

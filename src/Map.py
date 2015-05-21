@@ -2,6 +2,7 @@ from framework import *
 from fov import *
 from pathfinding import *
 from Constants import *
+from Core import *
 import time
 
 class Map() :
@@ -20,7 +21,7 @@ class Map() :
             while y < len( row ) :
                 tile = row[ y ]
                 if tile.get( 'collision' ) != None :
-                    tile[ "content" ] = Block( world, (x,y) )
+                    tile[ "content" ] = Block( scene, (x,y) )
                 y += 1
             x += 1
             
@@ -54,10 +55,11 @@ class Map() :
             self.fovbits.append(newbit)
         '''
             
-class Block :
+class Block( Entity ) :
     
-    def __init__( self, world, pos ) :
-        self.body = world.CreateKinematicBody(
+    def __init__( self, scene, pos ) :
+        Entity.__init__( self, scene )
+        self.body = scene.world.CreateKinematicBody(
             position = pos,
             fixedRotation=True,
             allowSleep=False,
@@ -77,6 +79,7 @@ class Block :
         self.body.userData = {
             'owner' : self
         }
+        self.types += [ "block" ]
         
     def handle_collision( self, my_fixture, colliding_fixture ) :
         pass

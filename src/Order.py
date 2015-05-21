@@ -53,7 +53,7 @@ class AttackOrder( Order ) :
     def Step( self ) :
         Order.Step( self )
         for unit in self.unit_list :
-            if unit.aim( self.target ) :
+            if unit.aim( self.target.body.transform.position ) :
                 if unit.use_current_item( self.target ) :
                     unit.stop()
                     continue

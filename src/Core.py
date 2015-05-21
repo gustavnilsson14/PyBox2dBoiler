@@ -2,6 +2,12 @@ import pygame
 import pygame.display
 from Constants import *
 
+class Entity :
+	
+	def __init__( self, scene ) :
+		self.scene = scene
+		self.types = [ "entity" ]
+
 class Image :
 	
 	def __init__( self, image, align = ALIGN_BOTTOM_CENTER ) :

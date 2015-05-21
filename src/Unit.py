@@ -4,9 +4,10 @@ from Core import *
 from Body import *
 from framework import *
 
-class Unit() :
+class Unit( Entity ) :
     
     def __init__( self, scene, pos ) :
+        Entity.__init__( self, scene )
         self.body_handler = Body( scene )
         self.scene = scene
         self.current_path = 0
@@ -18,7 +19,7 @@ class Unit() :
         self.health = 0
         self.alive = True
         self.target = 0
-        self.types = [ "unit" ]
+        self.types += [ "unit" ]
         
     def set_target( self, target ) :
         self.target = target
@@ -153,11 +154,50 @@ class Character( Unit ) :
     def aim( self, target ) :
         if self.current_item == 0 :
             return False
-        if self.has_vision_of_point( target.body.transform.position ) == False :
+        if self.has_vision_of_point( target ) == False :
             return False
-        radians_to_target = get_radians_between_points( self.body.transform.position, target.body.transform.position )
+        radians_to_target = get_radians_between_points( self.body.transform.position, target )
         self.body_handler.turn( radians_to_target )
-        self.body_handler.aim( self.current_item, target.body, self.accuracy )
+        self.body_handler.aim( self.current_item, target, self.accuracy )
+        return True
+                
+    def use_current_item( self, target ) :
+        if self.current_item != 0 :
+            return self.current_item.use( 0 )
+        return False
+        
+class PlayerCharacter( Unit ) :
+    
+    def __init__( self, scene, pos ) :
+        Unit.__init__( self, scene, pos )
+        self.body = self.body_handler.create_humanoid( self, scene, pos, 0.3, FILTER_CHARACTER )
+        self.speed = 1 * self.body.mass
+        self.accuracy = 0
+        self.vision_range = 40
+        self.health = 100000
+        #self.body_handler.set_image_at( 'head', 'image.png' )
+        self.current_item = 0
+        self.body_handler.attach_item( "right_arm", ProjectileWeapon( scene ) )
+        #self.body_handler.detach_item( "right_arm" )
+        self.target = 0
+        self.types += [ "player_character" ]
+        self.movement_vector = ( 0, 0 )
+        self.set_current_item( 'weapon' )
+    
+    def update( self, update ) :
+        self.body_handler.update( update )
+        self.body.linearVelocity = ( self.movement_vector[0] * self.speed, self.movement_vector[1] * self.speed )
+        
+    def set_current_item( self, type ) :
+        self.current_item = self.body_handler.find_item( type )
+        return True
+        
+    def aim( self, target ) :
+        if self.current_item == 0 :
+            return False
+        radians_to_target = get_radians_between_points( self.body.transform.position, target )
+        self.body_handler.turn( radians_to_target )
+        self.body_handler.aim( self.current_item, target, self.accuracy )
         return True
                 
     def use_current_item( self, target ) :
@@ -165,6 +205,10 @@ class Character( Unit ) :
             return self.current_item.use( target )
         return False
         
+    def take_damage( self, origin, damage ) :
+        Unit.take_damage( self, origin, damage )
+        self.scene.screen.shake_time = 1
+
 class Projectile( Unit ) :
     
     def __init__( self, scene, origin, offset = -0.8 ) :
@@ -173,7 +217,7 @@ class Projectile( Unit ) :
         self.body = self.body_handler.create_projectile( self, pos, 0.1, FILTER_PROJECTILE )
         self.origin = origin
         self.speed = 250 * self.body.mass
-        self.lifetime = 15
+        self.lifetime = 150
         vector = get_movement_vector( origin.angle, -self.speed )
         self.body.ApplyForce( vector, self.body.worldCenter, True)
         self.damage = 1
@@ -181,15 +225,15 @@ class Projectile( Unit ) :
         self.types += [ "projectile" ]
     
     def update( self, update ) :
-        pass
-        #Unit.update( self, update )
+        Unit.update( self, update )
 
     def handle_collision( self, my_fixture, colliding_fixture ) :
-        if colliding_fixture.body.userData.get( 'owner' ).__class__.__name__ == "Block" :
-            self.die( colliding_fixture.body.userData.get( 'owner' ) )
-        if colliding_fixture.body.userData.get( 'owner' ).__class__.__name__ == "Character" :
-            self.die( colliding_fixture.body.userData.get( 'owner' ) )
-            self.deal_damage( colliding_fixture.body.userData.get( 'owner' ) )
+        collider = colliding_fixture.body.userData.get( 'owner' )
+        if "block" in collider.types :
+            self.die( collider )
+        if "unit" in collider.types :
+            self.die( collider )
+            self.deal_damage( collider )
             
     def deal_damage( self, target ) :
         if target.take_damage( self, self.damage ) == True :
@@ -230,6 +274,8 @@ class Weapon( Item ) :
         self.types += [ "weapon" ]
 
     def use( self, target ) :
+        if target == 0 :
+            return True
         if get_distance_between_points( self.body.transform.position, target.body.transform.position ) < self.attack_range :
             return True
         return False

@@ -7,10 +7,12 @@ from framework import *
 from Scene import *
 import math
 from Constants import *
+from PlayerHandler import *
 
 class Game (Framework):
     
     def __init__( self ) :
+        self.player_handler = PlayerHandler( self )
         self.garbage_body_list = []
         self.garbage_joint_list = []
         self.defaultZoom = 80.0
@@ -19,6 +21,8 @@ class Game (Framework):
         self.world.gravity = (0,0)
         self.change_scene( "res/maps/compiled_example.js" )
         self.reset_zoom()
+        #-100 is the mouse
+        self.pressed_keys = [ -100 ]
         
     def change_scene( self, map_file ) :
         if self.current_scene != 0 :
@@ -42,6 +46,8 @@ class Game (Framework):
             self.garbage_joint_list.remove( garbage_joint )
             
         super( Game, self ).Step( settings )
+        
+        self.player_handler.update( self.pressed_keys )
         
         if self.current_scene != 0 :
             self.current_scene.Step()
@@ -123,6 +129,35 @@ class Game (Framework):
             self.garbage_joint_list.remove( garbage_joint )
             return True
         return False
-    
+        
+    def Keyboard(self, key):
+        if key in self.pressed_keys :
+            return False
+        self.pressed_keys += [ key ]
+        return True
+
+    def KeyboardUp(self, key):
+        if key in self.pressed_keys :
+            self.pressed_keys.remove( key )
+            return True
+        return False
+        
+    def MousePos(self):
+        return pygame.mouse.get_pos()
+        
+    def MouseDown(self, p):
+        key = -101
+        if key in self.pressed_keys :
+            return False
+        self.pressed_keys += [ key ]
+        
+    def MouseUp(self, p):
+        key = -101
+        if key in self.pressed_keys :
+            self.pressed_keys.remove( key )
+            return True
+        return False
+        
+        
 if __name__=="__main__":
      main(Game)
