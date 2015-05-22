@@ -263,29 +263,27 @@ class Body :
 		
 	def turn( self, radians ) :
 		main_joint = self.joints.get( "main_body_joint" )
-		self.turn_joint( main_joint, radians, None, 4 )
+		self.turn_joint( main_joint, radians, None, 2 )
 		
 	def aim( self, item, target, accuracy ) :
 		joint = item.holder.body_joint
 		main_joint = self.joints.get( "main_body_joint" )
 		if joint == 0 :
 			return False
-		desired_angle = get_radians_between_points( target, item.holder.body.transform.position )
-		if main_joint.angle > 0 :
-			desired_angle = main_joint.angle - desired_angle
-		else :
-			desired_angle = desired_angle - main_joint.angle
-		degrees = math.degrees( desired_angle ) + random.randint( -accuracy, accuracy )
-		desired_angle = math.radians( degrees )
+		desired_angle = get_radians_between_points( target,item.body.transform.position )
+		
+		desired_angle -= main_joint.angle
+		desired_angle = math.radians( ( math.degrees( desired_angle ) + accuracy[0] ) % 360 )
+		
 		limits = ( joint.userData.get( "upperAngle" ), joint.userData.get( "lowerAngle" ) )
-		return self.turn_joint( joint, desired_angle, limits, 1 )
+		joint.SetLimits( desired_angle, desired_angle )
 		
 	def turn_joint( self, joint, desired_angle, limits = None, speed = 1 ) :
 		turn_per_timestep = ( math.radians(160. * ( speed * self.dexterity ) ) / 60.0 )
 		angle_now = joint.angle
-			
+		
 		angle_to_turn = ( ( 180 + math.degrees( desired_angle - angle_now ) ) % 360 ) - 180
-			
+		
 		if angle_to_turn < -10:
 			angle_to_turn = -turn_per_timestep
 		elif angle_to_turn > 10:
@@ -294,18 +292,6 @@ class Body :
 			angle_to_turn = math.radians( angle_to_turn )
 		new_angle = angle_now + angle_to_turn
 		
-		if limits != None :
-			upperLimit = limits[0]
-			lowerLimit = limits[1]
-			bool_return = True
-			if new_angle > upperLimit :
-				new_angle = upperLimit
-				bool_return = False
-			elif new_angle < lowerLimit :
-				new_angle = lowerLimit
-				bool_return = False
-			joint.SetLimits( new_angle, new_angle )
-			return bool_return
 		joint.SetLimits( new_angle, new_angle )
 		return True
 	

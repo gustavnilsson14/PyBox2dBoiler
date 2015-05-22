@@ -134,10 +134,11 @@ class Character( Unit ) :
         Unit.__init__( self, scene, pos )
         self.body = self.body_handler.create_humanoid( self, scene, pos, 0.3, FILTER_CHARACTER )
         self.speed = 1 * self.body.mass
-        self.accuracy = 0
+        self.accuracy = 10
+        self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
         self.health = 100000
-        #self.body_handler.set_image_at( 'head', 'image.png' )
+        self.body_handler.set_image_at( 'head', 'image.png' )
         self.current_item = 0
         self.body_handler.attach_item( "right_arm", ProjectileWeapon( scene ) )
         #self.body_handler.detach_item( "right_arm" )
@@ -146,11 +147,19 @@ class Character( Unit ) :
     
     def update( self, update ) :
         Unit.update( self, update )
+        self.handle_accuracy()
         
     def set_current_item( self, type ) :
         self.current_item = self.body_handler.find_item( type )
         return True
         
+    def handle_accuracy( self ) :
+        self.current_accuracy = ( self.current_accuracy[0] + self.current_accuracy[1], self.current_accuracy[1] )
+        if self.current_accuracy[0] > self.accuracy :
+            self.current_accuracy = ( self.accuracy, -(self.accuracy/10.0) )
+        if self.current_accuracy[0] < -self.accuracy :
+            self.current_accuracy = ( -self.accuracy, (self.accuracy/10.0) )
+            
     def aim( self, target ) :
         if self.current_item == 0 :
             return False
@@ -158,7 +167,7 @@ class Character( Unit ) :
             return False
         radians_to_target = get_radians_between_points( self.body.transform.position, target )
         self.body_handler.turn( radians_to_target )
-        self.body_handler.aim( self.current_item, target, self.accuracy )
+        self.body_handler.aim( self.current_item, target, self.current_accuracy )
         return True
                 
     def use_current_item( self, target ) :
@@ -172,10 +181,11 @@ class PlayerCharacter( Unit ) :
         Unit.__init__( self, scene, pos )
         self.body = self.body_handler.create_humanoid( self, scene, pos, 0.3, FILTER_CHARACTER )
         self.speed = 1 * self.body.mass
-        self.accuracy = 0
+        self.accuracy = 2
+        self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
         self.health = 100000
-        #self.body_handler.set_image_at( 'head', 'image.png' )
+        self.body_handler.set_image_at( 'head', 'image.png' )
         self.current_item = 0
         self.body_handler.attach_item( "right_arm", ProjectileWeapon( scene ) )
         #self.body_handler.detach_item( "right_arm" )
@@ -186,8 +196,16 @@ class PlayerCharacter( Unit ) :
     
     def update( self, update ) :
         self.body_handler.update( update )
+        self.handle_accuracy()
         self.body.linearVelocity = ( self.movement_vector[0] * self.speed, self.movement_vector[1] * self.speed )
-        
+    
+    def handle_accuracy( self ) :
+        self.current_accuracy = ( self.current_accuracy[0] + self.current_accuracy[1], self.current_accuracy[1] )
+        if self.current_accuracy[0] > self.accuracy :
+            self.current_accuracy = ( self.accuracy, -(self.accuracy/10.0) )
+        if self.current_accuracy[0] < -self.accuracy :
+            self.current_accuracy = ( -self.accuracy, (self.accuracy/10.0) )
+    
     def set_current_item( self, type ) :
         self.current_item = self.body_handler.find_item( type )
         return True
@@ -197,7 +215,7 @@ class PlayerCharacter( Unit ) :
             return False
         radians_to_target = get_radians_between_points( self.body.transform.position, target )
         self.body_handler.turn( radians_to_target )
-        self.body_handler.aim( self.current_item, target, self.accuracy )
+        self.body_handler.aim( self.current_item, target, self.current_accuracy )
         return True
                 
     def use_current_item( self, target ) :
@@ -221,7 +239,7 @@ class Projectile( Unit ) :
         vector = get_movement_vector( origin.angle, -self.speed )
         self.body.ApplyForce( vector, self.body.worldCenter, True)
         self.damage = 1
-        #self.body_handler.set_image_at( 'main', 'image.png' )
+        self.body_handler.set_image_at( 'main', 'image.png' )
         self.types += [ "projectile" ]
     
     def update( self, update ) :
@@ -241,7 +259,7 @@ class Projectile( Unit ) :
 
 class Item :
     
-    def __init__( self, scene, cooldown = 0, local_anchor = (0,0) ) :
+    def __init__( self, scene, cooldown = 0, local_anchor = ( 0, 0 ) ) :
         self.holder = 0
         self.scene = scene
         self.body = 0

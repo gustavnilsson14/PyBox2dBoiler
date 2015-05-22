@@ -73,21 +73,18 @@ class Game (Framework):
                 pass
     
     def draw_image( self, settings, pos, image ) :
-        align = image.align
-        posX = pos[0] * self.viewZoom
-        posY = pos[1] * self.viewZoom
+        posX = ( pos[0] * self.viewZoom ) - self.viewOffset[0]
+        posY = ( pos[1] * self.viewZoom ) - self.viewOffset[1]
+        posY -= settings.screenSize[ 1 ]
+        if posY < 0 :
+            posY = math.fabs( posY )
+        else :
+            return
         zoom = self.viewZoom/self.defaultZoom/2
         new_image = image.get_current_image( zoom )
-        alignment = self.get_alignment( new_image, align )
-        imgX = alignment[0] - self.viewOffset[0]
-        imgY = self.viewOffset[1] + alignment[1]
+        alignment = self.get_alignment( new_image, image.align )
         
-        if imgY >= 0 :
-            imgY = settings.screenSize[ 1 ] - imgY
-        else :
-            imgY = settings.screenSize[ 1 ] --imgY
-        
-        imgpos = ( imgX + posX, imgY - posY )
+        imgpos = ( posX + alignment[0], posY + alignment[1] )
         self.screen.blit( new_image, imgpos )
         
     def get_alignment( self, image, align ) :
