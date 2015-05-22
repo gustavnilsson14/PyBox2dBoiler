@@ -13,7 +13,6 @@ class Unit( Entity ) :
         self.current_path = 0
         self.current_tile = ()
         self.current_order = 0
-        self.image = 0
         self.lifetime = 0
         self.vision_range = 0
         self.health = 0
@@ -114,8 +113,8 @@ class Unit( Entity ) :
     def take_damage( self, origin, damage ) :
         if self.health > 0 :
             self.health -= damage
-            if self.image != 0 :
-                self.image.blink()
+            if self.body_handler != 0 :
+                self.body_handler.blink()
             if self.health <= 0 :
                 self.die( origin )
                 return True
@@ -226,6 +225,7 @@ class PlayerCharacter( Unit ) :
     def take_damage( self, origin, damage ) :
         Unit.take_damage( self, origin, damage )
         self.scene.screen.shake_time = 1
+        self.scene.game.pause_time = 5
 
 class Projectile( Unit ) :
     

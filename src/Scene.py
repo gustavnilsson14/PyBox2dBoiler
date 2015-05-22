@@ -32,13 +32,10 @@ class Scene :
         self.game.player_handler.add_input( Input( player1, -101, player1.use_item ) )
         
         
-        #unit = Character( self, ( 40,25 ) )
-        #self.add_unit( unit )
+        unit = Character( self, ( 40,25 ) )
+        self.add_unit( unit )
         self.add_unit( self.target_unit )
-        #self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
-        
-        
-        #unit.set_target(self.target_unit)
+        self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
     
     def add_unit( self, unit ) :
         if self.unit_list.__contains__( unit ) :

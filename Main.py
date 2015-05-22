@@ -12,6 +12,7 @@ from PlayerHandler import *
 class Game (Framework):
     
     def __init__( self ) :
+        self.pause_time = 0
         self.player_handler = PlayerHandler( self )
         self.garbage_body_list = []
         self.garbage_joint_list = []
@@ -38,6 +39,16 @@ class Game (Framework):
         self.viewZoom = self.defaultZoom
         
     def Step(self, settings):
+        for body in self.world.bodies :
+            if body.userData == None :
+                continue
+            try :
+                self.draw_image( settings, body.transform, body.userData.get( 'image' ) )
+            except AttributeError: 
+                pass
+        if self.pause_time > 0 :
+            self.pause_time -= 1
+            return
         for garbage_body in self.garbage_body_list :
             self.world.DestroyBody( garbage_body )
             self.garbage_body_list.remove( garbage_body )
@@ -64,24 +75,17 @@ class Game (Framework):
                 continue
             fixtureA.body.userData.get( 'owner' ).handle_collision( fixtureA, fixtureB )
             fixtureB.body.userData.get( 'owner' ).handle_collision( fixtureB, fixtureA )
-        for body in self.world.bodies :
-            if body.userData == None :
-                continue
-            try :
-                self.draw_image( settings, body.transform.position, body.userData.get( 'image' ) )
-            except AttributeError: 
-                pass
     
-    def draw_image( self, settings, pos, image ) :
-        posX = ( pos[0] * self.viewZoom ) - self.viewOffset[0]
-        posY = ( pos[1] * self.viewZoom ) - self.viewOffset[1]
+    def draw_image( self, settings, transform, image ) :
+        posX = ( transform.position[0] * self.viewZoom ) - self.viewOffset[0]
+        posY = ( transform.position[1] * self.viewZoom ) - self.viewOffset[1]
         posY -= settings.screenSize[ 1 ]
         if posY < 0 :
             posY = math.fabs( posY )
         else :
             return
         zoom = self.viewZoom/self.defaultZoom/2
-        new_image = image.get_current_image( zoom )
+        new_image = image.get_current_image( zoom, math.degrees( transform.angle ) - 90 )
         alignment = self.get_alignment( new_image, image.align )
         
         imgpos = ( posX + alignment[0], posY + alignment[1] )

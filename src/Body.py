@@ -294,6 +294,12 @@ class Body :
 		
 		joint.SetLimits( new_angle, new_angle )
 		return True
+		
+	def blink( self ) :
+		for body in self.all_bodies :
+			image = self.all_bodies.get( body ).userData.get( "image" )
+			if image != None :
+				image.blink()
 	
 class ItemSlot :
 	
