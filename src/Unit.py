@@ -234,7 +234,7 @@ class Projectile( Unit ) :
         Unit.__init__( self, scene, origin.position )
         self.body = self.body_handler.create_projectile( self, pos, 0.1, FILTER_PROJECTILE )
         self.origin = origin
-        self.speed = 250 * self.body.mass
+        self.speed = 500 * self.body.mass
         self.lifetime = 150
         vector = get_movement_vector( origin.angle, -self.speed )
         self.body.ApplyForce( vector, self.body.worldCenter, True)
