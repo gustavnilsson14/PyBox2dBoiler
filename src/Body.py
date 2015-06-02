@@ -5,11 +5,13 @@ from Util import *
 import math
 import random
 import time
+import pygame
 
 class Body :
 	
 	def __init__( self, scene ) :
 		self.main_body = 0
+		self.sprite_group = pygame.sprite.LayeredDirty()
 		self.all_bodies = []
 		self.item_slots = []
 		self.joints = []
@@ -223,7 +225,9 @@ class Body :
 		
 	def set_image_at( self, body_part, image ) :
 		body = self.all_bodies.get( body_part )
-		body.userData[ 'image' ] = Image( image, ALIGN_CENTER_CENTER )
+		image = Image( image, ALIGN_CENTER_CENTER )
+		self.sprite_group.add( image )
+		body.userData[ 'image' ] = image
 		
 	def attach_item( self, body_part, item ) :
 		slot = self.item_slots.get( body_part )
@@ -300,6 +304,14 @@ class Body :
 			image = self.all_bodies.get( body ).userData.get( "image" )
 			if image != None :
 				image.blink()
+	
+	def update_images( self, view_zoom, view_offset, default_zoom, settings ) :
+		for key in self.all_bodies :
+			image = self.all_bodies.get( key ).userData.get( "image" )
+			if image == None :
+				continue
+			body = self.all_bodies.get( key )
+			image.update( body.transform.position, body.transform.angle, view_zoom, view_offset, default_zoom, settings )
 	
 class ItemSlot :
 	

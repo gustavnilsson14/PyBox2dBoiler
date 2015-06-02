@@ -54,7 +54,7 @@ class Unit( Entity ) :
         if self.lifetime > 0 :
             self.lifetime -= 1
             if self.lifetime == 0 :
-                self.scene.remove_unit( self )
+                self.scene.remove_entity( self )
     
     def move( self, new_pos ) :
         if self.body == 0 :
@@ -123,7 +123,7 @@ class Unit( Entity ) :
     def die( self, origin ) :
         if self.alive == False :
             return False
-        self.scene.remove_unit( self )
+        self.scene.remove_entity( self )
         self.alive = False
         return True
         
@@ -179,7 +179,7 @@ class PlayerCharacter( Unit ) :
     def __init__( self, scene, pos ) :
         Unit.__init__( self, scene, pos )
         self.body = self.body_handler.create_humanoid( self, scene, pos, 0.3, FILTER_CHARACTER )
-        self.speed = 1 * self.body.mass
+        self.speed = 5 * self.body.mass
         self.accuracy = 2
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
@@ -316,7 +316,7 @@ class ProjectileWeapon( Weapon ) :
     def create_projectile( self ) :
         if self.body != 0 :
             projectile = Projectile( self.scene, self.body.transform )
-            self.scene.add_unit( projectile )
+            self.scene.add_entity( projectile )
     
     def create_body( self, pos ) :
         self.body = self.scene.world.CreateDynamicBody(

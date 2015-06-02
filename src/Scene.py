@@ -4,17 +4,22 @@ from Order import *
 from PlayerHandler import *
 from random import randint
 import pygame
+from Constants import *
 
 class Scene :
     
     def __init__( self, game, world, scene_data ) :
-        self.unit_list = []
+        self.entity_list = []
         self.orders = []
         self.game = game
         self.world = world
         self.map = Map( self, world, scene_data.get( 'grid' ) )
         self.update_list = []
         self.screen = Screen( game )
+        self.sprite_group = pygame.sprite.LayeredDirty()
+        
+        image = Image( "res/img/environment/default.png", ALIGN_BOTTOM_CENTER )
+        self.sprite_group.add( image )
         #self.add_update( Update( self.screen.screen_shake, 250, 10, 2 ) )
         
         #unit.move( (23,20) )
@@ -33,25 +38,38 @@ class Scene :
         
         
         unit = Character( self, ( 40,25 ) )
-        self.add_unit( unit )
-        self.add_unit( self.target_unit )
+        self.add_entity( unit )
+        self.add_entity( self.target_unit )
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
     
-    def add_unit( self, unit ) :
-        if self.unit_list.__contains__( unit ) :
+    def draw( self, view_zoom, view_offset, default_zoom, settings ) :
+        rects = []
+        for sprite in self.sprite_group :
+            sprite.update( (20,20), 0, view_zoom, view_offset, default_zoom, settings )
+        rects += self.sprite_group.draw( self.game.screen )
+        for entity in self.entity_list :
+            body = entity.body_handler
+            if body != 0 :
+                body.update_images( view_zoom, view_offset, default_zoom, settings )
+                rects += body.sprite_group.draw( self.game.screen )
+        pygame.display.update( rects )
+        return
+    
+    def add_entity( self, entity ) :
+        if self.entity_list.__contains__( entity ) :
             return False
-        self.unit_list.append( unit )
-        self.add_update( Update( unit, unit.update ) )
+        self.entity_list.append( entity )
+        self.add_update( Update( entity, entity.update ) )
         
-    def remove_unit( self, unit ) :
-        if self.unit_list.__contains__( unit ) == False :
-            print unit.__class__.__name__ + " ALREADY GONE"
+    def remove_entity( self, entity ) :
+        if self.entity_list.__contains__( entity ) == False :
+            print entity.__class__.__name__ + " ALREADY GONE"
             return False
-        self.unit_list.remove( unit )
+        self.entity_list.remove( entity )
         for update in self.update_list :
-            if update.owner == unit :
+            if update.owner == entity :
                 self.remove_update( update )
-        self.game.add_garbage_body( unit.body )
+        self.game.add_garbage_body( entity.body )
     
     def add_update( self, update ) :
         if update == None :
@@ -66,7 +84,7 @@ class Scene :
             self.update_list.remove( update )
             return True
         return False
-    
+        
     def Step( self ) :
         for update in self.update_list :
             update.run()
