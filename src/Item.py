@@ -29,8 +29,8 @@ class Pellet( Projectile ) :
 
 class Shotgun( ProjectileWeapon ) :
 
-    def __init__( self, scene ) :
-        ProjectileWeapon.__init__( self, scene, 14, (0.3,0), 3 )
+    def __init__( self, scene, pos = ( 0, 0 )  ) :
+        ProjectileWeapon.__init__( self, scene, pos, 14, (0.3,0), 3 )
         self.pellet_amount = 10
         self.types += [ "shotgun" ]
 
@@ -46,11 +46,11 @@ class Shotgun( ProjectileWeapon ) :
     def create_body( self, pos ) :
         self.body = self.body_handler.create_short_gun( self, self.scene, pos, 1, FILTER_WEAPON )
         return self.body
-        
+    
 class Machinegun( ProjectileWeapon ) :
 
-    def __init__( self, scene ) :
-        ProjectileWeapon.__init__( self, scene, 3, (0.4,0), 3 )
+    def __init__( self, scene, pos = ( 0, 0 ) ) :
+        ProjectileWeapon.__init__( self, scene, pos, 3, (0.4,0), 3 )
         self.types += [ "machinegun" ]
 
     def create_body( self, pos ) :

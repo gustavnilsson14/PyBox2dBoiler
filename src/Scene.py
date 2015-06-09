@@ -1,5 +1,6 @@
 from Map import *
 from Unit import *
+from Item import *
 from Order import *
 from PlayerHandler import *
 from random import randint
@@ -32,6 +33,7 @@ class Scene :
         self.game.player_handler.add_input( Input( player1, Keys.K_s, player1.move_down ) )
         self.game.player_handler.add_input( Input( player1, Keys.K_a, player1.move_left ) )
         self.game.player_handler.add_input( Input( player1, Keys.K_d, player1.move_right ) )
+        self.game.player_handler.add_input( Input( player1, Keys.K_e, player1.pickup, False ) )
         self.game.player_handler.add_input( Input( player1, -100, player1.turn ) )
         self.game.player_handler.add_input( Input( player1, -101, player1.use_item ) )
         

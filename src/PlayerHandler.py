@@ -64,6 +64,26 @@ class Player :
 			self.character.movement_vector = ( -1, current_vector[1] )
 			return True
 		return False
+		
+	def pickup( self ) :
+		if self.character.alive == True :
+			pos = self.character.body.transform.position
+			for body in self.game.world.bodies :
+				if body.userData == None :
+					continue
+				owner = body.userData.get( 'owner' )
+				if owner == None :
+					continue
+				for item in self.character.body_handler.find_items() :
+					if item.body == body :
+						continue
+					if 'item' in owner.types :
+						target = body.transform.position
+						if get_distance_between_points( pos, target ) < 1 :
+							print owner
+							self.character.body_handler.attach_item( 'left_arm', owner )
+							return True
+		return False
 	
 	def turn( self ) :
 		if self.character.alive == True :
@@ -83,11 +103,16 @@ class Player :
 		
 class Input :
 	
-	def __init__( self, player, key, function ) :
+	def __init__( self, player, key, function, repeat = True ) :
 		self.player = player
 		self.key = key
 		self.function = function
+		self.repeat = repeat
 		
 	def run( self, keys ) :
 		if self.key in keys :
 			self.function()
+			if self.repeat == False :
+				self.player.game.pressed_keys.remove( self.key )
+			return True
+		return False

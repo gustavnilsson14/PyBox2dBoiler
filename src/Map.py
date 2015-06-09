@@ -38,6 +38,14 @@ class Map() :
                 content = 0
                 if tile.get( 'collision' ) != None :
                     content = Block( scene, (x,y) )
+                if tile.get( 'weaponpoints' ) != None :
+                    from Item import *
+                    if randint( 0, 4 ) > 2 :
+                        item = Machinegun( self.scene, ( x, y ) )
+                    else :
+                        item = Shotgun( self.scene, ( x, y ) )
+                    item.create_body( ( x, y ) )
+                    #content = Block( scene, (x,y) )
                 if content != 0 :
                     if content.image != 0 :
                         self.sprite_group.add( content.image )

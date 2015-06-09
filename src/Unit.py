@@ -272,8 +272,9 @@ class Projectile( Unit ) :
 
 class Item :
     
-    def __init__( self, scene, cooldown = 0, local_anchor = ( 0, 0 ) ) :
+    def __init__( self, scene, pos, cooldown = 0, local_anchor = ( 0, 0 ) ) :
         self.body_handler = Body( scene )
+        self.position = pos
         self.holder = 0
         self.scene = scene
         self.body = 0
@@ -292,6 +293,9 @@ class Item :
             return True
         return False
     
+    def create_body( self, pos ) :
+        return False
+        
     def destroy_body( self ) :
         if self.body != 0 :
             self.scene.game.add_garbage_body( self.body )
@@ -300,8 +304,8 @@ class Item :
 
 class Weapon( Item ) :
     
-    def __init__( self, scene, cooldown, local_anchor, attack_range ) :
-        Item.__init__( self, scene, cooldown, local_anchor )
+    def __init__( self, scene, pos, cooldown, local_anchor, attack_range ) :
+        Item.__init__( self, scene, pos, cooldown, local_anchor )
         self.attack_range = attack_range
         self.types += [ "weapon" ]
 
@@ -314,8 +318,8 @@ class Weapon( Item ) :
             
 class ProjectileWeapon( Weapon ) :
     
-    def __init__( self, scene, cooldown = 2, local_anchor = (0.45,0), attack_range = 5 ) :
-        Weapon.__init__( self, scene, cooldown, local_anchor, attack_range )
+    def __init__( self, scene, pos, cooldown = 2, local_anchor = (0.45,0), attack_range = 5 ) :
+        Weapon.__init__( self, scene, pos, cooldown, local_anchor, attack_range )
         self.attack_range = attack_range
         self.types += [ "projectile_weapon" ]
       
@@ -333,26 +337,7 @@ class ProjectileWeapon( Weapon ) :
             self.scene.add_entity( projectile )
     
     def create_body( self, pos ) :
-        self.body = self.scene.world.CreateDynamicBody(
-            position = pos,
-            fixedRotation=False,
-            allowSleep=False,
-            userData={
-                'owner' : self
-            },
-            fixtures=b2FixtureDef(
-                filter=b2Filter(
-                    groupIndex = 0,
-                    categoryBits = FILTER_WEAPON[0],
-                    maskBits = FILTER_WEAPON[1]
-                ),
-                shape=b2PolygonShape(
-                    box=(0.2, 0.03)
-                ), 
-                density=0.0001
-            )
-        )
-        return self.body
+        return False
 
     def handle_collision( self, my_fixture, colliding_fixture ) :
         pass

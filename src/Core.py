@@ -3,6 +3,10 @@ from pygame.sprite import *
 import pygame.display
 from Constants import *
 import math
+import random
+
+def randint( min, max ) :
+	return random.randint(min,max)
 
 class Entity :
 	

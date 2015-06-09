@@ -326,7 +326,7 @@ class Body :
 		for key in self.item_slots :
 			self.item_slots.get( key ).update( update )
 	
-	def find_items( self, type ) :
+	def find_items( self, type = 'item' ) :
 		item_list = []
 		for key in self.item_slots :
 			slot = self.item_slots.get( key )
