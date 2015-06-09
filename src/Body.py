@@ -414,6 +414,12 @@ class ItemSlot :
 		self.item = item
 		self.item.holder = self
 		
+	def get_owner_types( self ) :
+		owner = self.body.userData.get( 'owner' )
+		if owner == None :
+			return []
+		return owner.types
+		
 	def detach_item( self ) :
 		if self.joint != 0 :
 			self.scene.game.add_garbage_joint( self.joint )

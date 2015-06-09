@@ -35,6 +35,8 @@ class Shotgun( ProjectileWeapon ) :
         self.types += [ "shotgun" ]
 
     def create_projectile( self ) :
+        if ProjectileWeapon.holder_is_player( self ) :
+            self.scene.screen.shake_time = 6
         if self.body != 0 :
             for i in range(0, self.pellet_amount ) :
                 angle = math.radians( math.degrees( self.body.transform.angle ) + random.randint( -7, 7 ) )
@@ -52,6 +54,13 @@ class Machinegun( ProjectileWeapon ) :
     def __init__( self, scene, pos = ( 0, 0 ) ) :
         ProjectileWeapon.__init__( self, scene, pos, 3, (0.4,0), 3 )
         self.types += [ "machinegun" ]
+
+    def create_projectile( self ) :
+	if ProjectileWeapon.holder_is_player( self ) :
+            self.scene.screen.shake_time = 2
+        if self.body != 0 :
+            projectile = Projectile( self.scene, self.body.transform )
+            self.scene.add_entity( projectile )
 
     def create_body( self, pos ) :
         self.body = self.body_handler.create_long_gun( self, self.scene, pos, 1, FILTER_WEAPON )

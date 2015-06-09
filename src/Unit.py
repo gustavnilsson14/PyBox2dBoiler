@@ -194,7 +194,7 @@ class PlayerCharacter( Unit ) :
         self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
         self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
         self.current_item = 0
-        self.body_handler.attach_item( "right_arm", Shotgun( scene ) )
+        self.body_handler.attach_item( "right_arm", Machinegun( scene ) )
         #self.body_handler.detach_item( "right_arm" )
         self.target = 0
         self.types += [ "player_character" ]
@@ -331,10 +331,12 @@ class ProjectileWeapon( Weapon ) :
             return True
         return False
             
-    def create_projectile( self ) :
-        if self.body != 0 :
-            projectile = Projectile( self.scene, self.body.transform )
-            self.scene.add_entity( projectile )
+    def holder_is_player( self ) :
+        if self.holder == 0 :
+            return False
+        if 'player_character' in self.holder.get_owner_types() :
+            return True
+        return False
     
     def create_body( self, pos ) :
         return False
