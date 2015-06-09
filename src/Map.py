@@ -4,6 +4,7 @@ from pathfinding import *
 from Constants import *
 from Core import *
 import time
+import pygame
 
 class Map() :
     
@@ -14,22 +15,47 @@ class Map() :
         self.fovbits = []
         self.pathfinder = Pathfinder( grid )
         self.fov = FovChecker( grid )
+        self.tile_list = []
+        self.sprite_group = pygame.sprite.LayeredDirty()
         x = 0
         while x < len( grid ) :
             row = grid[ x ]
             y = 0
             while y < len( row ) :
                 tile = row[ y ]
+                content = Floor( scene, (x,y) )
+                if content.image != 0 :
+                    self.sprite_group.add( content.image )
+                self.tile_list.append( content )
+                y += 4
+            x += 4
+        x = 0
+        while x < len( grid ) :
+            row = grid[ x ]
+            y = 0
+            while y < len( row ) :
+                tile = row[ y ]
+                content = 0
                 if tile.get( 'collision' ) != None :
-                    tile[ "content" ] = Block( scene, (x,y) )
+                    content = Block( scene, (x,y) )
+                if content != 0 :
+                    if content.image != 0 :
+                        self.sprite_group.add( content.image )
+                    tile[ "content" ] = content
+                    self.tile_list.append( content )
                 y += 1
             x += 1
-            
+        x = 0
+    
+    def update( self, view_zoom, view_offset, settings ) :
+        for tile in self.tile_list :
+            tile.update( view_zoom, view_offset, settings )
+    
     def find_path( self, start, goal ) :
         path = self.pathfinder.find( start, goal )
         if path != False :
             return path
-        return False
+        return 0
             
     def get_visible_tiles( self, pos ) :
         fov = self.fov.check_tiles( pos, 5 )
@@ -54,11 +80,23 @@ class Map() :
             )
             self.fovbits.append(newbit)
         '''
-            
-class Block( Entity ) :
+        
+class Tile( Entity ) :
     
     def __init__( self, scene, pos ) :
         Entity.__init__( self, scene )
+        self.position = pos
+        self.image = 0
+        
+    def update( self, view_zoom, view_offset, settings ) :
+        if self.image != 0 :
+            self.image.update( self.position, 0, view_zoom, view_offset, settings )
+            
+class Block( Tile ) :
+    
+    def __init__( self, scene, pos ) :
+        Tile.__init__( self, scene, pos )
+        #self.image = Image( "res/img/environment/block.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
         self.body = scene.world.CreateKinematicBody(
             position = pos,
             fixedRotation=True,
@@ -83,3 +121,10 @@ class Block( Entity ) :
         
     def handle_collision( self, my_fixture, colliding_fixture ) :
         pass
+        
+class Floor( Tile ) :
+    
+    def __init__( self, scene, pos ) :
+        Tile.__init__( self, scene, pos )
+        #self.image = Image( "res/img/environment/floor.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
+        self.types += [ "floor" ]

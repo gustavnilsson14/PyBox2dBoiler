@@ -69,6 +69,7 @@ class Unit( Entity ) :
     def stop( self ) :
         if self.body == 0 :
             return False
+        self.current_path = 0
         self.body.linearVelocity = (0,0)
         #self.move_towards_target( self.scene.target_unit, 1 )
         
@@ -100,6 +101,9 @@ class Unit( Entity ) :
                 return True
             return True
         self.current_path = self.scene.map.find_path( self.body.transform.position, new_pos )
+        if self.current_path == 0 :
+            self.stop()
+            return False
         self.current_tile = self.current_path.pop( 0 )
         self.move_to_tile( self.current_tile )
         #print self.current_path, self.body.transform.position
@@ -137,9 +141,9 @@ class Character( Unit ) :
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
         self.health = 100000
-        self.body_handler.set_image_at( 'head', 'image.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
         self.current_item = 0
-        self.body_handler.attach_item( "right_arm", ProjectileWeapon( scene ) )
+        self.body_handler.attach_item( "right_arm", Machinegun( scene ) )
         #self.body_handler.detach_item( "right_arm" )
         self.target = 0
         self.types += [ "character" ]
@@ -184,9 +188,13 @@ class PlayerCharacter( Unit ) :
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
         self.health = 100000
-        self.body_handler.set_image_at( 'head', 'image.png' )
+        self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
         self.current_item = 0
-        self.body_handler.attach_item( "right_arm", ProjectileWeapon( scene ) )
+        self.body_handler.attach_item( "right_arm", Shotgun( scene ) )
         #self.body_handler.detach_item( "right_arm" )
         self.target = 0
         self.types += [ "player_character" ]
@@ -229,21 +237,26 @@ class PlayerCharacter( Unit ) :
 
 class Projectile( Unit ) :
     
-    def __init__( self, scene, origin, offset = -0.8 ) :
+    def __init__( self, scene, origin, offset = -0.8, speed = 500, lifetime = 150 ) :
         pos = origin.position + get_movement_vector( origin.angle, offset )
         Unit.__init__( self, scene, origin.position )
-        self.body = self.body_handler.create_projectile( self, pos, 0.1, FILTER_PROJECTILE )
+        self.create_body( pos )
         self.origin = origin
-        self.speed = 500 * self.body.mass
-        self.lifetime = 150
+        self.speed = speed * self.body.mass
+        self.lifetime = lifetime
         vector = get_movement_vector( origin.angle, -self.speed )
-        self.body.ApplyForce( vector, self.body.worldCenter, True)
+        radians_to_target = get_radians_between_points( (0,0), vector )
+        self.body.ApplyForce( vector, self.body.worldCenter, True )
+        self.body.transform = [ self.body.transform.position, radians_to_target ]
         self.damage = 1
-        self.body_handler.set_image_at( 'main', 'image.png' )
+        self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
         self.types += [ "projectile" ]
     
     def update( self, update ) :
         Unit.update( self, update )
+        
+    def create_body( self, pos ) :
+        self.body = self.body_handler.create_projectile( self, pos, 0.1, FILTER_PROJECTILE )
 
     def handle_collision( self, my_fixture, colliding_fixture ) :
         collider = colliding_fixture.body.userData.get( 'owner' )
@@ -260,6 +273,7 @@ class Projectile( Unit ) :
 class Item :
     
     def __init__( self, scene, cooldown = 0, local_anchor = ( 0, 0 ) ) :
+        self.body_handler = Body( scene )
         self.holder = 0
         self.scene = scene
         self.body = 0
@@ -300,7 +314,7 @@ class Weapon( Item ) :
             
 class ProjectileWeapon( Weapon ) :
     
-    def __init__( self, scene, cooldown = 5, local_anchor = (0.45,0), attack_range = 5 ) :
+    def __init__( self, scene, cooldown = 2, local_anchor = (0.45,0), attack_range = 5 ) :
         Weapon.__init__( self, scene, cooldown, local_anchor, attack_range )
         self.attack_range = attack_range
         self.types += [ "projectile_weapon" ]
@@ -342,3 +356,5 @@ class ProjectileWeapon( Weapon ) :
 
     def handle_collision( self, my_fixture, colliding_fixture ) :
         pass
+
+from Item import *

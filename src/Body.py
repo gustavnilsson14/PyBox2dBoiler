@@ -3,7 +3,6 @@ from Core import *
 from Constants import *
 from Util import *
 import math
-import random
 import time
 import pygame
 
@@ -221,11 +220,92 @@ class Body :
 			"main": main
 		}
 		self.main_body = main
+		return self.main_body	
+	
+	def create_pellet( self, owner, pos, size, filter ) :
+		main = self.scene.world.CreateDynamicBody(
+			position=pos,
+			userData={
+				'owner' : owner
+			},
+			fixtures=[
+				b2FixtureDef(
+					shape=b2CircleShape(radius=0.3*size),
+					density=1,
+					filter=b2Filter(
+						groupIndex = 0,
+						categoryBits = filter[0],
+						maskBits = filter[1]
+					)
+				)
+			]
+		)
+		self.all_bodies = { 
+			"main": main
+		}
+		self.main_body = main
 		return self.main_body
+
+	def create_short_gun( self, owner, scene, pos, size, filter ) :
+		main = self.scene.world.CreateDynamicBody(
+            position = pos,
+            fixedRotation=False,
+            allowSleep=False,
+            userData={
+                'owner' : owner
+            },
+            fixtures=[
+				b2FixtureDef(
+					filter=b2Filter(
+						groupIndex = 0,
+						categoryBits = filter[0],
+						maskBits = filter[1]
+					),
+					shape=b2PolygonShape(
+						box=(0.15 * size, 0.05 * size)
+					), 
+					density=0.0001
+				)
+            ]
+        )
+		self.all_bodies = { 
+			"main": main
+		}
+		self.main_body = main
+		return self.main_body
+	
+	def create_long_gun( self, owner, scene, pos, size, filter ) :
+		main = self.scene.world.CreateDynamicBody(
+            position = pos,
+            fixedRotation=False,
+            allowSleep=False,
+            userData={
+                'owner' : owner
+            },
+            fixtures=[
+				b2FixtureDef(
+					filter=b2Filter(
+						groupIndex = 0,
+						categoryBits = filter[0],
+						maskBits = filter[1]
+					),
+					shape=b2PolygonShape(
+						box=(0.2 * size, 0.03 * size)
+					), 
+					density=0.0001
+				)
+            ]
+        )
+		self.all_bodies = { 
+			"main": main
+		}
+		self.main_body = main
+		return self.main_body
+		
 		
 	def set_image_at( self, body_part, image ) :
 		body = self.all_bodies.get( body_part )
-		image = Image( image, ALIGN_CENTER_CENTER )
+		image = Image( image, self.scene.game.image_handler, ALIGN_CENTER_CENTER )
 		self.sprite_group.add( image )
 		body.userData[ 'image' ] = image
 		
@@ -305,13 +385,13 @@ class Body :
 			if image != None :
 				image.blink()
 	
-	def update_images( self, view_zoom, view_offset, default_zoom, settings ) :
+	def update_images( self, view_zoom, view_offset, settings ) :
 		for key in self.all_bodies :
 			image = self.all_bodies.get( key ).userData.get( "image" )
 			if image == None :
 				continue
 			body = self.all_bodies.get( key )
-			image.update( body.transform.position, body.transform.angle, view_zoom, view_offset, default_zoom, settings )
+			image.update( body.transform.position, body.transform.angle, view_zoom, view_offset, settings )
 	
 class ItemSlot :
 	

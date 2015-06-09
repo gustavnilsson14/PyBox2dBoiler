@@ -18,9 +18,8 @@ class Scene :
         self.screen = Screen( game )
         self.sprite_group = pygame.sprite.LayeredDirty()
         
-        image = Image( "res/img/environment/default.png", ALIGN_BOTTOM_CENTER )
+        image = Image( "res/img/environment/default.png", game.image_handler, ALIGN_BOTTOM_CENTER )
         self.sprite_group.add( image )
-        #self.add_update( Update( self.screen.screen_shake, 250, 10, 2 ) )
         
         #unit.move( (23,20) )
         
@@ -36,21 +35,20 @@ class Scene :
         self.game.player_handler.add_input( Input( player1, -100, player1.turn ) )
         self.game.player_handler.add_input( Input( player1, -101, player1.use_item ) )
         
+        self.add_entity( self.target_unit )
         
         unit = Character( self, ( 40,25 ) )
         self.add_entity( unit )
-        self.add_entity( self.target_unit )
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
     
-    def draw( self, view_zoom, view_offset, default_zoom, settings ) :
+    def draw( self, view_zoom, view_offset, settings ) :
         rects = []
-        for sprite in self.sprite_group :
-            sprite.update( (20,20), 0, view_zoom, view_offset, default_zoom, settings )
-        rects += self.sprite_group.draw( self.game.screen )
+        self.map.update( view_zoom, view_offset, settings )
+        rects += self.map.sprite_group.draw( self.game.screen )
         for entity in self.entity_list :
             body = entity.body_handler
             if body != 0 :
-                body.update_images( view_zoom, view_offset, default_zoom, settings )
+                body.update_images( view_zoom, view_offset, settings )
                 rects += body.sprite_group.draw( self.game.screen )
         pygame.display.update( rects )
         return

@@ -19,7 +19,7 @@ class Path :
         if self.computed + self.lifetime > current_time :
             self.computed = int( time.time() )
             return self.path
-        return False
+        return 0
 
 class Pathfinder :
     

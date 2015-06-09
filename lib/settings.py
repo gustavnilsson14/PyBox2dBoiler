@@ -35,7 +35,7 @@ class fwSettings(object):
     screenSize=(1280,720)
     drawStats=False
     drawShapes=True
-    drawJoints=True
+    drawJoints=False
     drawCoreShapes=False
     drawAABBs=False
     drawOBBs=False

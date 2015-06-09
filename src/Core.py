@@ -18,12 +18,12 @@ class Entity :
 		
 class Image( DirtySprite ) :
 	
-	def __init__( self, image, align = ALIGN_BOTTOM_CENTER ) :
+	def __init__( self, image, image_handler, align = ALIGN_BOTTOM_CENTER ) :
 		DirtySprite.__init__( self )
-		self.original_image = pygame.image.load( image )
-		self.zoomed_image = self.original_image.copy()
-		self.rotated_image = self.zoomed_image.copy()
-		self.image = self.rotated_image.copy()
+		self.image_key = image
+		self.image_handler = image_handler
+		self.image = pygame.Surface((0,0))
+		self.buffered_image = 0
 		self.rect = self.image.get_rect()
 		self.align = align
 		self.tint_duration = 0
@@ -36,50 +36,45 @@ class Image( DirtySprite ) :
 		self.tint_duration = duration
 		self.tint_color = color
 		
-	def scale_image( self, zoom ) :
-		if self.current_zoom != zoom :
-			self.current_zoom = zoom
-			return pygame.transform.scale( self.original_image, ( int( self.original_image.get_width() * self.current_zoom ), int( self.original_image.get_height() * self.current_zoom ) ) )
-		return self.zoomed_image
-		
-	def rotate_image( self, angle ) :
+	def rotate_image( self, image, angle ) :
 		angle = math.degrees( angle ) - 90
 		if angle != self.current_angle :
-			return pygame.transform.rotate( self.zoomed_image, int( self.current_angle ) )
-		return self.rotated_image
+			self.current_angle = angle
+			self.buffered_image = pygame.transform.rotate( image, self.current_angle )
+		return self.buffered_image
 		
-	def clip_image( self, view_zoom, view_offset, default_zoom, settings ) :
-		return self.rotated_image
 		
-	def update( self, position, angle, view_zoom, view_offset, default_zoom, settings ) :
+	def update( self, position, angle, view_zoom, view_offset, settings ) :
 		self.dirty = 1
-		zoom = view_zoom/default_zoom/2
-		
-		self.zoomed_image = self.scale_image( zoom )
-		self.rotated_image = self.rotate_image( angle )
-		self.image = self.clip_image( view_zoom, view_offset, default_zoom, settings )
-		
-		if self.tint_duration > 0 :
-			self.image = self.image.convert_alpha()
-			tmp = pygame.Surface( self.image.get_size(), pygame.SRCALPHA, 32)
-			tmp.fill( self.tint_color )
-			self.image.blit(tmp, (0,0), self.image.get_rect(), pygame.BLEND_RGBA_MULT)
-			self.tint_duration -= 1
 		posX = ( position[0] * view_zoom ) - view_offset[0]
 		posY = ( position[1] * view_zoom ) - view_offset[1]
-
 		posY -= settings.screenSize[ 1 ]
+		image = self.image_handler.get_image( self.image_key )
 		if posY < 0 :
 			posY = math.fabs( posY )
 		else :
 			self.image = pygame.Surface((0,0))
-
+			return
+		if ( posY - image.get_height() ) > settings.screenSize[1] or ( posX - image.get_width() ) > settings.screenSize[0] or ( posX + image.get_width() ) < 0 :
+			self.image = pygame.Surface((0,0))
+			return
+		if self.current_zoom != view_zoom :
+			self.current_zoom = view_zoom
+			self.current_angle = -1
+			self.image = self.rotate_image( image, angle )
+		else :
+			self.image = self.rotate_image( image, angle )
 		alignment = self.get_alignment( self.image, self.align )
-		
 		imgpos = ( posX + alignment[0], posY + alignment[1] )
 		self.rect = self.image.get_rect()
 		self.rect.x = imgpos[0]
 		self.rect.y = imgpos[1]
+		
+		if self.tint_duration > 0 :
+			tmp = pygame.Surface( self.image.get_size(), pygame.SRCALPHA, 32)
+			tmp.fill( self.tint_color )
+			self.image.blit(tmp, (0,0), self.image.get_rect(), pygame.BLEND_RGBA_MULT)
+			self.tint_duration -= 1
 		
 	def get_alignment( self, image, align ) :
 		if align == ALIGN_BOTTOM_CENTER :
@@ -93,4 +88,29 @@ class Image( DirtySprite ) :
 		elif align == ALIGN_BOTTOM_RIGHT :
 			return ( -image.get_width(), -image.get_height() )
 		
+class ImageHandler() :
+	
+	def __init__( self, game ) :
+		self.original_images = {}
+		self.zoomed_images = {}
+		self.game = game
+		
+	def zoom_image( self, image ) :
+		zoom = self.game.viewZoom/self.game.defaultZoom/2
+		return pygame.transform.scale( image, ( int( image.get_width() * zoom ), int( image.get_height() * zoom ) ) )
+	
+	def zoom_images( self ) :
+		for key in self.original_images :
+			image = self.original_images.get( key )
+			self.zoomed_images[ key ] = self.zoom_image( image.copy() )
+				
+	def get_image( self, key ) :
+		if self.original_images.get( key ) == None :
+			image = pygame.image.load( key )
+			image = image.convert_alpha()
+			self.original_images[ key ] = image
+			self.zoomed_images[ key ] = self.zoom_image( image.copy() )
+		image = self.zoomed_images.get( key )
+		if image != None :
+			return image.copy()
 		
