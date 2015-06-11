@@ -405,6 +405,7 @@ class ItemSlot :
 		
 	def attach_item( self, item ) :
 		body = item.create_body( self.body.transform.position + self.local_anchor )
+		body.transform = [ body.transform.position, self.body.transform.angle ]
 		self.joint = self.scene.world.CreateWeldJoint(
 			bodyA=self.body,
 			bodyB=body,
@@ -424,6 +425,10 @@ class ItemSlot :
 		if self.joint != 0 :
 			self.scene.game.add_garbage_joint( self.joint )
 			self.joint = 0
+			main_body = self.body.userData.get( 'owner' ).body
+			self.item.body.transform = [ main_body.transform.position, main_body.transform.angle ]
+			self.item.body.linearVelocity = ( 0, 0 )
+			self.item.body.angularVelocity = 0
 			self.item = 0
 
 	def update( self, update ) :

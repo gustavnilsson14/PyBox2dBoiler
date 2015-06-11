@@ -27,6 +27,7 @@ class Scene :
         
         self.target_unit = PlayerCharacter( self, ( 44,40 ) )
         self.screen.center_position = self.target_unit.body.transform.position
+        
         player1 = Player( self.game, self.target_unit )
         self.game.player_handler.add_player( player1 )
         self.game.player_handler.add_input( Input( player1, Keys.K_w, player1.move_up ) )
@@ -38,10 +39,11 @@ class Scene :
         self.game.player_handler.add_input( Input( player1, -101, player1.use_item ) )
         
         self.add_entity( self.target_unit )
-        
+        '''
         unit = Character( self, ( 40,25 ) )
         self.add_entity( unit )
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
+        '''
     
     def draw( self, view_zoom, view_offset, settings ) :
         rects = []
@@ -86,9 +88,9 @@ class Scene :
         return False
         
     def Step( self ) :
+        self.screen.update_camera_center()
         for update in self.update_list :
             update.run()
-        self.screen.update_camera_center()
     
     def destroy( self ) :
         self.world.ClearForces()
@@ -103,7 +105,8 @@ class Screen :
         self.shake_magnitude = shake_magnitude
         self.center_position = 0
         self.shake_time = 0
-        
+        self.current_zoom = -1
+
     def update_camera_center( self ) :
         self.game.setCenter( self.center_position )
         if self.shake_time > 0 :

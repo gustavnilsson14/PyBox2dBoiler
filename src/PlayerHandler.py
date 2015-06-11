@@ -81,7 +81,8 @@ class Player :
 						target = body.transform.position
 						if get_distance_between_points( pos, target ) < 1 :
 							print owner
-							self.character.body_handler.attach_item( 'left_arm', owner )
+							self.character.body_handler.attach_item( 'right_arm', owner )
+							self.character.set_current_item( 'weapon' )
 							return True
 		return False
 	

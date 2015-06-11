@@ -44,7 +44,6 @@ class Game (Framework):
         #This property manages zoom level
         self.viewZoom = self.defaultZoom
     
-    
     def Step(self, settings):
         if self.pause_time > 0 :
             self.pause_time -= 1
@@ -57,16 +56,18 @@ class Game (Framework):
             self.garbage_joint_list.remove( garbage_joint )
         
         background_colour = (55,55,55)
-        self.screen.fill( background_colour )
             
+        
+        self.screen.fill( background_colour )
+        if self.current_scene != 0 :
+            self.current_scene.Step()
         super( Game, self ).Step( settings )
+        
         
         self.current_scene.draw( self.viewZoom, self.viewOffset, settings )
         
         self.player_handler.update( self.pressed_keys )
         
-        if self.current_scene != 0 :
-            self.current_scene.Step()
         
         for contact in self.world.contacts :
             fixtureA = contact.fixtureA

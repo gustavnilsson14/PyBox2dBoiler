@@ -1,7 +1,6 @@
 from Unit import *
 from Core import *
 from Constants import *
-from framework import *
 import math
 import random
 
@@ -32,6 +31,7 @@ class Shotgun( ProjectileWeapon ) :
     def __init__( self, scene, pos = ( 0, 0 )  ) :
         ProjectileWeapon.__init__( self, scene, pos, 14, (0.3,0), 3 )
         self.pellet_amount = 10
+	self.spread = 7
         self.types += [ "shotgun" ]
 
     def create_projectile( self ) :
@@ -39,13 +39,12 @@ class Shotgun( ProjectileWeapon ) :
             self.scene.screen.shake_time = 6
         if self.body != 0 :
             for i in range(0, self.pellet_amount ) :
-                angle = math.radians( math.degrees( self.body.transform.angle ) + random.randint( -7, 7 ) )
-                rotation = b2Rot( angle )
-                transform = b2Transform( self.body.transform.position, rotation )
-                projectile = Pellet( self.scene, transform )
+                transform = self.apply_spread()
+		projectile = Pellet( self.scene, transform )
                 self.scene.add_entity( projectile )
 
     def create_body( self, pos ) :
+	ProjectileWeapon.create_body( self )
         self.body = self.body_handler.create_short_gun( self, self.scene, pos, 1, FILTER_WEAPON )
         return self.body
     
@@ -53,15 +52,18 @@ class Machinegun( ProjectileWeapon ) :
 
     def __init__( self, scene, pos = ( 0, 0 ) ) :
         ProjectileWeapon.__init__( self, scene, pos, 3, (0.4,0), 3 )
+	self.spread = 1
         self.types += [ "machinegun" ]
 
     def create_projectile( self ) :
 	if ProjectileWeapon.holder_is_player( self ) :
-            self.scene.screen.shake_time = 2
+            self.scene.screen.shake_time = 1
         if self.body != 0 :
-            projectile = Projectile( self.scene, self.body.transform )
+            transform = self.apply_spread()
+            projectile = Projectile( self.scene, transform )
             self.scene.add_entity( projectile )
 
     def create_body( self, pos ) :
+	ProjectileWeapon.create_body( self )
         self.body = self.body_handler.create_long_gun( self, self.scene, pos, 1, FILTER_WEAPON )
         return self.body

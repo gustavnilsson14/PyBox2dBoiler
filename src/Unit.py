@@ -293,8 +293,11 @@ class Item :
             return True
         return False
     
-    def create_body( self, pos ) :
-        return False
+    def create_body( self ) :
+        if self.body == 0 :
+            return
+        self.scene.game.add_garbage_body( self.body )
+            
         
     def destroy_body( self ) :
         if self.body != 0 :
@@ -315,12 +318,16 @@ class Weapon( Item ) :
         if get_distance_between_points( self.body.transform.position, target.body.transform.position ) < self.attack_range :
             return True
         return False
+        
+    def create_body( self ) :
+        Item.create_body( self )
             
 class ProjectileWeapon( Weapon ) :
     
     def __init__( self, scene, pos, cooldown = 2, local_anchor = (0.45,0), attack_range = 5 ) :
         Weapon.__init__( self, scene, pos, cooldown, local_anchor, attack_range )
         self.attack_range = attack_range
+        self.spread = 0
         self.types += [ "projectile_weapon" ]
       
     def use( self, target ) :
@@ -338,10 +345,15 @@ class ProjectileWeapon( Weapon ) :
             return True
         return False
     
-    def create_body( self, pos ) :
-        return False
+    def create_body( self ) :
+        Weapon.create_body( self )
 
     def handle_collision( self, my_fixture, colliding_fixture ) :
         pass
+        
+    def apply_spread( self ) :
+        angle = math.radians( math.degrees( self.body.transform.angle ) + random.randint( -self.spread, self.spread ) )
+        rotation = b2Rot( angle )
+        return b2Transform( self.body.transform.position, rotation )
 
 from Item import *
