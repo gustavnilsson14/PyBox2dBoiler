@@ -78,6 +78,8 @@ class Player :
 					if item.body == body :
 						continue
 					if 'item' in owner.types :
+						if owner.holder != 0 :
+							continue
 						target = body.transform.position
 						if get_distance_between_points( pos, target ) < 1 :
 							print owner

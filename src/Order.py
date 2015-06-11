@@ -52,6 +52,8 @@ class AttackOrder( Order ) :
     
     def Step( self ) :
         Order.Step( self )
+        if self.target.alive == False :
+            self.unit_list = []
         for unit in self.unit_list :
             if unit.aim( self.target.body.transform.position ) :
                 if unit.use_current_item( self.target ) :

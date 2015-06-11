@@ -393,6 +393,16 @@ class Body :
 			body = self.all_bodies.get( key )
 			image.update( body.transform.position, body.transform.angle, view_zoom, view_offset, settings )
 	
+	def destroy( self ) :
+		for j in self.joints :
+			joint = self.all_bodies.get( j )
+			self.scene.game.add_garbage_joint( joint )
+		for b in self.all_bodies :
+			body = self.all_bodies.get( b )
+			self.scene.game.add_garbage_body( body )
+		self.all_bodies = {}
+			
+
 class ItemSlot :
 	
 	def __init__( self, scene, body, body_joint, local_anchor ) :
@@ -425,6 +435,7 @@ class ItemSlot :
 		if self.joint != 0 :
 			self.scene.game.add_garbage_joint( self.joint )
 			self.joint = 0
+			self.item.holder = 0
 			main_body = self.body.userData.get( 'owner' ).body
 			self.item.body.transform = [ main_body.transform.position, main_body.transform.angle ]
 			self.item.body.linearVelocity = ( 0, 0 )

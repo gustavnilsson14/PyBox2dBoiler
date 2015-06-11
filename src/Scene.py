@@ -28,7 +28,10 @@ class Scene :
         self.target_unit = PlayerCharacter( self, ( 44,40 ) )
         self.screen.center_position = self.target_unit.body.transform.position
         
+        self.hud = Hud( self )
+        
         player1 = Player( self.game, self.target_unit )
+        self.hud.add_player( player1 )
         self.game.player_handler.add_player( player1 )
         self.game.player_handler.add_input( Input( player1, Keys.K_w, player1.move_up ) )
         self.game.player_handler.add_input( Input( player1, Keys.K_s, player1.move_down ) )
@@ -39,16 +42,21 @@ class Scene :
         self.game.player_handler.add_input( Input( player1, -101, player1.use_item ) )
         
         self.add_entity( self.target_unit )
-        '''
+        
         unit = Character( self, ( 40,25 ) )
         self.add_entity( unit )
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
-        '''
+        
+        player2 = Player( self.game, unit )
+        self.hud.add_player( player2 )
+        
     
     def draw( self, view_zoom, view_offset, settings ) :
         rects = []
         self.map.update( view_zoom, view_offset, settings )
         rects += self.map.sprite_group.draw( self.game.screen )
+        self.hud.update( settings )
+        rects += self.hud.sprite_group.draw( self.game.screen )
         for entity in self.entity_list :
             body = entity.body_handler
             if body != 0 :
@@ -71,7 +79,7 @@ class Scene :
         for update in self.update_list :
             if update.owner == entity :
                 self.remove_update( update )
-        self.game.add_garbage_body( entity.body )
+        entity.body_handler.destroy()
     
     def add_update( self, update ) :
         if update == None :
@@ -156,12 +164,56 @@ class Update :
             return True
         return False
         
+class Hud :
         
+    def __init__( self, scene ) :
+        self.player_list = []
+        self.hud_positions = [ (0,0),(0,1),(1,0),(1,1) ]
+        self.scene = scene
+        self.huds = []
+        self.sprite_group = pygame.sprite.LayeredDirty()
         
+    def add_player( self, player ) :
+        if player in self.player_list :
+            return False
+        if len( self.player_list ) == 4 :
+            return False
+        self.player_list += [ player ]
+        self.huds += [ PlayerHud( self.sprite_group ) ]
+        return True
         
+    def remove_player( self, player ) :
+        if player in self.player_list :
+            self.player_list.remove( player )
+            return True
+        return False
         
+    def update( self, settings ) :
+        for index, player in enumerate( self.player_list ) :
+            pos = ( self.hud_positions[ index ][0] * ( settings.screenSize[0] - 120 ), self.hud_positions[ index ][1] * ( settings.screenSize[1] - 40 ) )
+            hud = self.huds[ index ]
+            self.draw_player( player, hud, pos )
         
+    def draw_player( self, player, hud, pos ) :
+        self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.character.max_health ) )
         
+    def draw_health_bar( self, pos, hud, percentage ) :
+        max_width = 100
+        width = max_width * percentage
+        bar = pygame.Surface( ( int(width), 6 ) )
+        bar.fill( (255,0,0) )
+        hud.health_bar.image = bar
+        hud.health_bar.dirty = 1
+        hud.health_bar.rect = bar.get_rect()
+        hud.health_bar.rect.x = pos[0] + 10
+        hud.health_bar.rect.y = pos[1] + 10
+        
+class PlayerHud :
+        
+    def __init__( self, sprite_group ) :
+        self.sprite_group = sprite_group
+        self.health_bar = pygame.sprite.DirtySprite()
+        self.sprite_group.add( self.health_bar )
         
         
         

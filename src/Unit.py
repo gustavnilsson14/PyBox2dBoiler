@@ -15,10 +15,15 @@ class Unit( Entity ) :
         self.current_order = 0
         self.lifetime = 0
         self.vision_range = 0
+        self.max_health = 0
         self.health = 0
         self.alive = True
         self.target = 0
         self.types += [ "unit" ]
+        
+    def set_health( self, health ) :
+        self.max_health = health
+        self.health = health
         
     def set_target( self, target ) :
         self.target = target
@@ -140,7 +145,7 @@ class Character( Unit ) :
         self.accuracy = 10
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
-        self.health = 100000
+        self.set_health( 100 )
         self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
         self.current_item = 0
         self.body_handler.attach_item( "right_arm", Machinegun( scene ) )
@@ -183,11 +188,11 @@ class PlayerCharacter( Unit ) :
     def __init__( self, scene, pos ) :
         Unit.__init__( self, scene, pos )
         self.body = self.body_handler.create_humanoid( self, scene, pos, 0.3, FILTER_CHARACTER )
-        self.speed = 5 * self.body.mass
+        self.speed = 3 * self.body.mass
         self.accuracy = 2
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
-        self.health = 100000
+        self.set_health( 100 )
         self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
         self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
         self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
@@ -298,7 +303,6 @@ class Item :
             return
         self.scene.game.add_garbage_body( self.body )
             
-        
     def destroy_body( self ) :
         if self.body != 0 :
             self.scene.game.add_garbage_body( self.body )
