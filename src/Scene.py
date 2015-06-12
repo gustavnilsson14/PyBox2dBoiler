@@ -26,7 +26,7 @@ class Scene :
         
         
         self.target_unit = PlayerCharacter( self, ( 44,40 ) )
-        self.screen.center_position = self.target_unit.body.transform.position
+        self.screen.focus_positions += [ self.target_unit.body.transform.position ]
         
         self.hud = Hud( self )
         
@@ -44,6 +44,7 @@ class Scene :
         self.add_entity( self.target_unit )
         
         unit = Character( self, ( 40,25 ) )
+        self.screen.focus_positions += [ unit.body.transform.position ]
         self.add_entity( unit )
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
         
@@ -111,12 +112,19 @@ class Screen :
         self.game = game
         self.shake_offset = (0,0)
         self.shake_magnitude = shake_magnitude
-        self.center_position = 0
+        self.focus_positions = []
         self.shake_time = 0
         self.current_zoom = -1
 
     def update_camera_center( self ) :
-        self.game.setCenter( self.center_position )
+        center_position = (0,0)
+        for position in self.focus_positions :
+            if center_position == (0,0) :
+                center_position = position
+                continue
+            center_position = ( center_position[0] + position[0], center_position[1] + position[1] )
+        center_position = ( center_position[0] / len( self.focus_positions ), center_position[1] / len( self.focus_positions ) )
+        self.game.setCenter( center_position )
         if self.shake_time > 0 :
             self.shake_offset = ( randint(-self.shake_magnitude,self.shake_magnitude), randint(-self.shake_magnitude,self.shake_magnitude) )
             self.game._viewOffset[ 0 ] += self.shake_offset[0]

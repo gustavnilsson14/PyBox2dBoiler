@@ -145,7 +145,7 @@ class Character( Unit ) :
         self.accuracy = 10
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
-        self.set_health( 100 )
+        self.set_health( 10 )
         self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
         self.current_item = 0
         self.body_handler.attach_item( "right_arm", Machinegun( scene ) )
@@ -238,7 +238,7 @@ class PlayerCharacter( Unit ) :
     def take_damage( self, origin, damage ) :
         Unit.take_damage( self, origin, damage )
         self.scene.screen.shake_time = 1
-        self.scene.game.pause_time = 5
+        self.scene.game.pause_time = 3
 
 class Projectile( Unit ) :
     

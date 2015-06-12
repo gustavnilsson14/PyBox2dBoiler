@@ -394,6 +394,9 @@ class Body :
 			image.update( body.transform.position, body.transform.angle, view_zoom, view_offset, settings )
 	
 	def destroy( self ) :
+		for i in self.item_slots :
+			slot = self.item_slots.get( i )
+			slot.detach_item()
 		for j in self.joints :
 			joint = self.all_bodies.get( j )
 			self.scene.game.add_garbage_joint( joint )

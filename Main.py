@@ -20,8 +20,8 @@ class Game (Framework):
         self.garbage_body_list = []
         self.garbage_joint_list = []
         self.defaultZoom = 80.0
-        self.minZoom = 20.0
-        self.maxZoom = 185.0
+        self.minZoom = 15.0
+        self.maxZoom = 285.0
         super(Game, self).__init__()
         self.current_scene = 0
         self.world.gravity = (0,0)
@@ -48,12 +48,12 @@ class Game (Framework):
         if self.pause_time > 0 :
             self.pause_time -= 1
             return
-        for garbage_body in self.garbage_body_list :
-            self.world.DestroyBody( garbage_body )
-            self.garbage_body_list.remove( garbage_body )
         for garbage_joint in self.garbage_joint_list :
             self.world.DestroyJoint( garbage_joint )
             self.garbage_joint_list.remove( garbage_joint )
+        for garbage_body in self.garbage_body_list :
+            self.world.DestroyBody( garbage_body )
+            self.garbage_body_list.remove( garbage_body )
         
         background_colour = (55,55,55)
             
