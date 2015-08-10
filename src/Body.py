@@ -302,6 +302,33 @@ class Body :
 		self.main_body = main
 		return self.main_body
 		
+	def create_block( self, owner, scene, pos, size, filter ) :
+		main = self.scene.world.CreateKinematicBody(
+            position = pos,
+            fixedRotation=True,
+            allowSleep=False,
+            userData={
+                'owner' : owner
+            },
+            fixtures=b2FixtureDef(
+                filter=b2Filter(
+                    groupIndex = 0,
+                    categoryBits = FILTER_DEFAULT[0],
+                    maskBits = FILTER_DEFAULT[1]
+                ),
+                shape=b2PolygonShape(
+                    box=(0.5 * size, 0.5 * size)
+                ), 
+                density=20.0
+                
+            ),
+        )
+		self.all_bodies = { 
+			"main": main
+		}
+		self.main_body = main
+		return self.main_body
+		
 		
 	def set_image_at( self, body_part, image ) :
 		body = self.all_bodies.get( body_part )

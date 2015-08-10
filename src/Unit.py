@@ -148,7 +148,9 @@ class Character( Unit ) :
         self.set_health( 10 )
         self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
         self.current_item = 0
-        self.body_handler.attach_item( "right_arm", Machinegun( scene ) )
+        item = Machinegun( scene )
+        self.body_handler.attach_item( "right_arm", item )
+        self.scene.add_entity( item )
         #self.body_handler.detach_item( "right_arm" )
         self.target = 0
         self.types += [ "character" ]
@@ -188,7 +190,7 @@ class PlayerCharacter( Unit ) :
     def __init__( self, scene, pos ) :
         Unit.__init__( self, scene, pos )
         self.body = self.body_handler.create_humanoid( self, scene, pos, 0.3, FILTER_CHARACTER )
-        self.speed = 3 * self.body.mass
+        self.speed = 1.5 * self.body.mass
         self.accuracy = 2
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
@@ -199,7 +201,9 @@ class PlayerCharacter( Unit ) :
         self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
         self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
         self.current_item = 0
-        self.body_handler.attach_item( "right_arm", Machinegun( scene ) )
+        item = Machinegun( scene )
+        self.body_handler.attach_item( "right_arm", item )
+        self.scene.add_entity( item )
         #self.body_handler.detach_item( "right_arm" )
         self.target = 0
         self.types += [ "player_character" ]
@@ -242,7 +246,7 @@ class PlayerCharacter( Unit ) :
 
 class Projectile( Unit ) :
     
-    def __init__( self, scene, origin, offset = -0.8, speed = 500, lifetime = 150 ) :
+    def __init__( self, scene, origin, offset = -0.8, speed = 800, lifetime = 150 ) :
         pos = origin.position + get_movement_vector( origin.angle, offset )
         Unit.__init__( self, scene, origin.position )
         self.create_body( pos )
@@ -275,18 +279,18 @@ class Projectile( Unit ) :
         if target.take_damage( self, self.damage ) == True :
             pass
 
-class Item :
+class Item( Entity ) :
     
     def __init__( self, scene, pos, cooldown = 0, local_anchor = ( 0, 0 ) ) :
+        Entity.__init__( self, scene )
         self.body_handler = Body( scene )
         self.position = pos
         self.holder = 0
-        self.scene = scene
         self.body = 0
         self.max_cooldown = cooldown
         self.cooldown = 0
         self.local_anchor = local_anchor
-        self.types = [ "item" ]
+        self.types += [ "item" ]
         
     def update( self, update ) :
         if self.cooldown > 0 :

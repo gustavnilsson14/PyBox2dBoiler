@@ -7,7 +7,7 @@ import random
 class Pellet( Projectile ) :
     
     def __init__( self, scene, origin, offset = -0.8, speed = 500, lifetime = 150 ) :
-        Projectile.__init__( self, scene, origin, -0.6, 450, 30 )
+        Projectile.__init__( self, scene, origin, -0.6, 750, 60 )
         self.damage = 1
         self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
         self.types += [ "projectile" ]

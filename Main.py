@@ -16,7 +16,6 @@ class Game (Framework):
     
     def __init__( self ) :
         self.pause_time = 0
-        self.player_handler = PlayerHandler( self )
         self.garbage_body_list = []
         self.garbage_joint_list = []
         self.defaultZoom = 80.0
@@ -26,14 +25,18 @@ class Game (Framework):
         self.current_scene = 0
         self.world.gravity = (0,0)
         self.image_handler = ImageHandler( self )
-        self.change_scene( "res/maps/compiled_example.js" )
+        self.change_scene( "res/maps/compiled_map1.js" )
         self.reset_zoom()
+        
+        self.player_handler = PlayerHandler( self )
+        self.check_joysticks()
         #-100 is the mouse
         self.pressed_keys = [ -100 ]
         
     def change_scene( self, map_file ) :
         if self.current_scene != 0 :
             self.current_scene.destroy()
+        self.player_handler = PlayerHandler( self )
         if os.path.isfile( map_file ) == False :
             return False
         with open (map_file, "r") as myfile :
@@ -48,26 +51,25 @@ class Game (Framework):
         if self.pause_time > 0 :
             self.pause_time -= 1
             return
-        for garbage_joint in self.garbage_joint_list :
+        while len( self.garbage_joint_list ) != 0:
+            garbage_joint = self.garbage_joint_list[0]
             self.world.DestroyJoint( garbage_joint )
             self.garbage_joint_list.remove( garbage_joint )
-        for garbage_body in self.garbage_body_list :
+        while len( self.garbage_body_list ) != 0:
+            garbage_body = self.garbage_body_list[0]
             self.world.DestroyBody( garbage_body )
             self.garbage_body_list.remove( garbage_body )
         
         background_colour = (55,55,55)
-            
         
         self.screen.fill( background_colour )
         if self.current_scene != 0 :
             self.current_scene.Step()
         super( Game, self ).Step( settings )
         
-        
         self.current_scene.draw( self.viewZoom, self.viewOffset, settings )
         
         self.player_handler.update( self.pressed_keys )
-        
         
         for contact in self.world.contacts :
             fixtureA = contact.fixtureA
@@ -108,12 +110,19 @@ class Game (Framework):
             return True
         return False
         
+    def check_joysticks( self ) :
+        pygame.joystick.init()
+        for i in range(pygame.joystick.get_count()):
+            joystick = pygame.joystick.Joystick( i )
+            joystick.init()
+            self.player_handler.joystick_list.append( joystick )
+
     def Keyboard(self, key):
         if key in self.pressed_keys :
             return False
         self.pressed_keys += [ key ]
         return True
-
+        
     def KeyboardUp(self, key):
         if key in self.pressed_keys :
             self.pressed_keys.remove( key )

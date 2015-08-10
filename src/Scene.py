@@ -5,6 +5,7 @@ from Order import *
 from PlayerHandler import *
 from random import randint
 import pygame
+import random
 from Constants import *
 
 class Scene :
@@ -14,25 +15,23 @@ class Scene :
         self.orders = []
         self.game = game
         self.world = world
-        self.map = Map( self, world, scene_data.get( 'grid' ) )
         self.update_list = []
         self.screen = Screen( game )
         self.sprite_group = pygame.sprite.LayeredDirty()
+        self.map = Map( self, world, scene_data.get( 'grid' ) )
         
         image = Image( "res/img/environment/default.png", game.image_handler, ALIGN_BOTTOM_CENTER )
         self.sprite_group.add( image )
+        self.hud = Hud( self )
         
-        #unit.move( (23,20) )
-        
-        
-        self.target_unit = PlayerCharacter( self, ( 44,40 ) )
+        '''self.target_unit = PlayerCharacter( self, ( 44,40 ) )
         self.screen.focus_positions += [ self.target_unit.body.transform.position ]
         
-        self.hud = Hud( self )
         
         player1 = Player( self.game, self.target_unit )
         self.hud.add_player( player1 )
         self.game.player_handler.add_player( player1 )
+        self.game.player_handler.add_input( Input( player1, Keys.K_m, player1.change_scene ) )
         self.game.player_handler.add_input( Input( player1, Keys.K_w, player1.move_up ) )
         self.game.player_handler.add_input( Input( player1, Keys.K_s, player1.move_down ) )
         self.game.player_handler.add_input( Input( player1, Keys.K_a, player1.move_left ) )
@@ -49,9 +48,11 @@ class Scene :
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
         
         player2 = Player( self.game, unit )
-        self.hud.add_player( player2 )
+        self.hud.add_player( player2 )'''
         
-    
+    def get_spawn_point( self ) :
+        return random.choice( self.map.spawn_list )
+        
     def draw( self, view_zoom, view_offset, settings ) :
         rects = []
         self.map.update( view_zoom, view_offset, settings )
@@ -102,9 +103,25 @@ class Scene :
             update.run()
     
     def destroy( self ) :
+        while len( self.entity_list ) != 0 :
+            entity = self.entity_list[0]
+            entity.alive = False
+            self.remove_entity( entity )
+        while len( self.orders ) != 0 :
+            order = self.orders[0]
+            self.orders.remove( order )
+        while len( self.update_list ) != 0 :
+            update = self.update_list[0]
+            self.update_list.remove( update )
+        self.hud.destroy()
+        self.map.destroy()
+        self.update_list = 0
+        self.map = 0
+        self.hud = 0
+        self.screen = 0
+        self.entity_list = 0
+        self.orders = 0
         self.world.ClearForces()
-        while len( self.world.bodies ) != 0 :
-            self.world.destroyBody( self.world.bodies[0] )
 
 class Screen :
     
@@ -118,6 +135,9 @@ class Screen :
 
     def update_camera_center( self ) :
         center_position = (0,0)
+        if len( self.focus_positions ) == 0 :
+            self.game.setCenter( (25,25) )
+            return
         for position in self.focus_positions :
             if center_position == (0,0) :
                 center_position = position
@@ -216,14 +236,15 @@ class Hud :
         hud.health_bar.rect.x = pos[0] + 10
         hud.health_bar.rect.y = pos[1] + 10
         
+    def destroy( self ) :
+        while len( self.player_list ) != 0 :
+            self.player_list.remove( self.player_list[0] )
+        while len( self.huds ) != 0 :
+            self.huds.remove( self.huds[0] )
+        
 class PlayerHud :
         
     def __init__( self, sprite_group ) :
         self.sprite_group = sprite_group
         self.health_bar = pygame.sprite.DirtySprite()
         self.sprite_group.add( self.health_bar )
-        
-        
-        
-        
-        

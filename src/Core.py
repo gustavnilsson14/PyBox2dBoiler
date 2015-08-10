@@ -16,9 +16,15 @@ class Entity :
 		self.body_handler = 0
 		
 	def draw( self, screen ) :
+		pass
 		if self.body_handler == 0 :
 			return False
 		self.body_handler
+		
+	def destroy( self ) :
+		if self.body_handler != 0 :
+			self.body_handler.destroy()
+		return False
 		
 class Image( DirtySprite ) :
 	
