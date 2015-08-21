@@ -87,8 +87,8 @@ class MenuScene(Scene) :
                         elif menu.get_position() == 1:
                             print "options"
                         elif menu.get_position() == 2:#here is the Menu class function
-                            pygame.display.quit()
-                            sys.exit()
+                            self.run_top()
+                            self.running = 0
                     if event.key == K_ESCAPE:
                         pygame.display.quit()
                         sys.exit()
