@@ -162,8 +162,10 @@ class Game (Framework):
 
     def checkEvents(self):
         for event in pygame.event.get():
-            if event.type == QUIT or (event.type == KEYDOWN and event.key == Keys.K_ESCAPE):
+            if event.type == QUIT :
                 return False
+            elif (event.type == KEYDOWN and event.key == Keys.K_ESCAPE) :
+                self.change_scene(SCENE_TYPE_MENU)
             elif event.type == KEYDOWN:
                 self._Keyboard_Event(event.key, down=True)
             elif event.type == KEYUP:

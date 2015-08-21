@@ -29,7 +29,7 @@ class Menu:
     font = pygame.font.Font
     dest_surface = pygame.Surface
     number_of_fields = 0
-    bg_color = (51,51,51)
+    bg_color = (70,12,17)
     text_color =  (255, 255, 153)
     selection_color = (153,102,255)
     menu_selection = 0

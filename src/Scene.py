@@ -109,8 +109,8 @@ class MenuScene(Scene) :
                             self.run_top()
                             self.running = 0
                     if event.key == K_ESCAPE:
-                        pygame.display.quit()
-                        sys.exit()
+                        self.run_top()
+                        self.running = 0
                     pygame.display.update()
                 elif event.type == QUIT:
                     pygame.display.quit()
