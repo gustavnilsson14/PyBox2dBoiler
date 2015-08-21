@@ -120,7 +120,7 @@ class Block( Tile ) :
 
     def __init__( self, scene, pos ) :
         Tile.__init__( self, scene, pos )
-        self.image = Image( "res/img/environment/block2.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
+        self.image = Image( "res/img/environment/block.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
         self.body = self.body_handler.create_block( self, scene, pos, 1, FILTER_DEFAULT )
         self.types += [ "block" ]
 
