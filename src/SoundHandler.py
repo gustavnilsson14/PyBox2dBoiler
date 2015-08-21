@@ -7,6 +7,9 @@ class SoundHandler() :
         self.sounds = {
             'shoot': pygame.mixer.Sound( 'res/sfx/shoot.wav' )
         }
+        self.music = {
+            'default': pygame.mixer.Sound( 'res/music/shoot.wav' )
+        }
     
     def get_sound( self, key ) :
         sound = self.sounds.get( key )
@@ -24,3 +27,20 @@ class SoundHandler() :
             return 0
         sound.play()
         return 1
+        
+    def play_music( self, key ) :
+        track = self.music.get( key )
+        if track == None :
+            return False
+        track.play()
+        
+    def stop_music( self, key = 0 ) :
+        if key == 0 :
+            for track in self.music :
+                self.music.get(track).stop()
+            return True
+        track = self.music.get( key )
+        if track == None :
+            return False
+        track.stop()
+        return True
