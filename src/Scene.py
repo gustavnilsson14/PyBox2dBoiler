@@ -31,7 +31,7 @@ class MenuScene(Scene) :
         Scene.__init__(self, game)
 
     def run_top( self ) :
-        surface = pygame.display.set_mode((854,480))
+        surface = pygame.display.set_mode((1280,720))
         surface.fill((51,51,51))
         img = pygame.image.load('res/img/bg.jpg')
         surface.blit(img,(0,0))
@@ -68,7 +68,7 @@ class MenuScene(Scene) :
             pygame.time.wait(8)
 
     def run_option( self ) :
-        surface = pygame.display.set_mode((854,480))
+        surface = pygame.display.set_mode((1280,720))
         surface.fill((51,51,51))
         menu = Menu()
 
@@ -109,8 +109,8 @@ class MenuScene(Scene) :
                             self.run_top()
                             self.running = 0
                     if event.key == K_ESCAPE:
-                        pygame.display.quit()
-                        sys.exit()
+                        self.run_top()
+                        self.running = 0
                     pygame.display.update()
                 elif event.type == QUIT:
                     pygame.display.quit()
