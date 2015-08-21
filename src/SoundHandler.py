@@ -6,10 +6,18 @@ class SoundHandler() :
         self.sounds = {
             'shoot': pygame.mixer.Sound( 'res/sfx/shoot.wav' )
         }
-        pass
     
     def get_sound( self, key ) :
-        return self.sounds.get( key )
+        sound = self.sounds.get( key )
+        if ( sound == None ) :
+            return False
+        return sound 
     
     def play_sound( self, key ) :
-        self.sounds.get( key ).play()
+        #Run almost anywhere!
+        #self.game.sound_handler.play_sound('shoot')
+        sound = self.sounds.get( key )
+        if ( sound == None ) :
+            return False
+        sound.play()
+        return True
