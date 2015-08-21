@@ -4,7 +4,7 @@ class SoundHandler() :
     
     def __init__( self ) :
         self.sounds = {
-            'shoot': pygame.mixer.Sound( 'res/sfx/shoot.mp3' )
+            'shoot': pygame.mixer.Sound( 'res/sfx/shoot.wav' )
         }
         pass
     
