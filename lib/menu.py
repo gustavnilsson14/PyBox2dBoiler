@@ -25,7 +25,7 @@ class Menu:
     list = []
     field = []
     font_size = 32
-    font_path = 'data/coders_crux.ttf'
+    font_path = 'lib/data/coders_crux.ttf'
     font = pygame.font.Font
     dest_surface = pygame.Surface
     number_of_fields = 0
