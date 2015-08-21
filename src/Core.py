@@ -47,6 +47,7 @@ class Image( DirtySprite ) :
 		self.tint_color = color
 		
 	def rotate_image( self, image, angle ) :
+		image = image.copy()
 		angle = math.degrees( angle ) - 90
 		if angle != self.current_angle :
 			self.current_angle = angle
@@ -60,14 +61,27 @@ class Image( DirtySprite ) :
 		posY = ( position[1] * view_zoom ) - view_offset[1]
 		posY -= settings.screenSize[ 1 ]
 		image = self.image_handler.get_image( self.image_key )
+		
+		#Trim images outside of draw area
+		if ( posY + (settings.screenSize[1]) ) < 0 :
+			self.image = pygame.Surface((0,0))
+			return
+		if posY > settings.screenSize[1] :
+			self.image = pygame.Surface((0,0))
+			return
+		if ( posX - image.get_width() ) > settings.screenSize[0] :
+			self.image = pygame.Surface((0,0))
+			return
+		if ( posX + image.get_width() ) < 0 :
+			self.image = pygame.Surface((0,0))
+			return
+		
 		if posY < 0 :
 			posY = math.fabs( posY )
 		else :
 			self.image = pygame.Surface((0,0))
 			return
-		if ( posY - image.get_height() ) > settings.screenSize[1] or ( posX - image.get_width() ) > settings.screenSize[0] or ( posX + image.get_width() ) < 0 :
-			self.image = pygame.Surface((0,0))
-			return
+			
 		if self.current_zoom != view_zoom :
 			self.current_zoom = view_zoom
 			self.current_angle = -1
@@ -122,5 +136,5 @@ class ImageHandler() :
 			self.zoomed_images[ key ] = self.zoom_image( image.copy() )
 		image = self.zoomed_images.get( key )
 		if image != None :
-			return image.copy()
+			return image
 		
