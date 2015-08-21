@@ -24,7 +24,6 @@ class MenuScene(Scene) :
     def __init__( self, game ) :
         Scene.__init__(self, game)
 
-
 class GameScene(Scene) :
 
     def __init__( self, game, world, scene_data ) :
@@ -59,12 +58,15 @@ class GameScene(Scene) :
 
         self.add_entity( self.target_unit )
 
+        '''
+        self.target_unit = PlayerCharacter( self, ( 24,40 ) )
+        self.add_entity( self.target_unit )
         unit = Character( self, ( 40,25 ) )
         self.screen.focus_positions += [ unit.body.transform.position ]
         self.add_entity( unit )
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
 
-        player2 = Player( self.game, unit )
+        '''player2 = Player( self.game, unit )
         self.hud.add_player( player2 )'''
 
     def get_spawn_point( self ) :

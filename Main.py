@@ -26,7 +26,7 @@ class Game (Framework):
         self.world.gravity = (0,0)
         self.image_handler = ImageHandler( self )
 
-        self.change_scene(SCENE_TYPE_MENU)
+        self.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
 
         self.reset_zoom()
 
@@ -48,7 +48,7 @@ class Game (Framework):
             return False
         with open (map_file, "r") as myfile :
             map_data = myfile.read().replace('\n', '')
-            self.current_scene = Scene( self, self.world, json.loads( map_data ) )
+            self.current_scene = GameScene( self, self.world, json.loads( map_data ) )
 
     def reset_zoom( self ) :
         #This property manages zoom level
