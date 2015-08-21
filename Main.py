@@ -6,6 +6,7 @@ sys.path.append( 'src' )
 from framework import *
 from SoundHandler import *
 from Scene import *
+from GameSettings import *
 import math
 from Constants import *
 from PlayerHandler import *
@@ -16,9 +17,9 @@ import time
 class Game (Framework):
 
     def __init__( self ) :
-        
         pygame.mixer.init()
         self.sound_handler = SoundHandler()
+        self.gamesettings = GameSettings()
         self.pause_time = 0
         self.garbage_body_list = []
         self.garbage_joint_list = []
