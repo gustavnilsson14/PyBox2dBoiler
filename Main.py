@@ -18,8 +18,8 @@ class Game (Framework):
 
     def __init__( self ) :
         pygame.mixer.init()
-        self.sound_handler = SoundHandler()
         self.gamesettings = GameSettings()
+        self.sound_handler = SoundHandler( self.gamesettings )
         self.pause_time = 0
         self.garbage_body_list = []
         self.garbage_joint_list = []

@@ -278,7 +278,7 @@ class Body :
 		main = self.scene.world.CreateDynamicBody(
             position = pos,
             fixedRotation=False,
-            allowSleep=False,
+            allowSleep=True,
             userData={
                 'owner' : owner
             },
