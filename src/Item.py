@@ -31,7 +31,7 @@ class Shotgun( ProjectileWeapon ) :
     def __init__( self, scene, pos = ( 0, 0 )  ) :
         ProjectileWeapon.__init__( self, scene, pos, 14, (0.3,0), 3 )
         self.pellet_amount = 10
-	self.spread = 7
+        self.spread = 7
         self.types += [ "shotgun" ]
 
     def create_projectile( self ) :
@@ -44,7 +44,7 @@ class Shotgun( ProjectileWeapon ) :
                 self.scene.add_entity( projectile )
 
     def create_body( self, pos ) :
-	ProjectileWeapon.create_body( self )
+        ProjectileWeapon.create_body( self )
         self.body = self.body_handler.create_short_gun( self, self.scene, pos, 1, FILTER_WEAPON )
         return self.body
     
@@ -52,7 +52,7 @@ class Machinegun( ProjectileWeapon ) :
 
     def __init__( self, scene, pos = ( 0, 0 ) ) :
         ProjectileWeapon.__init__( self, scene, pos, 3, (0.4,0), 3 )
-	self.spread = 1
+        self.spread = 1
         self.types += [ "machinegun" ]
 
     def create_projectile( self ) :
@@ -64,6 +64,7 @@ class Machinegun( ProjectileWeapon ) :
             self.scene.add_entity( projectile )
 
     def create_body( self, pos ) :
-	ProjectileWeapon.create_body( self )
+        ProjectileWeapon.create_body( self )
         self.body = self.body_handler.create_long_gun( self, self.scene, pos, 1, FILTER_WEAPON )
+        self.body_handler.set_image_at( 'main', 'res/img/weapon/machinegun.png' )
         return self.body

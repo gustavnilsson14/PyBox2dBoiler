@@ -146,7 +146,11 @@ class Character( Unit ) :
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
         self.set_health( 10 )
-        self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
+        self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/body/default_head2.png' )
         self.current_item = 0
         item = Machinegun( scene )
         self.body_handler.attach_item( "right_arm", item )
