@@ -122,6 +122,7 @@ class GameScene(Scene) :
 
     def __init__( self, game, world, scene_data ) :
         Scene.__init__(self, game)
+        self.game.sound_handler.play_music('default')
         self.entity_list = []
         self.orders = []
         self.world = world
@@ -211,7 +212,7 @@ class GameScene(Scene) :
         return False
 
     def Step( self ) :
-        self.game.sound_handler.play_sound('shoot')
+        #self.game.sound_handler.play_sound('shoot')
         self.screen.update_camera_center()
         for update in self.update_list :
             update.run()
