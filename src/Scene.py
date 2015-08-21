@@ -195,6 +195,7 @@ class GameScene(Scene) :
         return False
 
     def Step( self ) :
+        self.game.sound_handler.play_sound('shoot')
         self.screen.update_camera_center()
         for update in self.update_list :
             update.run()
