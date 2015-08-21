@@ -33,6 +33,8 @@ class MenuScene(Scene) :
     def run_top( self ) :
         surface = pygame.display.set_mode((854,480))
         surface.fill((51,51,51))
+        img = pygame.image.load('res/img/bg.jpg')
+        surface.blit(img,(0,0))
         menu = Menu()
         menu.init(['Start','Options','Quit'], surface)
         menu.draw()
@@ -69,7 +71,7 @@ class MenuScene(Scene) :
         surface = pygame.display.set_mode((854,480))
         surface.fill((51,51,51))
         menu = Menu()
-        menu.init(['NO FUCKING SOUND!','EVERYTHING!','Back'], surface)
+        menu.init(['SOUND - ON','EVERYTHING!','Back'], surface)
         menu.draw()
         pygame.key.set_repeat(199,69)#(delay,interval)
         pygame.display.update()
@@ -83,7 +85,8 @@ class MenuScene(Scene) :
                         menu.draw(1) #here is the Menu class function
                     if event.key == K_RETURN:
                         if menu.get_position() == 0:
-                            print "no sound"
+                            self.run_option()
+                            self.running = 0
                         elif menu.get_position() == 1:
                             print "options"
                         elif menu.get_position() == 2:#here is the Menu class function
