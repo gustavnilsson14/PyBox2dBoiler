@@ -13,7 +13,7 @@ from pygame.locals import *
 import time
 
 class Game (Framework):
-    
+
     def __init__( self ) :
         self.pause_time = 0
         self.garbage_body_list = []
@@ -25,18 +25,25 @@ class Game (Framework):
         self.current_scene = 0
         self.world.gravity = (0,0)
         self.image_handler = ImageHandler( self )
-        self.change_scene( "res/maps/compiled_map1.js" )
+
+        self.change_scene(SCENE_TYPE_MENU)
+
         self.reset_zoom()
-        
+
         self.player_handler = PlayerHandler( self )
         self.check_joysticks()
         #-100 is the mouse
         self.pressed_keys = [ -100 ]
-        
-    def change_scene( self, map_file ) :
+
+    def change_scene( self, type, map_file = False) :
         if self.current_scene != 0 :
             self.current_scene.destroy()
         self.player_handler = PlayerHandler( self )
+
+        if type == SCENE_TYPE_MENU :
+            self.current_scene = MenuScene( self )
+            return True
+
         if os.path.isfile( map_file ) == False :
             return False
         with open (map_file, "r") as myfile :
@@ -46,7 +53,7 @@ class Game (Framework):
     def reset_zoom( self ) :
         #This property manages zoom level
         self.viewZoom = self.defaultZoom
-    
+
     def Step(self, settings):
         if self.pause_time > 0 :
             self.pause_time -= 1
@@ -59,29 +66,29 @@ class Game (Framework):
             garbage_body = self.garbage_body_list[0]
             self.world.DestroyBody( garbage_body )
             self.garbage_body_list.remove( garbage_body )
-        
+
         background_colour = (55,55,55)
-        
+
         self.screen.fill( background_colour )
         if self.current_scene != 0 :
             self.current_scene.Step()
         super( Game, self ).Step( settings )
-        
+
         self.current_scene.draw( self.viewZoom, self.viewOffset, settings )
-        
+
         self.player_handler.update( self.pressed_keys )
-        
+
         for contact in self.world.contacts :
             fixtureA = contact.fixtureA
             fixtureB = contact.fixtureB
-            
+
             if fixtureA.body.userData == None or fixtureB.body.userData == None :
                 continue
             if fixtureA.body.userData.get( 'owner' ) == None or fixtureB.body.userData.get( 'owner' ) == None :
                 continue
             fixtureA.body.userData.get( 'owner' ).handle_collision( fixtureA, fixtureB )
             fixtureB.body.userData.get( 'owner' ).handle_collision( fixtureB, fixtureA )
-        
+
     def add_garbage_body( self, garbage_body ) :
         if garbage_body == None :
             return False
@@ -89,13 +96,13 @@ class Game (Framework):
             return False
         self.garbage_body_list.append( garbage_body )
         return True
-        
+
     def remove_garbage_body( self, garbage_body ) :
         if self.garbage_body_list.__contains__( garbage_body ) :
             self.garbage_body_list.remove( garbage_body )
             return True
         return False
-        
+
     def add_garbage_joint( self, garbage_joint ) :
         if garbage_joint == None :
             return False
@@ -103,13 +110,13 @@ class Game (Framework):
             return False
         self.garbage_joint_list.append( garbage_joint )
         return True
-        
+
     def remove_garbage_joint( self, garbage_joint ) :
         if self.garbage_joint_list.__contains__( garbage_joint ) :
             self.garbage_joint_list.remove( garbage_joint )
             return True
         return False
-        
+
     def check_joysticks( self ) :
         pygame.joystick.init()
         for i in range(pygame.joystick.get_count()):
@@ -122,29 +129,29 @@ class Game (Framework):
             return False
         self.pressed_keys += [ key ]
         return True
-        
+
     def KeyboardUp(self, key):
         if key in self.pressed_keys :
             self.pressed_keys.remove( key )
             return True
         return False
-        
+
     def MousePos(self):
         return pygame.mouse.get_pos()
-        
+
     def MouseDown(self, p):
         key = -101
         if key in self.pressed_keys :
             return False
         self.pressed_keys += [ key ]
-        
+
     def MouseUp(self, p):
         key = -101
         if key in self.pressed_keys :
             self.pressed_keys.remove( key )
             return True
         return False
-        
+
     def checkEvents(self):
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == Keys.K_ESCAPE):
@@ -174,7 +181,7 @@ class Game (Framework):
                     self.viewZoom /= 1.1
                     if self.viewZoom < self.minZoom :
                         self.viewZoom = self.minZoom
-                    
+
                     self.image_handler.zoom_images()
             elif event.type == MOUSEBUTTONUP:
                 p = self.ConvertScreenToWorld(*event.pos)
@@ -192,6 +199,6 @@ class Game (Framework):
 
 
         return True
-        
+
 if __name__=="__main__":
      main(Game)
