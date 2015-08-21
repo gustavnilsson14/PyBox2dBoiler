@@ -8,6 +8,9 @@ import pygame
 import random
 from Constants import *
 
+sys.path.append( 'lib' )
+from menu import *
+
 class Scene :
 
     def __init__( self, game) :
@@ -19,10 +22,85 @@ class Scene :
     def Step( self ) :
         pass
 
+    def destroy( self ) :
+        pass
+
 class MenuScene(Scene) :
 
     def __init__( self, game ) :
         Scene.__init__(self, game)
+
+    def run_top( self ) :
+        surface = pygame.display.set_mode((854,480))
+        surface.fill((51,51,51))
+        img = pygame.image.load('res/img/bg.jpg')
+        surface.blit(img,(0,0))
+        menu = Menu()
+        menu.init(['Start','Options','Quit'], surface)
+        menu.draw()
+        pygame.key.set_repeat(199,69)#(delay,interval)
+        pygame.display.update()
+        self.running = 1
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_UP:
+                        menu.draw(-1) #here is the Menu class function
+                    if event.key == K_DOWN:
+                        menu.draw(1) #here is the Menu class function
+                    if event.key == K_RETURN:
+                        if menu.get_position() == 0:
+                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+                            self.running = 0
+                        elif menu.get_position() == 1:
+                            self.run_option()
+                            self.running = 0
+                        elif menu.get_position() == 2:#here is the Menu class function
+                            pygame.display.quit()
+                            sys.exit()
+                    if event.key == K_ESCAPE:
+                        pygame.display.quit()
+                        sys.exit()
+                    pygame.display.update()
+                elif event.type == QUIT:
+                    pygame.display.quit()
+                    sys.exit()
+            pygame.time.wait(8)
+
+    def run_option( self ) :
+        surface = pygame.display.set_mode((854,480))
+        surface.fill((51,51,51))
+        menu = Menu()
+        menu.init(['SOUND - ON','EVERYTHING!','Back'], surface)
+        menu.draw()
+        pygame.key.set_repeat(199,69)#(delay,interval)
+        pygame.display.update()
+        self.running = 1
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_UP:
+                        menu.draw(-1) #here is the Menu class function
+                    if event.key == K_DOWN:
+                        menu.draw(1) #here is the Menu class function
+                    if event.key == K_RETURN:
+                        if menu.get_position() == 0:
+                            self.run_option()
+                            self.running = 0
+                        elif menu.get_position() == 1:
+                            print "options"
+                        elif menu.get_position() == 2:#here is the Menu class function
+                            self.run_top()
+                            self.running = 0
+                    if event.key == K_ESCAPE:
+                        pygame.display.quit()
+                        sys.exit()
+                    pygame.display.update()
+                elif event.type == QUIT:
+                    pygame.display.quit()
+                    sys.exit()
+            pygame.time.wait(8)
+
 
 class GameScene(Scene) :
 

@@ -30,7 +30,8 @@ class Game (Framework):
         self.world.gravity = (0,0)
         self.image_handler = ImageHandler( self )
 
-        self.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+        self.change_scene( SCENE_TYPE_MENU )
+        #self.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
 
         self.reset_zoom()
 
@@ -40,12 +41,14 @@ class Game (Framework):
         self.pressed_keys = [ -100 ]
 
     def change_scene( self, type, map_file = False) :
+        print self.current_scene
         if self.current_scene != 0 :
             self.current_scene.destroy()
         self.player_handler = PlayerHandler( self )
 
         if type == SCENE_TYPE_MENU :
             self.current_scene = MenuScene( self )
+            self.current_scene.run_top()
             return True
 
         if os.path.isfile( map_file ) == False :

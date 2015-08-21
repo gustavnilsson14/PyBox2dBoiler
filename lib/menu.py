@@ -25,7 +25,7 @@ class Menu:
     list = []
     field = []
     font_size = 32
-    font_path = 'data/coders_crux.ttf'
+    font_path = 'lib/data/coders_crux.ttf'
     font = pygame.font.Font
     dest_surface = pygame.Surface
     number_of_fields = 0
@@ -73,7 +73,9 @@ class Menu:
                 self.menu_selection = self.number_of_fields - 1
             self.menu_selection %= self.number_of_fields
         menu = pygame.Surface((self.menu_width, self.menu_height))
+        #menu.set_colorkey(self.bg_color)
         menu.fill(self.bg_color)
+
         selection_rectangle = self.field[self.menu_selection].selection_rectangle
         pygame.draw.rect(menu,self.selection_color,selection_rectangle)
 
