@@ -27,7 +27,7 @@ class Scene :
 
 class MenuScene(Scene) :
 
-    def __init__( self, game) :
+    def __init__( self, game ) :
         Scene.__init__(self, game)
 
     def run_top( self ) :
@@ -71,14 +71,7 @@ class MenuScene(Scene) :
         surface = pygame.display.set_mode((854,480))
         surface.fill((51,51,51))
         menu = Menu()
-
-        if self.game.gamesettings.sound == True :
-            soundsettings = 'ON'
-        elif self.game.gamesettings.sound == False :
-            soundsettings = 'OFF'
-
-        menu.init(['SOUND - '+soundsettings,'DIFFICULTY - '+self.game.gamesettings.difficulty,'Back'], surface)
-
+        menu.init(['SOUND - ON','EVERYTHING!','Back'], surface)
         menu.draw()
         pygame.key.set_repeat(199,69)#(delay,interval)
         pygame.display.update()
@@ -92,19 +85,10 @@ class MenuScene(Scene) :
                         menu.draw(1) #here is the Menu class function
                     if event.key == K_RETURN:
                         if menu.get_position() == 0:
-                            if self.game.gamesettings.sound == True :
-                                self.game.gamesettings.sound = False
-                            else :
-                                self.game.gamesettings.sound = True
                             self.run_option()
                             self.running = 0
                         elif menu.get_position() == 1:
-                            if self.game.gamesettings.difficulty == 'EASY' :
-                                self.game.gamesettings.difficulty = 'HARD'
-                            else :
-                                self.game.gamesettings.difficulty = 'EASY'
-                            self.run_option()
-                            self.running = 0
+                            print "options"
                         elif menu.get_position() == 2:#here is the Menu class function
                             self.run_top()
                             self.running = 0

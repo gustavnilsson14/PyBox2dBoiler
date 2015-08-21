@@ -3,3 +3,6 @@ res/maps/compile.py
 pybox2d/*
 pybox2d
 *.pyc
+Box2D/*
+build
+dist
