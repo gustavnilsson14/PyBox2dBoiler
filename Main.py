@@ -183,12 +183,12 @@ class Game (Framework):
                 elif event.button == 3: #right
                     self.rMouseDown = True
                 elif event.button == 4:
-                    self.viewZoom *= 1.1
+                    self.viewZoom += 1
                     if self.viewZoom > self.maxZoom :
                         self.viewZoom = self.maxZoom
                     self.image_handler.zoom_images()
                 elif event.button == 5:
-                    self.viewZoom /= 1.1
+                    self.viewZoom -= 1
                     if self.viewZoom < self.minZoom :
                         self.viewZoom = self.minZoom
 

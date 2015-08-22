@@ -141,18 +141,19 @@ class Player :
 				owner = body.userData.get( 'owner' )
 				if owner == None :
 					continue
-				for item in self.character.body_handler.find_items() :
-					if item.body == body :
+				if owner.types.__contains__( 'item' ) == 0 :
+					continue
+				if owner.holder != 0 :
+					continue
+				target = body.transform.position
+				if get_distance_between_points( pos, target ) > 1 :
+					continue
+				for key in self.character.body_handler.item_slots :
+					if owner.viable_slots.__contains__( key ) == 0 and len( owner.viable_slots ) != 0 :
 						continue
-					if 'item' in owner.types :
-						if owner.holder != 0 :
-							continue
-						target = body.transform.position
-						if get_distance_between_points( pos, target ) < 1 :
-							print owner
-							self.character.body_handler.attach_item( 'right_arm', owner )
-							self.character.set_current_item( 'weapon' )
-							return True
+					slot = self.character.body_handler.item_slots.get( key )
+					if self.character.pickup( owner, slot, key, body ) == True :
+						return True
 		return False
 	
 	def turn( self ) :

@@ -10,6 +10,7 @@ class Unit( Entity ) :
         Entity.__init__( self, scene )
         self.body_handler = Body( scene )
         self.scene = scene
+        self.immunities = []
         self.current_path = 0
         self.current_tile = ()
         self.current_order = 0
@@ -19,6 +20,7 @@ class Unit( Entity ) :
         self.health = 0
         self.alive = True
         self.target = 0
+        self.orbs = 0
         self.types += [ "unit" ]
         
     def set_health( self, health ) :
@@ -120,8 +122,10 @@ class Unit( Entity ) :
         self.body.linearVelocity = movement_vector
         
     def take_damage( self, origin, damage ) :
+        if self.immunities.__contains__( damage.type ) :
+            return True
         if self.health > 0 :
-            self.health -= damage
+            self.health -= damage.value
             if self.body_handler != 0 :
                 self.body_handler.blink()
             if self.health <= 0 :
@@ -135,6 +139,17 @@ class Unit( Entity ) :
         self.scene.remove_entity( self )
         self.alive = False
         return True
+        
+    def pickup( self, item, slot, key, body ) :
+        if slot.item != 0 :
+            if slot.item.body == body :
+                return 0
+        if item.picked( self, slot ) == True :
+            return True
+        self.body_handler.attach_item( key, item )
+        self.set_current_item( 'weapon' )
+        return True
+        
         
 class Character( Unit ) :
     
@@ -152,9 +167,6 @@ class Character( Unit ) :
         self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
         self.body_handler.set_image_at( 'head', 'res/img/body/default_head2.png' )
         self.current_item = 0
-        item = Machinegun( scene )
-        self.body_handler.attach_item( "right_arm", item )
-        self.scene.add_entity( item )
         #self.body_handler.detach_item( "right_arm" )
         self.target = 0
         self.types += [ "character" ]
@@ -205,9 +217,7 @@ class PlayerCharacter( Unit ) :
         self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
         self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
         self.current_item = 0
-        item = Machinegun( scene )
-        self.body_handler.attach_item( "right_arm", item )
-        self.scene.add_entity( item )
+        #self.scene.add_entity( item )
         #self.body_handler.detach_item( "right_arm" )
         self.target = 0
         self.types += [ "player_character" ]
@@ -231,10 +241,10 @@ class PlayerCharacter( Unit ) :
         return True
         
     def aim( self, target ) :
-        if self.current_item == 0 :
-            return False
         radians_to_target = get_radians_between_points( self.body.transform.position, target )
         self.body_handler.turn( radians_to_target )
+        if self.current_item == 0 :
+            return False
         self.body_handler.aim( self.current_item, target, self.current_accuracy )
         return True
                 
@@ -248,124 +258,12 @@ class PlayerCharacter( Unit ) :
         self.scene.screen.shake_time = 1
         self.scene.game.pause_time = 3
 
-class Projectile( Unit ) :
+class Mage( PlayerCharacter ) :
     
-    def __init__( self, scene, origin, offset = -0.8, speed = 800, lifetime = 150 ) :
-        pos = origin.position + get_movement_vector( origin.angle, offset )
-        Unit.__init__( self, scene, origin.position )
-        self.create_body( pos )
-        self.origin = origin
-        self.speed = speed * self.body.mass
-        self.lifetime = lifetime
-        vector = get_movement_vector( origin.angle, -self.speed )
-        radians_to_target = get_radians_between_points( (0,0), vector )
-        self.body.ApplyForce( vector, self.body.worldCenter, True )
-        self.body.transform = [ self.body.transform.position, radians_to_target ]
-        self.damage = 1
-        self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
-        self.types += [ "projectile" ]
-    
-    def update( self, update ) :
-        Unit.update( self, update )
+    def __init__( self, scene, pos ) :
+        item = GreyOrb( scene )
+        self.body_handler.attach_item( "spell_orb", item )
         
-    def create_body( self, pos ) :
-        self.body = self.body_handler.create_projectile( self, pos, 0.1, FILTER_PROJECTILE )
-
-    def handle_collision( self, my_fixture, colliding_fixture ) :
-        collider = colliding_fixture.body.userData.get( 'owner' )
-        if "block" in collider.types :
-            self.die( collider )
-        if "unit" in collider.types :
-            self.die( collider )
-            self.deal_damage( collider )
-            
-    def deal_damage( self, target ) :
-        if target.take_damage( self, self.damage ) == True :
-            pass
-
-class Item( Entity ) :
-    
-    def __init__( self, scene, pos, cooldown = 0, local_anchor = ( 0, 0 ) ) :
-        Entity.__init__( self, scene )
-        self.body_handler = Body( scene )
-        self.position = pos
-        self.holder = 0
-        self.body = 0
-        self.max_cooldown = cooldown
-        self.cooldown = 0
-        self.local_anchor = local_anchor
-        self.types += [ "item" ]
         
-    def update( self, update ) :
-        if self.cooldown > 0 :
-            self.cooldown -= 1
     
-    def use( self ) :
-        if self.cooldown == 0 :
-            self.cooldown = self.max_cooldown
-            return True
-        return False
-    
-    def create_body( self ) :
-        if self.body == 0 :
-            return
-        self.scene.game.add_garbage_body( self.body )
-            
-    def destroy_body( self ) :
-        if self.body != 0 :
-            self.scene.game.add_garbage_body( self.body )
-            return True
-        return False
-
-class Weapon( Item ) :
-    
-    def __init__( self, scene, pos, cooldown, local_anchor, attack_range ) :
-        Item.__init__( self, scene, pos, cooldown, local_anchor )
-        self.attack_range = attack_range
-        self.types += [ "weapon" ]
-
-    def use( self, target ) :
-        if target == 0 :
-            return True
-        if get_distance_between_points( self.body.transform.position, target.body.transform.position ) < self.attack_range :
-            return True
-        return False
-        
-    def create_body( self ) :
-        Item.create_body( self )
-            
-class ProjectileWeapon( Weapon ) :
-    
-    def __init__( self, scene, pos, cooldown = 2, local_anchor = (0.45,0), attack_range = 5 ) :
-        Weapon.__init__( self, scene, pos, cooldown, local_anchor, attack_range )
-        self.attack_range = attack_range
-        self.spread = 0
-        self.types += [ "projectile_weapon" ]
-      
-    def use( self, target ) :
-        if Weapon.use( self, target ) :
-            if Item.use( self ) :
-                self.create_projectile()
-                return True
-            return True
-        return False
-            
-    def holder_is_player( self ) :
-        if self.holder == 0 :
-            return False
-        if 'player_character' in self.holder.get_owner_types() :
-            return True
-        return False
-    
-    def create_body( self ) :
-        Weapon.create_body( self )
-
-    def handle_collision( self, my_fixture, colliding_fixture ) :
-        pass
-        
-    def apply_spread( self ) :
-        angle = math.radians( math.degrees( self.body.transform.angle ) + random.randint( -self.spread, self.spread ) )
-        rotation = b2Rot( angle )
-        return b2Transform( self.body.transform.position, rotation )
-
 from Item import *

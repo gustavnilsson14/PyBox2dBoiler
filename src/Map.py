@@ -4,6 +4,7 @@ from pathfinding import *
 from Constants import *
 from Core import *
 from Body import *
+from Item import *
 import time
 import pygame
 
@@ -37,9 +38,9 @@ class Map() :
             y = 0
             while y < len( row ) :
                 tile = row[ y ]
-                content = 0
+                content = []
                 if tile.get( 'collision' ) != None :
-                    content = Block( scene, (x,y) )
+                    content += [ Block( scene, (x,y) ) ]
                 if tile.get( 'weaponpoints' ) != None :
                     from Item import *
                     if randint( 0, 4 ) > 2 :
@@ -48,14 +49,16 @@ class Map() :
                         item = Shotgun( self.scene, ( x, y ) )
                     self.scene.add_entity( item )
                     item.create_body( ( x, y ) )
-                    #content = Block( scene, (x,y) )
+                if tile.get( 'orbpoints' ) != None :
+                    content += [ OrbPoint( scene, (x,y) ) ]
                 if tile.get( 'spawn' ) != None :
                     self.spawn_list.append( ( x, y ) )
-                if content != 0 :
-                    if content.image != 0 :
-                        self.sprite_group.add( content.image )
-                    tile[ "content" ] = content
-                    self.tile_list.append( content )
+                for thing in content :
+                    #thing = content[ id ]
+                    if thing.image != 0 :
+                        self.sprite_group.add( thing.image )
+                    tile[ "content" ] = thing
+                    self.tile_list.append( thing )
                 y += 1
             x += 1
         x = 0
@@ -131,5 +134,30 @@ class Floor( Tile ) :
 
     def __init__( self, scene, pos ) :
         Tile.__init__( self, scene, pos )
-        self.image = Image( "res/img/environment/floor.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
+        #self.image = Image( "res/img/environment/floor.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
         self.types += [ "floor" ]
+        
+class OrbPoint( Tile ) :
+    
+    def __init__( self, scene, pos ) :
+        Tile.__init__( self, scene, pos )
+        self.next_spawn = 0
+
+    def update( self, view_zoom, view_offset, settings ) :
+        if self.next_spawn == 0 :
+            item = self.get_orb()
+            item.create_body( self.position )
+            self.scene.add_entity( item )
+            self.next_spawn = 1200
+            return
+        self.next_spawn -= 1
+            
+    def get_orb( self ) :
+        int = randint( 0, 2 )
+        if int == 0 :
+            return FireOrb( self.scene, self.position )
+        if int == 1 :
+            return IceOrb( self.scene, self.position )
+        if int == 2 :
+            return BoltOrb( self.scene, self.position )
+        return 0
