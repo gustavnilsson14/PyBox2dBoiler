@@ -124,15 +124,21 @@ class MenuScene(Scene) :
         #img = pygame.image.load('res/img/bg.jpg')
         #surface.blit(img,(0,0))
         myfont = pygame.font.SysFont("monospace", 15)
-
+        keynotset = 1
         for x in range(0, 4):
             if x < len(self.game.player_handler.player_to_join_list):
-                player1 = myfont.render("Joined", 1, (255,255,0))
-                surface.blit(player1, (300+(200*x), 100))
+                player = myfont.render("Joined", 1, (255,255,0))
+                surface.blit(player, (300+(200*x), 100))
+            elif self.game.player_handler.player_to_join_keyboard == 1 and keynotset == 1:
+                player = myfont.render("Joined", 1, (255,255,0))
+                surface.blit(player, (300+(200*x), 100))
+                keynotset = 0
             else:
-                player1 = myfont.render("Press Start", 1, (255,255,0))
-                surface.blit(player1, (300+(200*x), 100))
+                player = myfont.render("Press Start", 1, (255,255,0))
+                surface.blit(player, (300+(200*x), 100))
 
+        player = myfont.render("Press Y to Start", 1, (255,255,0))
+        surface.blit(player, (600, 500))
 
         pygame.key.set_repeat(199,69)#(delay,interval)
         pygame.display.update()
@@ -145,8 +151,16 @@ class MenuScene(Scene) :
                         self.game.player_handler.player_to_join_list += [ joystick.get_id() ]
                         self.run_select()
                         self.running = 0
+                    if joystick.get_button( JOYSTICK_BUTTON_PICKUP ) == 1 :
+                        if len(self.game.player_handler.player_to_join_list) > 0:
+                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+                            self.running = 0
                 if event.type == KEYDOWN:
                     if event.key == K_RETURN:
+                        self.game.player_handler.player_to_join_keyboard = 1
+                        self.run_select()
+                        self.running = 0
+                    if event.key == K_y:
                         self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
                         self.running = 0
                     pygame.display.update()

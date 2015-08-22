@@ -9,6 +9,7 @@ class PlayerHandler :
 		self.game = game
 		self.player_list = []
 		self.player_to_join_list = []
+		self.player_to_join_keyboard = 0
 		self.input_list = []
 		self.joystick_list = []
 
@@ -56,10 +57,14 @@ class PlayerHandler :
 		self.game.pressed_keys += [joystick.get_id() - 1000]
 
 	def check_player_opt_in( self, keys ) :
-		if keys.__contains__( Keys.K_RETURN ) and self.keyboard_mouse_player_exists() == False :
+		if self.player_to_join_keyboard == 1 and self.keyboard_mouse_player_exists() == False :
 			player = Player( self.game )
 			self.add_player( player )
 			self.add_keyboard_mouse_input( player )
+		'''if keys.__contains__( Keys.K_RETURN ) and self.keyboard_mouse_player_exists() == False :
+			player = Player( self.game )
+			self.add_player( player )
+			self.add_keyboard_mouse_input( player )'''
 		for joystick in self.joystick_list :
 			for player_joystick in self.player_to_join_list :
 				if joystick.get_id() == player_joystick:
