@@ -509,12 +509,10 @@ class ItemSlot :
 			self.scene.game.add_garbage_joint( self.joint )
 			self.joint = 0
 			self.item.holder = 0
-			print "HEY", self.item.body.linearVelocity, self.item.body.angularVelocity
 			main_body = self.body.userData.get( 'owner' ).body
 			self.item.body.transform = [ main_body.transform.position, main_body.transform.angle ]
 			self.item.body.linearVelocity = ( 0, 0 )
 			self.item.body.angularVelocity = 0
-			print "HEY", self.item.body.linearVelocity, self.item.body.angularVelocity
 			self.item.dropped()
 			self.item = 0
 

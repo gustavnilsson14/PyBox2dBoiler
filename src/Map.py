@@ -52,7 +52,8 @@ class Map() :
                 if tile.get( 'orbpoints' ) != None :
                     content += [ OrbPoint( scene, (x,y) ) ]
                 if tile.get( 'enemyspawn1' ) != None :
-                    content += [ EnemySpawn( scene, (x,y) ) ]
+                    spawn = EnemySpawn( scene, (x,y), self.scene.ai )
+                    content += [ spawn ]
                 if tile.get( 'spawn' ) != None :
                     self.spawn_list.append( ( x, y ) )
                 for thing in content :
@@ -138,67 +139,87 @@ class Floor( Tile ) :
         Tile.__init__( self, scene, pos )
         #self.image = Image( "res/img/environment/floor.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
         self.types += [ "floor" ]
-
-class OrbPoint( Tile ) :
-
-    def __init__( self, scene, pos ) :
+        
+class SpawnPoint( Tile ) :
+    
+    def __init__( self, scene, pos, spawn_interval ) :
         Tile.__init__( self, scene, pos )
-        self.next_spawn = 0
-        self.types += [ self.__class__.__name__ ]
-
+        self.entity = 0
+        self.spawn_interval = spawn_interval
+        self.next_spawn = randint( spawn_interval / 2, spawn_interval )
+        self.reset_entities()
+        
     def update( self, view_zoom, view_offset, settings ) :
         if self.next_spawn == 0 :
-            item = self.get_orb()
-            item.create_body( self.position )
-            self.scene.add_entity( item )
-            self.next_spawn = 1200
-            return
+            self.next_spawn = self.spawn_interval
+            if self.entity == 0 :
+                return 1
         self.next_spawn -= 1
-
-    def get_orb( self ) :
-        int = randint( 0, 2 )
-        if int == 0 :
-            return FireOrb( self.scene, self.position )
-        if int == 1 :
-            return IceOrb( self.scene, self.position )
-        if int == 2 :
-            return BoltOrb( self.scene, self.position )
         return 0
+        
+    def create_item( self ) :
+        entity = self.get_entity()
+        entity = entity( self.scene, self.position )
+        entity.create_body( self.position )
+        self.entity = entity
+        self.scene.add_entity( entity )
+        return
+    
+    def create_enemy( self ) :
+        entity = self.get_entity()
+        if entity == 0 :
+            return 0
+        entity = entity( self.scene, self.position )
+        self.entity = entity
+        self.scene.add_entity( entity )
+        return entity
+    
+    def get_entity( self ) :
+        if len( self.entities ) == 0 :
+            return 0
+        entity = self.entities.pop()
+        if len( self.entities ) == 0 :
+            self.reset_entities()
+        return entity
+        
+    def reset_entities( self ) :
+        pass
 
-class EnemySpawn( Tile ) :
+class OrbPoint( SpawnPoint ) :
 
     def __init__( self, scene, pos ) :
-        Tile.__init__( self, scene, pos )
-        self.next_spawn = 0
+        SpawnPoint.__init__( self, scene, pos, 1080 )
+        self.next_spawn = 240
         self.types += [ self.__class__.__name__ ]
-        self.reset_enemies()
 
     def update( self, view_zoom, view_offset, settings ) :
-        if self.next_spawn == 0 :
-            enemy = self.get_enemy()
-            enemy = enemy( self.scene, self.position )
-            self.scene.add_entity( enemy )
-            self.scene.ai.add_entity( enemy )
-            self.next_spawn = 480000
-            return
-        self.next_spawn -= 1
+        if SpawnPoint.update( self, view_zoom, view_offset, settings ) == 1 :
+            SpawnPoint.create_item( self )
 
-    def get_enemy( self ) :
-        enemy = self.enemies.pop()
-        if len( self.enemies ) == 0 :
-            self.reset_enemies()
-        return enemy
-
-    def reset_enemies( self ) :
-        self.enemies = [
-            FireMage,
-            FireMage,
-            FireMage,
-            IceMage,
-            IceMage,
-            IceMage,
-            BoltMage,
-            BoltMage,
-            BoltMage,
+    def reset_entities( self ) :
+        self.entities = [
+            FireOrb,FireOrb,IceOrb,IceOrb,BoltOrb,BoltOrb,
         ]
-        random.shuffle( self.enemies )
+        random.shuffle( self.entities )
+
+class EnemySpawn( SpawnPoint ) :
+
+    def __init__( self, scene, pos, ai ) :
+        SpawnPoint.__init__( self, scene, pos, 1580 )
+        self.ai = ai
+        self.entities = [FireMage]
+        random.shuffle( self.entities )
+        self.ai.add_spawn( self )
+        self.types += [ self.__class__.__name__ ]
+
+    def spawn_enemy( self ) :
+        enemy = SpawnPoint.create_enemy( self )
+        if enemy == 0 :
+            self.ai.remove_spawn( self )
+            return 0
+        self.ai.add_entity( enemy )
+        return 1
+        
+
+    def reset_entities( self ) :
+        pass

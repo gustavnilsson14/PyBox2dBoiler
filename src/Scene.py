@@ -25,6 +25,9 @@ class Scene :
 
     def destroy( self ) :
         pass
+        
+    def defeat( self, type ) :
+        print "DEFEAT"
 
 class MenuScene(Scene) :
 

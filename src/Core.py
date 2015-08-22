@@ -80,10 +80,6 @@ class Image( DirtySprite ) :
 
 			self.image = pygame.Surface((0,0))
 			return
-			'''print posY
-			self.image = pygame.Surface((0,0))
-			return'''
-
 		if posY - ( image.get_height() / 2) > settings.screenSize[1] :
 			self.image = pygame.Surface((0,0))
 			return
