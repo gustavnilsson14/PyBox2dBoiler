@@ -404,6 +404,7 @@ class Hud :
 
     def draw_player( self, player, hud, pos ) :
         self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.character.max_health ) )
+        self.draw_power_bar( pos, hud, float( player.character.power ) / float( player.character.max_power ) )
 
     def draw_health_bar( self, pos, hud, percentage ) :
         max_width = 100
@@ -416,6 +417,17 @@ class Hud :
         hud.health_bar.rect.x = pos[0] + 10
         hud.health_bar.rect.y = pos[1] + 10
 
+    def draw_power_bar( self, pos, hud, percentage ) :
+        max_width = 100
+        width = max_width * percentage
+        bar = pygame.Surface( ( int(width), 6 ) )
+        bar.fill( (0,255,0) )
+        hud.power_bar.image = bar
+        hud.power_bar.dirty = 1
+        hud.power_bar.rect = bar.get_rect()
+        hud.power_bar.rect.x = pos[0] + 10
+        hud.power_bar.rect.y = pos[1] + 20
+
     def destroy( self ) :
         while len( self.player_list ) != 0 :
             self.player_list.remove( self.player_list[0] )
@@ -427,4 +439,6 @@ class PlayerHud :
     def __init__( self, sprite_group ) :
         self.sprite_group = sprite_group
         self.health_bar = pygame.sprite.DirtySprite()
+        self.power_bar = pygame.sprite.DirtySprite()
         self.sprite_group.add( self.health_bar )
+        self.sprite_group.add( self.power_bar )

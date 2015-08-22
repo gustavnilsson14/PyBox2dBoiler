@@ -24,8 +24,8 @@ class Game (Framework):
         self.garbage_body_list = []
         self.garbage_joint_list = []
         self.defaultZoom = 80.0
-        self.minZoom = 15.0
-        self.maxZoom = 285.0
+        self.minZoom = 15
+        self.maxZoom = 285
         super(Game, self).__init__()
         self.current_scene = 0
         self.world.gravity = (0,0)
