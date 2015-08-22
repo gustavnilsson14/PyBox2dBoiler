@@ -59,15 +59,10 @@ class Image( DirtySprite ) :
 			self.current_angle = angle
 			self.buffered_image = pygame.transform.rotate( image, self.current_angle )
 		return self.buffered_image
-<<<<<<< HEAD
 
 
-	def update( self, position, angle, view_zoom, view_offset, settings ) :
-=======
-		
-		
 	def update( self, position, angle, view_zoom, view_offset, settings, scene ) :
->>>>>>> d981e3dac4a0c18b3d7e00880a48bfcf4f3f7ca5
+
 		self.dirty = 1
 		posX = ( position[0] * view_zoom ) - view_offset[0]
 		posY = ( position[1] * view_zoom ) - view_offset[1]
@@ -75,23 +70,20 @@ class Image( DirtySprite ) :
 		image = self.image_handler.get_image( self.image_key )
 
 		#Trim images outside of draw area
-<<<<<<< HEAD
 
-		if ( posY + (settings.screenSize[1]) ) < 0 :
-=======
 		if posY < ( image.get_height() / 2) :
 			if posY > 0 :
 				posY -= posY * 2
 			else :
 				posY = math.fabs( posY )
 		else :
->>>>>>> d981e3dac4a0c18b3d7e00880a48bfcf4f3f7ca5
+
 			self.image = pygame.Surface((0,0))
 			return
 			'''print posY
 			self.image = pygame.Surface((0,0))
 			return'''
-		
+
 		if posY - ( image.get_height() / 2) > settings.screenSize[1] :
 			self.image = pygame.Surface((0,0))
 			return
@@ -101,17 +93,9 @@ class Image( DirtySprite ) :
 		if ( posX + image.get_width() ) < 0 :
 			self.image = pygame.Surface((0,0))
 			return
-<<<<<<< HEAD
 
-		if posY < 0 :
-			posY = math.fabs( posY )
-		else :
-			self.image = pygame.Surface((0,0))
-			return
-
-=======
 		scene.drawn_images += 1
->>>>>>> d981e3dac4a0c18b3d7e00880a48bfcf4f3f7ca5
+
 		if self.current_zoom != view_zoom :
 			self.current_zoom = view_zoom
 			self.current_angle = -1
