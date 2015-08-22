@@ -36,8 +36,7 @@ class Game (Framework):
 
         self.reset_zoom()
 
-        self.player_handler = PlayerHandler( self )
-        self.check_joysticks()
+
         #-100 is the mouse
         self.pressed_keys = [ -100 ]
 
@@ -45,9 +44,10 @@ class Game (Framework):
         print self.current_scene
         if self.current_scene != 0 :
             self.current_scene.destroy()
-        self.player_handler = PlayerHandler( self )
 
         if type == SCENE_TYPE_MENU :
+            self.player_handler = PlayerHandler( self )
+            self.check_joysticks()
             self.current_scene = MenuScene( self )
             self.current_scene.run_top()
             return True

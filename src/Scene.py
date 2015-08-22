@@ -49,9 +49,10 @@ class MenuScene(Scene) :
                         menu.draw(-1) #here is the Menu class function
                     if event.key == K_DOWN:
                         menu.draw(1) #here is the Menu class function
-                    if event.key == K_RETURN:
+                    if event.key == K_RETURN :
                         if menu.get_position() == 0:
-                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+                            #self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+                            self.run_select()
                             self.running = 0
                         elif menu.get_position() == 1:
                             self.run_option()
@@ -118,6 +119,67 @@ class MenuScene(Scene) :
                     sys.exit()
             pygame.time.wait(8)
 
+    def run_select( self ) :
+        surface = pygame.display.set_mode((1280,720))
+        surface.fill((0,0,0))
+        #img = pygame.image.load('res/img/bg.jpg')
+        #surface.blit(img,(0,0))
+        myfont = pygame.font.SysFont("monospace", 15)
+        keynotset = 1
+        for x in range(0, 4):
+            if x < len(self.game.player_handler.player_to_join_list):
+                player = myfont.render("Joined", 1, (255,255,0))
+                surface.blit(player, (300+(200*x), 100))
+            elif self.game.player_handler.player_to_join_keyboard == 1 and keynotset == 1:
+                player = myfont.render("Joined", 1, (255,255,0))
+                surface.blit(player, (300+(200*x), 100))
+                keynotset = 0
+            else:
+                player = myfont.render("Press Start", 1, (255,255,0))
+                surface.blit(player, (300+(200*x), 100))
+
+        player = myfont.render("Press Y to Start", 1, (255,255,0))
+        surface.blit(player, (600, 500))
+
+        pygame.key.set_repeat(199,69)#(delay,interval)
+        pygame.display.update()
+        self.running = 1
+        while self.running:
+            for event in pygame.event.get():
+                for joystick in self.game.player_handler.joystick_list :
+                    
+                    if joystick.get_name() == "Controller (XBOX 360 For Windows)" or joystick.get_name() == "Microsoft X-Box 360 pad" :
+                        start = joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_START] )
+                    else :
+                        start = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_START] )
+                    if start == 1 and self.joystick_player_exists( joystick.get_id() ) == False :
+                        self.game.player_handler.player_to_join_list += [ joystick.get_id() ]
+                        self.run_select()
+                        self.running = 0
+                    if joystick.get_button( JOYSTICK_BUTTON_PICKUP ) == 1 :
+                        if len(self.game.player_handler.player_to_join_list) > 0 or self.game.player_handler.player_to_join_keyboard == 1:
+                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+                            self.running = 0
+                if event.type == KEYDOWN:
+                    if event.key == K_RETURN:
+                        self.game.player_handler.player_to_join_keyboard = 1
+                        self.run_select()
+                        self.running = 0
+                    if event.key == K_y:
+                        if len(self.game.player_handler.player_to_join_list) > 0 or self.game.player_handler.player_to_join_keyboard == 1:
+                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+                            self.running = 0
+                    pygame.display.update()
+                elif event.type == QUIT:
+                    pygame.display.quit()
+                    sys.exit()
+            pygame.time.wait(8)
+
+    def joystick_player_exists( self, joystick_id ) :
+        for player in self.game.player_handler.player_to_join_list :
+            if player == joystick_id :
+                return True
+        return False
 
 class GameScene(Scene) :
 
@@ -154,15 +216,17 @@ class GameScene(Scene) :
 
         self.add_entity( self.target_unit )
 
-        '''
-        '''self.target_unit = PlayerCharacter( self, ( 24,40 ) )
+        
+        self.target_unit = PlayerCharacter( self, ( 24,40 ) )
+
+
         self.add_entity( self.target_unit )
         unit = FireMage( self, ( 40,25 ) )
         self.screen.focus_positions += [ unit.body.transform.position ]
         self.add_entity( unit )
-        self.orders.append( AttackOrder( [ unit ], self.target_unit ) )'''
-
-        '''player2 = Player( self.game, unit )
+        
+        self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
+        player2 = Player( self.game, unit )
         self.hud.add_player( player2 )'''
 
     def get_spawn_point( self ) :
@@ -241,7 +305,7 @@ class GameScene(Scene) :
 
 class Screen :
 
-    def __init__( self, game, shake_magnitude = 20 ) :
+    def __init__( self, game, shake_magnitude = 0 ) :
         self.game = game
         self.shake_offset = (0,0)
         self.shake_magnitude = shake_magnitude

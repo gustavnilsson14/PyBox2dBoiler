@@ -381,14 +381,16 @@ class Body :
 		return self.main_body
 
 
-	def set_image_at( self, body_part, image ) :
+	def set_image_at( self, body_part, image_key ) :
 		body = self.all_bodies.get( body_part )
-		previous_image = body.userData.get( 'image' 
-		if previous_image != None :
+		previous_image = body.userData.get( 'image_key' )
+		if previous_image != None and previous_image != image_key :
+			previous_image = body.userData.get( 'image' )
 			self.sprite_group.remove( previous_image )
-		image = Image( image, self.scene.game.image_handler, ALIGN_CENTER_CENTER )
+		image = Image( image_key, self.scene.game.image_handler, ALIGN_CENTER_CENTER )
 		self.sprite_group.add( image )
 		body.userData[ 'image' ] = image
+		body.userData[ 'image_key' ] = image_key
 
 	def attach_item( self, body_part, item ) :
 		slot = self.item_slots.get( body_part )
