@@ -197,26 +197,46 @@ class Player :
 		if self.character == 0 :
 			return
 		joystick = self.input_type
-		if self.character.alive == True :
-			movement_vector = ( joystick.get_axis( JOYSTICK_AXIS_HORIZONTAL_MOVE ), -joystick.get_axis( JOYSTICK_AXIS_VERTICAL_MOVE ) )
-			self.character.movement_vector = (0,0)
-			if movement_vector[ 0 ] > 0.4 or movement_vector[ 1 ] > 0.4 or movement_vector[ 0 ] < -0.4 or movement_vector[ 1 ] < -0.4 :
-				self.character.movement_vector = movement_vector
+		if joystick.get_name() == "Controller (XBOX 360 For Windows)" :
+			if self.character.alive == True :
+				movement_vector = ( joystick.get_axis(  XBOX_KEY_MAP[JOYSTICK_AXIS_HORIZONTAL_MOVE] ), -joystick.get_axis( XBOX_KEY_MAP[JOYSTICK_AXIS_VERTICAL_MOVE] ) )
+				self.character.movement_vector = (0,0)
+				if movement_vector[ 0 ] > 0.4 or movement_vector[ 1 ] > 0.4 or movement_vector[ 0 ] < -0.4 or movement_vector[ 1 ] < -0.4 :
+					self.character.movement_vector = movement_vector
 
-			character_pos = self.character.body.transform.position
-			angle_vector = ( joystick.get_axis( JOYSTICK_AXIS_HORIZONTAL_TURN ) + character_pos[0], -joystick.get_axis( JOYSTICK_AXIS_VERTICAL_TURN ) + character_pos[1])
-			if angle_vector[ 0 ] > 0.4 or angle_vector[ 1 ] > 0.4 or angle_vector[ 0 ] < -0.4 or angle_vector[ 1 ] < -0.4 :
-				self.character.aim( angle_vector )
+				character_pos = self.character.body.transform.position
+				angle_vector = ( joystick.get_axis( XBOX_KEY_MAP[JOYSTICK_AXIS_HORIZONTAL_TURN] ) + character_pos[0], -joystick.get_axis( XBOX_KEY_MAP[JOYSTICK_AXIS_VERTICAL_TURN] ) + character_pos[1])
+				if angle_vector[ 0 ] > 0.4 or angle_vector[ 1 ] > 0.4 or angle_vector[ 0 ] < -0.4 or angle_vector[ 1 ] < -0.4 :
+					self.character.aim( angle_vector )
 
-			if joystick.get_button( JOYSTICK_BUTTON_USE ) == 1 :
-				self.use_item()
+				if joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_USE] ) == 1 :
+					self.use_item()
 
-			if joystick.get_button( JOYSTICK_BUTTON_PICKUP ) == 1 :
-				self.pickup()
+				if joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_PICKUP] ) == 1 :
+					self.pickup()
+			else :
+				if joystick.get_button( XBOX_KEY_MAP[OYSTICK_BUTTON_START] ) == 1 :
+					self.respawn()
 		else :
-			if joystick.get_button( JOYSTICK_BUTTON_START ) == 1 :
-				self.respawn()
+			if self.character.alive == True :
+				movement_vector = ( joystick.get_axis(  GENERIC_KEY_MAP[JOYSTICK_AXIS_HORIZONTAL_MOVE] ), -joystick.get_axis( GENERIC_KEY_MAP[JOYSTICK_AXIS_VERTICAL_MOVE] ) )
+				self.character.movement_vector = (0,0)
+				if movement_vector[ 0 ] > 0.4 or movement_vector[ 1 ] > 0.4 or movement_vector[ 0 ] < -0.4 or movement_vector[ 1 ] < -0.4 :
+					self.character.movement_vector = movement_vector
 
+				character_pos = self.character.body.transform.position
+				angle_vector = ( joystick.get_axis( GENERIC_KEY_MAP[JOYSTICK_AXIS_HORIZONTAL_TURN] ) + character_pos[0], -joystick.get_axis( GENERIC_KEY_MAP[JOYSTICK_AXIS_VERTICAL_TURN] ) + character_pos[1])
+				if angle_vector[ 0 ] > 0.4 or angle_vector[ 1 ] > 0.4 or angle_vector[ 0 ] < -0.4 or angle_vector[ 1 ] < -0.4 :
+					self.character.aim( angle_vector )
+
+				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_USE] ) == 1 :
+					self.use_item()
+
+				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_PICKUP] ) == 1 :
+					self.pickup()
+			else :
+				if joystick.get_button( GENERIC_KEY_MAP[OYSTICK_BUTTON_START] ) == 1 :
+					self.respawn()
 
 class Input :
 

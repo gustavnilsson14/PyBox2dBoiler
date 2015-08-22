@@ -146,8 +146,10 @@ class MenuScene(Scene) :
         while self.running:
             for event in pygame.event.get():
                 for joystick in self.game.player_handler.joystick_list :
-                    print joystick.get_name()
-                    start = joystick.get_button( JOYSTICK_BUTTON_START )
+                    if joystick.get_name() == "Controller (XBOX 360 For Windows)" :
+                        start = joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_START] )
+                    else :
+                        start = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_START] )
                     if start == 1 and self.joystick_player_exists( joystick.get_id() ) == False :
                         self.game.player_handler.player_to_join_list += [ joystick.get_id() ]
                         self.run_select()
@@ -301,7 +303,7 @@ class GameScene(Scene) :
 
 class Screen :
 
-    def __init__( self, game, shake_magnitude = 1 ) :
+    def __init__( self, game, shake_magnitude = 0 ) :
         self.game = game
         self.shake_offset = (0,0)
         self.shake_magnitude = shake_magnitude
