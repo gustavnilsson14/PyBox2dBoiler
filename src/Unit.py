@@ -262,6 +262,7 @@ class PlayerCharacter( Unit ) :
 
     def take_damage( self, origin, damage ) :
         Unit.take_damage( self, origin, damage )
+
         if self.immunities.__contains__( damage.type ) == 0 :
             self.scene.screen.shake_time = 1
             self.scene.game.pause_time = 3

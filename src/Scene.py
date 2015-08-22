@@ -125,24 +125,25 @@ class MenuScene(Scene) :
     def run_select( self ) :
         surface = pygame.display.set_mode((1280,720))
         surface.fill((0,0,0))
-        #img = pygame.image.load('res/img/bg.jpg')
-        #surface.blit(img,(0,0))
-        myfont = pygame.font.SysFont("monospace", 15)
+        img = pygame.image.load('res/img/selectbg.jpg')
+        surface.blit(img,(0,0))
+        myfont = pygame.font.SysFont("monospace", 25)
         keynotset = 1
         for x in range(0, 4):
             if x < len(self.game.player_handler.player_to_join_list):
-                player = myfont.render("Joined", 1, (255,255,0))
-                surface.blit(player, (300+(200*x), 100))
+                player = myfont.render("Joined", 1, (255,255,255))
+                surface.blit(player, (65+(320*x), 100))
             elif self.game.player_handler.player_to_join_keyboard == 1 and keynotset == 1:
-                player = myfont.render("Joined", 1, (255,255,0))
-                surface.blit(player, (300+(200*x), 100))
+                player = myfont.render("Joined", 1, (255,255,255))
+                surface.blit(player, (65+(320*x), 100))
                 keynotset = 0
             else:
-                player = myfont.render("Press Start", 1, (255,255,0))
-                surface.blit(player, (300+(200*x), 100))
+                player = myfont.render("Press Start", 1, (255,255,255))
+                surface.blit(player, (65+(320*x), 100))
 
-        player = myfont.render("Press Y to Start", 1, (255,255,0))
-        surface.blit(player, (600, 500))
+        myfont = pygame.font.SysFont("monospace", 40)
+        player = myfont.render("Press Y to Start", 1, (0,0,0))
+        surface.blit(player, (500, 500))
 
         pygame.key.set_repeat(199,69)#(delay,interval)
         pygame.display.update()
@@ -404,7 +405,7 @@ class Hud :
         if len( self.player_list ) == 4 :
             return False
         self.player_list += [ player ]
-        self.huds += [ PlayerHud( self.sprite_group ) ]
+        self.huds += [ PlayerHud( player, self.sprite_group ) ]
         return True
 
     def remove_player( self, player ) :
@@ -417,6 +418,7 @@ class Hud :
         for index, player in enumerate( self.player_list ) :
             pos = ( self.hud_positions[ index ][0] * ( settings.screenSize[0] - 120 ), self.hud_positions[ index ][1] * ( settings.screenSize[1] - 40 ) )
             hud = self.huds[ index ]
+            hud.update(self.scene, pos)
             self.draw_player( player, hud, pos )
 
     def draw_player( self, player, hud, pos ) :
@@ -453,9 +455,25 @@ class Hud :
 
 class PlayerHud :
 
-    def __init__( self, sprite_group ) :
+    def __init__( self, player, sprite_group ) :
         self.sprite_group = sprite_group
+        self.player = player
         self.health_bar = pygame.sprite.DirtySprite()
         self.power_bar = pygame.sprite.DirtySprite()
+        self.level_icons = pygame.sprite.DirtySprite()
         self.sprite_group.add( self.health_bar )
         self.sprite_group.add( self.power_bar )
+
+    def update( self, scene, pos ) :
+        for joystick in scene.game.player_handler.joystick_list :
+            if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) :
+                self.sprite_group.add( self.level_icons )
+                bar = pygame.Surface( (220, 50 ) )
+                bar.fill( (0,255,0) )
+                img = pygame.image.load('res/img/level_up.png')
+                bar.blit(img,(0,0))
+                self.level_icons.image = bar
+                self.level_icons.dirty = 1
+                self.level_icons.rect = bar.get_rect()
+                self.level_icons.rect.x = pos[0] + 10
+                self.level_icons.rect.y = pos[1] + 30
