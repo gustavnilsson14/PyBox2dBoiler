@@ -183,11 +183,18 @@ class Player :
 	def add_stats( self, stat_type ) :
 		if self.character.orbs > 0:
 			if stat_type == "health":
-				self.character.max_health += self.character.orbs*50
+				self.character.max_health += self.character.orbs
 				self.character.orbs = 0
+				self.character.body_handler.detach_item("spell_orb")
 			elif stat_type == "power":
-				self.character.max_power += self.character.orbs*50
+				self.character.max_power += self.character.orbs
 				self.character.orbs = 0
+				self.character.body_handler.detach_item("spell_orb")
+			elif stat_type == "firerate":
+				self.character.firerate -= self.character.orbs
+				self.character.orbs = 0
+				self.character.body_handler.detach_item("spell_orb")
+
 		self.character.current_item = 0
 		self.character.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
 		self.character.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
@@ -256,14 +263,16 @@ class Player :
 				if joystick.get_button( 3 ) == 1 :
 					self.pickup()
 
-				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_HEALTY] ) == 1 :
-					self.add_stats("health")
+				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) == 1 :
 
-				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_POWER] ) == 1 :
-					self.add_stats("power")
+					if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_HEALTY] ) == 1 :
+						self.add_stats("health")
 
-				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_FIRERATE] ) == 1 :
-					self.add_stats("firerate")
+					if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_POWER] ) == 1 :
+						self.add_stats("power")
+
+					if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_FIRERATE] ) == 1 :
+						self.add_stats("firerate")
 
 			else :
 				if joystick.get_button( GENERIC_KEY_MAP[OYSTICK_BUTTON_START] ) == 1 :
