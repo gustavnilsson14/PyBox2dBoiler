@@ -146,13 +146,14 @@ class MenuScene(Scene) :
         while self.running:
             for event in pygame.event.get():
                 for joystick in self.game.player_handler.joystick_list :
+                    print joystick.get_name()
                     start = joystick.get_button( JOYSTICK_BUTTON_START )
                     if start == 1 and self.joystick_player_exists( joystick.get_id() ) == False :
                         self.game.player_handler.player_to_join_list += [ joystick.get_id() ]
                         self.run_select()
                         self.running = 0
                     if joystick.get_button( JOYSTICK_BUTTON_PICKUP ) == 1 :
-                        if len(self.game.player_handler.player_to_join_list) > 0:
+                        if len(self.game.player_handler.player_to_join_list) > 0 or self.game.player_handler.player_to_join_keyboard == 1:
                             self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
                             self.running = 0
                 if event.type == KEYDOWN:
@@ -161,8 +162,9 @@ class MenuScene(Scene) :
                         self.run_select()
                         self.running = 0
                     if event.key == K_y:
-                        self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
-                        self.running = 0
+                        if len(self.game.player_handler.player_to_join_list) > 0 or self.game.player_handler.player_to_join_keyboard == 1:
+                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+                            self.running = 0
                     pygame.display.update()
                 elif event.type == QUIT:
                     pygame.display.quit()
@@ -299,7 +301,7 @@ class GameScene(Scene) :
 
 class Screen :
 
-    def __init__( self, game, shake_magnitude = 20 ) :
+    def __init__( self, game, shake_magnitude = 1 ) :
         self.game = game
         self.shake_offset = (0,0)
         self.shake_magnitude = shake_magnitude
