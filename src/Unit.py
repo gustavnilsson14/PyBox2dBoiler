@@ -263,8 +263,8 @@ class PlayerCharacter( Unit ) :
 
     def take_damage( self, origin, damage ) :
         Unit.take_damage( self, origin, damage )
-        self.scene.screen.shake_time = 1
-        self.scene.game.pause_time = 3
+        #self.scene.screen.shake_time = 1
+        #self.scene.game.pause_time = 3
 
 class Mage( PlayerCharacter ) :
 
