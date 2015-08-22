@@ -4,9 +4,9 @@ from pathfinding import *
 from Constants import *
 from Core import *
 from Body import *
+from Enemy import *
 from Item import *
-import time
-import pygame
+import time, pygame, random
 
 class Map() :
 
@@ -51,6 +51,8 @@ class Map() :
                     item.create_body( ( x, y ) )
                 if tile.get( 'orbpoints' ) != None :
                     content += [ OrbPoint( scene, (x,y) ) ]
+                if tile.get( 'enemyspawn1' ) != None :
+                    content += [ EnemySpawn( scene, (x,y) ) ]
                 if tile.get( 'spawn' ) != None :
                     self.spawn_list.append( ( x, y ) )
                 for thing in content :
@@ -142,6 +144,7 @@ class OrbPoint( Tile ) :
     def __init__( self, scene, pos ) :
         Tile.__init__( self, scene, pos )
         self.next_spawn = 0
+        self.types += [ self.__class__.__name__ ]
 
     def update( self, view_zoom, view_offset, settings ) :
         if self.next_spawn == 0 :
@@ -161,3 +164,42 @@ class OrbPoint( Tile ) :
         if int == 2 :
             return BoltOrb( self.scene, self.position )
         return 0
+        
+class EnemySpawn( Tile ) :
+    
+    def __init__( self, scene, pos ) :
+        Tile.__init__( self, scene, pos )
+        self.next_spawn = 0
+        self.types += [ self.__class__.__name__ ]
+        self.reset_enemies()
+
+    def update( self, view_zoom, view_offset, settings ) :
+        if self.next_spawn == 0 :
+            enemy = self.get_enemy()
+            enemy = enemy( self.scene, self.position )
+            self.scene.add_entity( enemy )
+            self.scene.ai.add_entity( enemy )
+            self.next_spawn = 480000
+            return
+        self.next_spawn -= 1
+            
+    def get_enemy( self ) :
+        enemy = self.enemies.pop()
+        if len( self.enemies ) == 0 :
+            self.reset_enemies()
+        return enemy
+        
+    def reset_enemies( self ) :
+        self.enemies = [
+            FireMage,
+            FireMage,
+            FireMage,
+            IceMage,
+            IceMage,
+            IceMage,
+            BoltMage,
+            BoltMage,
+            BoltMage,
+        ]
+        random.shuffle( self.enemies )
+        

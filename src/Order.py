@@ -78,3 +78,15 @@ class PatrolOrder( Order ) :
                 unit.move( self.goal )
             else :
                 unit.move( self.start )
+
+class AI :
+    
+    def __init__( self, scene, game ) :
+        self.minions = []
+        pass
+        
+    def add_entity( self, entity ) :
+        if entity in self.minions :
+            return 0
+        self.minions += [ entity ]
+        print "NEW MINION"
