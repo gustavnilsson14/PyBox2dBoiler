@@ -136,11 +136,11 @@ class Floor( Tile ) :
 
     def __init__( self, scene, pos ) :
         Tile.__init__( self, scene, pos )
-        #self.image = Image( "res/img/environment/floor.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
+        self.image = Image( "res/img/environment/floor.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
         self.types += [ "floor" ]
-        
+
 class OrbPoint( Tile ) :
-    
+
     def __init__( self, scene, pos ) :
         Tile.__init__( self, scene, pos )
         self.next_spawn = 0
@@ -154,7 +154,7 @@ class OrbPoint( Tile ) :
             self.next_spawn = 1200
             return
         self.next_spawn -= 1
-            
+
     def get_orb( self ) :
         int = randint( 0, 2 )
         if int == 0 :
@@ -164,9 +164,9 @@ class OrbPoint( Tile ) :
         if int == 2 :
             return BoltOrb( self.scene, self.position )
         return 0
-        
+
 class EnemySpawn( Tile ) :
-    
+
     def __init__( self, scene, pos ) :
         Tile.__init__( self, scene, pos )
         self.next_spawn = 0
@@ -182,13 +182,13 @@ class EnemySpawn( Tile ) :
             self.next_spawn = 480000
             return
         self.next_spawn -= 1
-            
+
     def get_enemy( self ) :
         enemy = self.enemies.pop()
         if len( self.enemies ) == 0 :
             self.reset_enemies()
         return enemy
-        
+
     def reset_enemies( self ) :
         self.enemies = [
             FireMage,
@@ -202,4 +202,3 @@ class EnemySpawn( Tile ) :
             BoltMage,
         ]
         random.shuffle( self.enemies )
-        
