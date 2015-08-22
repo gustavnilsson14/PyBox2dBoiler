@@ -147,7 +147,7 @@ class MenuScene(Scene) :
         while self.running:
             for event in pygame.event.get():
                 for joystick in self.game.player_handler.joystick_list :
-                    
+
                     if joystick.get_name() == "Controller (XBOX 360 For Windows)" or joystick.get_name() == "Microsoft X-Box 360 pad" :
                         start = joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_START] )
                     else :
@@ -218,7 +218,7 @@ class GameScene(Scene) :
 
         self.add_entity( self.target_unit )
 
-        
+
         self.target_unit = PlayerCharacter( self, ( 24,40 ) )
 
 lf, ( 24,40 ) )
@@ -228,7 +228,7 @@ lf, ( 24,40 ) )
         unit = FireMage( self, ( 40,25 ) )
         self.screen.focus_positions += [ unit.body.transform.position ]
         self.add_entity( unit )
-        
+
         self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
         player2 = Player( self.game, unit )
         self.hud.add_player( player2 )'''

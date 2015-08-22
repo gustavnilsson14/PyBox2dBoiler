@@ -20,7 +20,6 @@ class Unit( Entity ) :
         self.health = 0
         self.alive = True
         self.target = 0
-        self.orbs = 0
         self.types += [ "unit" ]
 
     def set_health( self, health ) :
@@ -208,9 +207,11 @@ class PlayerCharacter( Unit ) :
         self.accuracy = 2
         self.max_power = 0
         self.power = 0
+        self.orbs = 0
+        self.firerate = 15
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
-        self.set_health( 100 )
+        self.set_health( 1000 )
         self.set_power( 50 )
         self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
         self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
@@ -255,6 +256,7 @@ class PlayerCharacter( Unit ) :
 
     def use_current_item( self, target ) :
         if self.current_item != 0 :
+            self.current_item.max_cooldown = self.firerate
             return self.current_item.use( target )
         return False
 
@@ -269,5 +271,5 @@ class Mage( PlayerCharacter ) :
     def __init__( self, scene, pos ) :
         item = GreyOrb( scene )
         self.body_handler.attach_item( "spell_orb", item )
-        
+
 from Item import *

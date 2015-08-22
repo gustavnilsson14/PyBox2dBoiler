@@ -9,31 +9,31 @@ def randint( min, max ) :
 	return random.randint(min,max)
 
 class Entity :
-	
+
 	def __init__( self, scene ) :
 		self.scene = scene
 		self.types = [ "entity" ]
 		self.body_handler = 0
-		
+
 	def draw( self, screen ) :
 		pass
 		if self.body_handler == 0 :
 			return False
 		self.body_handler
-		
+
 	def destroy( self ) :
 		if self.body_handler != 0 :
 			self.body_handler.destroy()
 		return False
 
 class Damage :
-	
+
 	def __init__( self, value, type = DAMAGE_TYPE_PHYSICAL ) :
 		self.value = value
 		self.type = type
 
 class Image( DirtySprite ) :
-	
+
 	def __init__( self, image, image_handler, align = ALIGN_BOTTOM_CENTER ) :
 		DirtySprite.__init__( self )
 		self.image_key = image
@@ -47,11 +47,11 @@ class Image( DirtySprite ) :
 		self.current_angle = -1
 		self.current_zoom = -1
 		self.dirty = 1
-		
+
 	def blink( self, duration = 8, color = ( 64,64,64,255 ) ) :
 		self.tint_duration = duration
 		self.tint_color = color
-		
+
 	def rotate_image( self, image, angle ) :
 		angle = math.degrees( angle ) - 90
 		if angle != self.current_angle :
@@ -59,25 +59,27 @@ class Image( DirtySprite ) :
 			self.current_angle = angle
 			self.buffered_image = pygame.transform.rotate( image, self.current_angle )
 		return self.buffered_image
-		
-		
+
+
 	def update( self, position, angle, view_zoom, view_offset, settings, scene ) :
+
 		self.dirty = 1
 		posX = ( position[0] * view_zoom ) - view_offset[0]
 		posY = ( position[1] * view_zoom ) - view_offset[1]
 		posY -= settings.screenSize[ 1 ]
 		image = self.image_handler.get_image( self.image_key )
-		
+
 		#Trim images outside of draw area
+
 		if posY < ( image.get_height() / 2) :
 			if posY > 0 :
 				posY -= posY * 2
 			else :
 				posY = math.fabs( posY )
 		else :
+
 			self.image = pygame.Surface((0,0))
 			return
-		
 		if posY - ( image.get_height() / 2) > settings.screenSize[1] :
 			self.image = pygame.Surface((0,0))
 			return
@@ -87,7 +89,9 @@ class Image( DirtySprite ) :
 		if ( posX + image.get_width() ) < 0 :
 			self.image = pygame.Surface((0,0))
 			return
+
 		scene.drawn_images += 1
+
 		if self.current_zoom != view_zoom :
 			self.current_zoom = view_zoom
 			self.current_angle = -1
@@ -99,13 +103,13 @@ class Image( DirtySprite ) :
 		self.rect = self.image.get_rect()
 		self.rect.x = imgpos[0]
 		self.rect.y = imgpos[1]
-		
+
 		if self.tint_duration > 0 :
 			tmp = pygame.Surface( self.image.get_size(), pygame.SRCALPHA, 32)
 			tmp.fill( self.tint_color )
 			self.image.blit(tmp, (0,0), self.image.get_rect(), pygame.BLEND_RGBA_MULT)
 			self.tint_duration -= 1
-		
+
 	def get_alignment( self, image, align ) :
 		if align == ALIGN_BOTTOM_CENTER :
 			return ( -( image.get_width() / 2 ), -image.get_height() )
@@ -117,23 +121,23 @@ class Image( DirtySprite ) :
 			return ( -0, -0 )
 		elif align == ALIGN_BOTTOM_RIGHT :
 			return ( -image.get_width(), -image.get_height() )
-		
+
 class ImageHandler() :
-	
+
 	def __init__( self, game ) :
 		self.original_images = {}
 		self.zoomed_images = {}
 		self.game = game
-		
+
 	def zoom_image( self, image ) :
 		zoom = self.game.viewZoom/self.game.defaultZoom/2
 		return pygame.transform.scale( image, ( int( image.get_width() * zoom ), int( image.get_height() * zoom ) ) )
-	
+
 	def zoom_images( self ) :
 		for key in self.original_images :
 			image = self.original_images.get( key )
 			self.zoomed_images[ key ] = self.zoom_image( image.copy() )
-				
+
 	def get_image( self, key ) :
 		if self.original_images.get( key ) == None :
 			image = pygame.image.load( key )
@@ -143,4 +147,3 @@ class ImageHandler() :
 		image = self.zoomed_images.get( key )
 		if image != None :
 			return image
-		
