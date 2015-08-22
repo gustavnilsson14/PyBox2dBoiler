@@ -384,7 +384,7 @@ class Body :
 	def set_image_at( self, body_part, image_key ) :
 		body = self.all_bodies.get( body_part )
 		previous_image = body.userData.get( 'image_key' )
-		if previous_image != None and previous_image != image_key :
+		if previous_image != None :
 			previous_image = body.userData.get( 'image' )
 			self.sprite_group.remove( previous_image )
 		image = Image( image_key, self.scene.game.image_handler, ALIGN_CENTER_CENTER )
