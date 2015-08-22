@@ -186,6 +186,7 @@ class GameScene(Scene) :
     def __init__( self, game, world, scene_data ) :
         Scene.__init__(self, game)
         self.ai = AI( self, game )
+        self.drawn_images = 0
         self.game.sound_handler.play_music('default')
         self.entity_list = []
         self.orders = []
@@ -246,6 +247,8 @@ lf, ( 24,40 ) )
             if body != 0 :
                 body.update_images( view_zoom, view_offset, settings )
                 rects += body.sprite_group.draw( self.game.screen )
+        #print self.drawn_images
+        self.drawn_images = 0
         pygame.display.update( rects )
         return
 
