@@ -24,8 +24,8 @@ class Game (Framework):
         self.garbage_body_list = []
         self.garbage_joint_list = []
         self.defaultZoom = 80.0
-        self.minZoom = 15.0
-        self.maxZoom = 285.0
+        self.minZoom = 15
+        self.maxZoom = 285
         super(Game, self).__init__()
         self.current_scene = 0
         self.world.gravity = (0,0)
@@ -183,12 +183,12 @@ class Game (Framework):
                 elif event.button == 3: #right
                     self.rMouseDown = True
                 elif event.button == 4:
-                    self.viewZoom *= 1.1
+                    self.viewZoom += 1
                     if self.viewZoom > self.maxZoom :
                         self.viewZoom = self.maxZoom
                     self.image_handler.zoom_images()
                 elif event.button == 5:
-                    self.viewZoom /= 1.1
+                    self.viewZoom -= 1
                     if self.viewZoom < self.minZoom :
                         self.viewZoom = self.minZoom
 

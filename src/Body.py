@@ -54,6 +54,7 @@ class Body :
 				)
 			]
 		)
+		head.transform = (head.transform.position, math.radians( 180 ) )
 		main_body_joint = self.scene.world.CreateRevoluteJoint(
 			bodyA=main_body,
 			bodyB=head,
@@ -174,6 +175,29 @@ class Body :
 			},
             enableLimit=True,
 		)
+		
+		s_o_pos = ( pos[0] + 0.5*size, pos[1] )
+		spell_orb = self.scene.world.CreateDynamicBody(
+			position = s_o_pos,
+			userData={
+				'owner' : owner
+			},
+			fixtures=b2FixtureDef(
+				filter=b2Filter(
+					groupIndex = 0,
+					categoryBits = filter[0],
+					maskBits = filter[1]
+				),
+				shape=b2CircleShape(radius=0.1*size),
+				density=1
+			),
+		)
+		spell_orb.transform = (spell_orb.transform.position, math.radians( 180 ) )
+		spell_orb_joint = self.scene.world.CreateWeldJoint(
+			bodyA=head,
+			bodyB=spell_orb,
+			anchor=s_o_pos,
+		)
 
 		self.main_body = main_body
 		self.main_body_joint = main_body_joint
@@ -187,7 +211,8 @@ class Body :
 		}
 		self.item_slots = {
 			"right_arm": ItemSlot( scene, right_arm, right_arm_joint, ( 0.2*size, 0 ) ),
-			"left_arm": ItemSlot( scene, left_arm, right_arm_joint, ( 0.2*size, 0 ) )
+			"left_arm": ItemSlot( scene, left_arm, right_arm_joint, ( 0.2*size, 0 ) ),
+			"spell_orb": ItemSlot( scene, head, main_body_joint, ( -(0.2*size), 0 ) )
 		}
 		self.joints = {
 			"main_body_joint": main_body_joint,
@@ -302,6 +327,32 @@ class Body :
 		self.main_body = main
 		return self.main_body
 
+	def create_orb( self, owner, scene, pos, size, filter ) :
+		main = self.scene.world.CreateDynamicBody(
+            position = pos,
+            fixedRotation=False,
+            allowSleep=True,
+            userData={
+                'owner' : owner
+            },
+            fixtures=[
+				b2FixtureDef(
+					filter=b2Filter(
+						groupIndex = 0,
+						categoryBits = filter[0],
+						maskBits = filter[1]
+					),
+					shape=b2CircleShape(radius=0.05*size),
+					density=0.0001
+				)
+            ]
+        )
+		self.all_bodies = {
+			"main": main
+		}
+		self.main_body = main
+		return self.main_body
+
 	def create_block( self, owner, scene, pos, size, filter ) :
 		main = self.scene.world.CreateKinematicBody(
             position = pos,
@@ -330,11 +381,16 @@ class Body :
 		return self.main_body
 
 
-	def set_image_at( self, body_part, image ) :
+	def set_image_at( self, body_part, image_key ) :
 		body = self.all_bodies.get( body_part )
-		image = Image( image, self.scene.game.image_handler, ALIGN_CENTER_CENTER )
+		previous_image = body.userData.get( 'image_key' )
+		if previous_image != None and previous_image != image_key :
+			previous_image = body.userData.get( 'image' )
+			self.sprite_group.remove( previous_image )
+		image = Image( image_key, self.scene.game.image_handler, ALIGN_CENTER_CENTER )
 		self.sprite_group.add( image )
 		body.userData[ 'image' ] = image
+		body.userData[ 'image_key' ] = image_key
 
 	def attach_item( self, body_part, item ) :
 		slot = self.item_slots.get( body_part )
@@ -386,6 +442,10 @@ class Body :
 		desired_angle -= main_joint.angle
 		desired_angle = math.radians( ( math.degrees( desired_angle ) + accuracy[0] ) % 360 )
 
+		if joint.userData == None :
+			return True
+		if joint.userData.get( "upperAngle" ) == None :
+			return True
 		limits = ( joint.userData.get( "upperAngle" ), joint.userData.get( "lowerAngle" ) )
 		joint.SetLimits( desired_angle, desired_angle )
 
@@ -444,6 +504,7 @@ class ItemSlot :
 		self.item = 0
 
 	def attach_item( self, item ) :
+		print item
 		body = item.create_body( self.body.transform.position + self.local_anchor )
 		body.transform = [ body.transform.position, self.body.transform.angle ]
 		self.joint = self.scene.world.CreateWeldJoint(
@@ -461,6 +522,12 @@ class ItemSlot :
 			return []
 		return owner.types
 
+	def get_owner( self ) :
+		owner = self.body.userData.get( 'owner' )
+		if owner == None :
+			return 0
+		return owner
+		
 	def detach_item( self ) :
 		if self.joint != 0 :
 			self.scene.game.add_garbage_joint( self.joint )
@@ -470,6 +537,7 @@ class ItemSlot :
 			self.item.body.transform = [ main_body.transform.position, main_body.transform.angle ]
 			self.item.body.linearVelocity = ( 0, 0 )
 			self.item.body.angularVelocity = 0
+			self.item.dropped()
 			self.item = 0
 
 	def update( self, update ) :
