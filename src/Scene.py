@@ -158,7 +158,7 @@ class MenuScene(Scene) :
                         self.running = 0
                     if joystick.get_button( JOYSTICK_BUTTON_PICKUP ) == 1 :
                         if len(self.game.player_handler.player_to_join_list) > 0 or self.game.player_handler.player_to_join_keyboard == 1:
-                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_tutorial.js')
                             self.running = 0
                 if event.type == KEYDOWN:
                     if event.key == K_RETURN:
@@ -167,7 +167,7 @@ class MenuScene(Scene) :
                         self.running = 0
                     if event.key == K_y:
                         if len(self.game.player_handler.player_to_join_list) > 0 or self.game.player_handler.player_to_join_keyboard == 1:
-                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
+                            self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_tutorial.js')
                             self.running = 0
                     pygame.display.update()
                 elif event.type == QUIT:
@@ -185,6 +185,7 @@ class GameScene(Scene) :
 
     def __init__( self, game, world, scene_data ) :
         Scene.__init__(self, game)
+        self.ai = AI( self, game )
         self.game.sound_handler.play_music('default')
         self.entity_list = []
         self.orders = []
@@ -218,6 +219,8 @@ class GameScene(Scene) :
 
         
         self.target_unit = PlayerCharacter( self, ( 24,40 ) )
+
+lf, ( 24,40 ) )
 
 
         self.add_entity( self.target_unit )
@@ -254,7 +257,6 @@ class GameScene(Scene) :
 
     def remove_entity( self, entity ) :
         if self.entity_list.__contains__( entity ) == False :
-            print entity.__class__.__name__ + " ALREADY GONE"
             return False
         self.entity_list.remove( entity )
         for update in self.update_list :
@@ -281,6 +283,7 @@ class GameScene(Scene) :
         self.screen.update_camera_center()
         for update in self.update_list :
             update.run()
+        self.ai.update()
 
     def destroy( self ) :
         while len( self.entity_list ) != 0 :

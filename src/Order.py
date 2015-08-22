@@ -1,3 +1,5 @@
+import random
+
 class Order :
     
     def __init__( self, unit_list ) :
@@ -78,3 +80,28 @@ class PatrolOrder( Order ) :
                 unit.move( self.goal )
             else :
                 unit.move( self.start )
+
+class AI :
+    
+    def __init__( self, scene, game ) :
+        self.scene = scene
+        self.game = game
+        self.minions = []
+        self.frames_per_action = 120
+
+    def order_attack( self, minion, target ) :
+        self.scene.orders.append( AttackOrder( [ minion ], target ) )
+        
+    def update( self ) :
+        if len( self.game.player_handler.player_list ) == 0 :
+            return 0
+        if self.game.time % self.frames_per_action == 0 :
+            minion = random.choice( self.minions )
+            target = random.choice( self.game.player_handler.player_list ).character
+            self.order_attack( minion, target )
+    
+    def add_entity( self, entity ) :
+        if entity in self.minions :
+            return 0
+        self.minions += [ entity ]
+        

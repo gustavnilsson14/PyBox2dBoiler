@@ -21,6 +21,7 @@ class Game (Framework):
         self.gamesettings = GameSettings()
         self.sound_handler = SoundHandler( self.gamesettings )
         self.pause_time = 0
+        self.time = 0
         self.garbage_body_list = []
         self.garbage_joint_list = []
         self.defaultZoom = 80.0
@@ -40,11 +41,11 @@ class Game (Framework):
         #-100 is the mouse
         self.pressed_keys = [ -100 ]
 
-    def change_scene( self, type, map_file = False) :
-        print self.current_scene
+    def change_scene( self, type, map_file = False ) :
         if self.current_scene != 0 :
             self.current_scene.destroy()
-
+        self.take_out_garbage()
+        self.total_reset()
         if type == SCENE_TYPE_MENU :
             self.player_handler = PlayerHandler( self )
             self.check_joysticks()
@@ -61,11 +62,16 @@ class Game (Framework):
     def reset_zoom( self ) :
         #This property manages zoom level
         self.viewZoom = self.defaultZoom
-
-    def Step(self, settings):
-        if self.pause_time > 0 :
-            self.pause_time -= 1
-            return
+    
+    def total_reset( self ) :
+        while len( self.world.joints ) != 0 :
+            garbage_joint = self.world.joints[0]
+            self.world.DestroyJoint( garbage_joint )
+        while len( self.world.bodies ) != 0 : 
+            garbage_body = self.world.bodies[0]
+            self.world.DestroyBody( garbage_body )
+    
+    def take_out_garbage( self ) :
         while len( self.garbage_joint_list ) != 0:
             garbage_joint = self.garbage_joint_list[0]
             self.world.DestroyJoint( garbage_joint )
@@ -74,6 +80,13 @@ class Game (Framework):
             garbage_body = self.garbage_body_list[0]
             self.world.DestroyBody( garbage_body )
             self.garbage_body_list.remove( garbage_body )
+        
+    def Step(self, settings):
+        if self.pause_time > 0 :
+            self.pause_time -= 1
+            return
+        self.time += 1
+        self.take_out_garbage()
 
         background_colour = (55,55,55)
 

@@ -200,10 +200,10 @@ class FireOrb( SpellOrb ) :
     def picked( self, owner, slot ) :
         SpellOrb.picked( self, owner, slot )
         owner.body_handler.set_image_at( 'head', 'res/img/body/fire_head.png' )
-        owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/fire_shoulder.png' )
-        owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/fire_shoulder.png' )
         owner.body_handler.set_image_at( 'right_arm', 'res/img/body/fire_arm.png' )
         owner.body_handler.set_image_at( 'left_arm', 'res/img/body/fire_arm.png' )
+        owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/fire_shoulder.png' )
+        owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/fire_shoulder.png' )
 
 class IceOrb( SpellOrb ) :
 
@@ -228,10 +228,10 @@ class IceOrb( SpellOrb ) :
     def picked( self, owner, slot ) :
         SpellOrb.picked( self, owner, slot )
         owner.body_handler.set_image_at( 'head', 'res/img/body/ice_head.png' )
-        owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/ice_shoulder.png' )
-        owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/ice_shoulder.png' )
         owner.body_handler.set_image_at( 'right_arm', 'res/img/body/ice_arm.png' )
         owner.body_handler.set_image_at( 'left_arm', 'res/img/body/ice_arm.png' )
+        owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/ice_shoulder.png' )
+        owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/ice_shoulder.png' )
 
 class BoltOrb( SpellOrb ) :
 
@@ -256,10 +256,10 @@ class BoltOrb( SpellOrb ) :
     def picked( self, owner, slot ) :
         SpellOrb.picked( self, owner, slot )
         owner.body_handler.set_image_at( 'head', 'res/img/body/storm_head.png' )
-        owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/storm_shoulder.png' )
-        owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/storm_shoulder.png' )
         owner.body_handler.set_image_at( 'right_arm', 'res/img/body/storm_arm.png' )
         owner.body_handler.set_image_at( 'left_arm', 'res/img/body/storm_arm.png' )
+        owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/storm_shoulder.png' )
+        owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/storm_shoulder.png' )
 
 class Projectile( Unit ) :
 
@@ -366,7 +366,7 @@ class Bolt( Projectile ) :
 
     def __init__( self, scene, origin, offset = -0.8, speed = 500, lifetime = 150 ) :
         Projectile.__init__( self, scene, origin, -0.6, 750, 60 )
-        self.damage = Damage( 1, DAMAGE_TYPE_LIGTHNING )
+        self.damage = Damage( 1, DAMAGE_TYPE_LIGHTNING )
         self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
         self.types += [ self.__class__.__name__ ]
 
