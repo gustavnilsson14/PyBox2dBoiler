@@ -220,6 +220,8 @@ class GameScene(Scene) :
         
         self.target_unit = PlayerCharacter( self, ( 24,40 ) )
 
+lf, ( 24,40 ) )
+
 
         self.add_entity( self.target_unit )
         unit = FireMage( self, ( 40,25 ) )
@@ -281,6 +283,7 @@ class GameScene(Scene) :
         self.screen.update_camera_center()
         for update in self.update_list :
             update.run()
+        self.ai.update()
 
     def destroy( self ) :
         while len( self.entity_list ) != 0 :

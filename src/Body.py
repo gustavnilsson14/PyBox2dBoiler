@@ -176,29 +176,6 @@ class Body :
             enableLimit=True,
 		)
 		
-		s_o_pos = ( pos[0] + 0.5*size, pos[1] )
-		spell_orb = self.scene.world.CreateDynamicBody(
-			position = s_o_pos,
-			userData={
-				'owner' : owner
-			},
-			fixtures=b2FixtureDef(
-				filter=b2Filter(
-					groupIndex = 0,
-					categoryBits = filter[0],
-					maskBits = filter[1]
-				),
-				shape=b2CircleShape(radius=0.1*size),
-				density=1
-			),
-		)
-		spell_orb.transform = (spell_orb.transform.position, math.radians( 180 ) )
-		spell_orb_joint = self.scene.world.CreateWeldJoint(
-			bodyA=head,
-			bodyB=spell_orb,
-			anchor=s_o_pos,
-		)
-
 		self.main_body = main_body
 		self.main_body_joint = main_body_joint
 		self.all_bodies = {
@@ -504,7 +481,6 @@ class ItemSlot :
 		self.item = 0
 
 	def attach_item( self, item ) :
-		print item
 		body = item.create_body( self.body.transform.position + self.local_anchor )
 		body.transform = [ body.transform.position, self.body.transform.angle ]
 		self.joint = self.scene.world.CreateWeldJoint(
@@ -533,10 +509,12 @@ class ItemSlot :
 			self.scene.game.add_garbage_joint( self.joint )
 			self.joint = 0
 			self.item.holder = 0
+			print "HEY", self.item.body.linearVelocity, self.item.body.angularVelocity
 			main_body = self.body.userData.get( 'owner' ).body
 			self.item.body.transform = [ main_body.transform.position, main_body.transform.angle ]
 			self.item.body.linearVelocity = ( 0, 0 )
 			self.item.body.angularVelocity = 0
+			print "HEY", self.item.body.linearVelocity, self.item.body.angularVelocity
 			self.item.dropped()
 			self.item = 0
 
