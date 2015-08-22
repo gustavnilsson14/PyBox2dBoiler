@@ -113,7 +113,6 @@ class Unit( Entity ) :
             return False
         self.current_tile = self.current_path.pop( 0 )
         self.move_to_tile( self.current_tile )
-        #print self.current_path, self.body.transform.position
 
     def move_to_tile( self, tile ) :
         radians_to_tile = get_radians_between_points( self.body.transform.position, tile )
@@ -261,8 +260,9 @@ class PlayerCharacter( Unit ) :
 
     def take_damage( self, origin, damage ) :
         Unit.take_damage( self, origin, damage )
-        self.scene.screen.shake_time = 1
-        self.scene.game.pause_time = 3
+        if self.immunities.__contains__( damage.type ) == 0 :
+            self.scene.screen.shake_time = 1
+            self.scene.game.pause_time = 3
 
 class Mage( PlayerCharacter ) :
 

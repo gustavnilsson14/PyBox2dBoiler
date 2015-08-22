@@ -86,14 +86,32 @@ class AI :
     def __init__( self, scene, game ) :
         self.scene = scene
         self.game = game
+        self.spawn_list = []
         self.minions = []
-        self.frames_per_action = 120
+        self.frames_per_action = 1
+        self.spawn_rate = 120
+        self.max_enemies = 12
 
     def order_attack( self, minion, target ) :
         self.scene.orders.append( AttackOrder( [ minion ], target ) )
         
     def update( self ) :
+        total_enemies = 0
+        for spawn in self.spawn_list :
+            if len( spawn.entities ) == 0 :
+                self.spawn_list.remove( spawn )
+                continue
+            total_enemies += len( spawn.entities )
+        if total_enemies == 0 :
+            self.scene.defeat( GROUP_AI )
+        self.sort_dead_minions()
+        if self.game.time % self.spawn_rate == 0 and len( self.minions ) < self.max_enemies :
+            print "TRY TO SPAWN"
+            while random.choice( self.spawn_list ).spawn_enemy() == 0 :
+                pass
         if len( self.game.player_handler.player_list ) == 0 :
+            return 0
+        if len( self.minions ) == 0 : 
             return 0
         if self.game.time % self.frames_per_action == 0 :
             minion = random.choice( self.minions )
@@ -104,4 +122,13 @@ class AI :
         if entity in self.minions :
             return 0
         self.minions += [ entity ]
+        
+    def sort_dead_minions( self ) :
+        for minion in self.minions :
+            if minion.alive == False :
+                self.minions.remove( minion )
+        
+    def add_spawn( self, spawn ) :
+        self.spawn_list += [ spawn ]
+        
         
