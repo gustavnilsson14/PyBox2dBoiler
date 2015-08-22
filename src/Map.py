@@ -167,12 +167,16 @@ class SpawnPoint( Tile ) :
     
     def create_enemy( self ) :
         entity = self.get_entity()
+        if entity == 0 :
+            return 0
         entity = entity( self.scene, self.position )
         self.entity = entity
         self.scene.add_entity( entity )
         return entity
     
     def get_entity( self ) :
+        if len( self.entities ) == 0 :
+            return 0
         entity = self.entities.pop()
         if len( self.entities ) == 0 :
             self.reset_entities()
@@ -203,20 +207,19 @@ class EnemySpawn( SpawnPoint ) :
     def __init__( self, scene, pos, ai ) :
         SpawnPoint.__init__( self, scene, pos, 1580 )
         self.ai = ai
-        self.entities = [FireMage, FireMage, FireMage, IceMage, IceMage, IceMage, BoltMage, BoltMage, BoltMage]
+        self.entities = [FireMage]
         random.shuffle( self.entities )
         self.ai.add_spawn( self )
         self.types += [ self.__class__.__name__ ]
 
     def spawn_enemy( self ) :
-        print "SPAWN"
-        if self.entity == 0 :
-            self.ai.add_entity( SpawnPoint.create_enemy( self ) )
-            return 1
-        elif self.entity.alive == False :
-            self.ai.add_entity( SpawnPoint.create_enemy( self ) )
-            return 1
-        return 0
+        enemy = SpawnPoint.create_enemy( self )
+        if enemy == 0 :
+            self.ai.remove_spawn( self )
+            return 0
+        self.ai.add_entity( enemy )
+        return 1
+        
 
     def reset_entities( self ) :
         pass
