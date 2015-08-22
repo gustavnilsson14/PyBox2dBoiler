@@ -20,7 +20,6 @@ class Unit( Entity ) :
         self.health = 0
         self.alive = True
         self.target = 0
-        self.orbs = 0
         self.types += [ "unit" ]
 
     def set_health( self, health ) :
@@ -209,6 +208,7 @@ class PlayerCharacter( Unit ) :
         self.accuracy = 2
         self.max_power = 0
         self.power = 0
+        self.orbs = 0
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
         self.set_health( 100 )
@@ -269,5 +269,5 @@ class Mage( PlayerCharacter ) :
     def __init__( self, scene, pos ) :
         item = GreyOrb( scene )
         self.body_handler.attach_item( "spell_orb", item )
-        
+
 from Item import *

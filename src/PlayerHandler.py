@@ -180,6 +180,24 @@ class Player :
 			return True
 		return False
 
+	def add_stats( self, stat_type ) :
+		if self.character.orbs > 0:
+			if stat_type == "health":
+				self.character.max_health += self.character.orbs*50
+				self.character.orbs = 0
+			elif stat_type == "power":
+				self.character.max_power += self.character.orbs*50
+				self.character.orbs = 0
+		self.character.current_item = 0
+		self.character.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+		self.character.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+		self.character.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+		self.character.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+		self.character.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
+
+
+
+
 	def use_item( self ) :
 		if self.character == 0 :
 			return False
@@ -198,7 +216,7 @@ class Player :
 		if self.character == 0 :
 			return
 		joystick = self.input_type
-		
+
 		if joystick.get_name() == "Controller (XBOX 360 For Windows)"  or joystick.get_name() == "Microsoft X-Box 360 pad" :
 			if self.character.alive == True :
 				movement_vector = ( joystick.get_axis(  XBOX_KEY_MAP[JOYSTICK_AXIS_HORIZONTAL_MOVE] ), -joystick.get_axis( XBOX_KEY_MAP[JOYSTICK_AXIS_VERTICAL_MOVE] ) )
@@ -216,6 +234,7 @@ class Player :
 
 				if joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_PICKUP] ) == 1 :
 					self.pickup()
+
 			else :
 				if joystick.get_button( XBOX_KEY_MAP[OYSTICK_BUTTON_START] ) == 1 :
 					self.respawn()
@@ -234,8 +253,18 @@ class Player :
 				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_USE] ) == 1 :
 					self.use_item()
 
-				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_PICKUP] ) == 1 :
+				if joystick.get_button( 3 ) == 1 :
 					self.pickup()
+
+				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_HEALTY] ) == 1 :
+					self.add_stats("health")
+
+				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_POWER] ) == 1 :
+					self.add_stats("power")
+
+				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_FIRERATE] ) == 1 :
+					self.add_stats("firerate")
+
 			else :
 				if joystick.get_button( GENERIC_KEY_MAP[OYSTICK_BUTTON_START] ) == 1 :
 					self.respawn()
