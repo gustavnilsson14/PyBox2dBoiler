@@ -14,7 +14,7 @@ from menu import *
 
 class Scene :
 
-    def __init__( self, game) :
+    def __init__( self, game ) :
         self.game = game
 
     def draw( self, view_zoom, view_offset, settings ) :
@@ -27,7 +27,7 @@ class Scene :
         pass
         
     def defeat( self, type ) :
-        print "DEFEAT"
+        pass
 
 class MenuScene(Scene) :
 
@@ -198,6 +198,7 @@ class GameScene(Scene) :
         self.screen = Screen( game )
         self.sprite_group = pygame.sprite.LayeredDirty()
         self.map = Map( self, world, scene_data.get( 'grid' ) )
+        self.meta_data = scene_data.get('metadata').get('meta')
 
         image = Image( "res/img/environment/default.png", game.image_handler, ALIGN_BOTTOM_CENTER )
         self.sprite_group.add( image )
@@ -311,6 +312,13 @@ lf, ( 24,40 ) )
         self.entity_list = 0
         self.orders = 0
         self.world.ClearForces()
+        
+    def defeat( self, type ) :
+        if type == DEFEAT_GROUP_AI :
+            if self.game.change_scene( SCENE_TYPE_GAME, self.meta_data.get('next') ) == False :
+                print "VICTORY"
+            
+            return False
 
 class Screen :
 

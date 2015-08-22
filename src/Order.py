@@ -101,7 +101,7 @@ class AI :
         if self.game.time % self.spawn_rate == 0 and len( self.minions ) < self.max_enemies :
             max_tries = 12
             if len( self.spawn_list ) == 0 and len( self.minions ) == 0 :
-                self.scene.defeat( GROUP_AI )
+                self.scene.defeat( DEFEAT_GROUP_AI )
                 return
             if len( self.spawn_list ) != 0 :
                 while random.choice( self.spawn_list ).spawn_enemy() == 0 and max_tries != 0:

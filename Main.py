@@ -52,7 +52,6 @@ class Game (Framework):
             self.current_scene = MenuScene( self )
             self.current_scene.run_top()
             return True
-
         if os.path.isfile( map_file ) == False :
             return False
         with open (map_file, "r") as myfile :

@@ -207,7 +207,8 @@ class EnemySpawn( SpawnPoint ) :
     def __init__( self, scene, pos, ai ) :
         SpawnPoint.__init__( self, scene, pos, 1580 )
         self.ai = ai
-        self.entities = [FireMage]
+        self.entities = []
+        self.entities = [FireMage, FireMage, FireMage, IceMage, IceMage, IceMage, BoltMage, BoltMage, BoltMage]
         random.shuffle( self.entities )
         self.ai.add_spawn( self )
         self.types += [ self.__class__.__name__ ]
