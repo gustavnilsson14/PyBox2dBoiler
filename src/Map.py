@@ -116,7 +116,7 @@ class Tile( Entity ) :
 
     def update( self, view_zoom, view_offset, settings ) :
         if self.image != 0 :
-            self.image.update( self.position, 0, view_zoom, view_offset, settings )
+            self.image.update( self.position, 0, view_zoom, view_offset, settings, self.scene )
 
     def destroy( self ) :
         Entity.destroy( self )

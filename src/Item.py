@@ -345,7 +345,7 @@ class Icicle( Projectile ) :
     def __init__( self, scene, origin, offset = -0.8, speed = 500, lifetime = 150 ) :
         Projectile.__init__( self, scene, origin, -0.6, 750, 60 )
         self.damage = Damage( 1, DAMAGE_TYPE_ICE )
-        self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
+        self.body_handler.set_image_at( 'main', 'res/img/effect/icebolt.png' )
         self.types += [ self.__class__.__name__ ]
 
     def update( self, update ) :

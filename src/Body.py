@@ -455,7 +455,7 @@ class Body :
 			if image == None :
 				continue
 			body = self.all_bodies.get( key )
-			image.update( body.transform.position, body.transform.angle, view_zoom, view_offset, settings )
+			image.update( body.transform.position, body.transform.angle, view_zoom, view_offset, settings, self.scene )
 
 	def destroy( self ) :
 		for i in self.item_slots :
