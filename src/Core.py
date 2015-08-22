@@ -25,7 +25,13 @@ class Entity :
 		if self.body_handler != 0 :
 			self.body_handler.destroy()
 		return False
-		
+
+class Damage :
+	
+	def __init__( self, value, type = DAMAGE_TYPE_PHYSICAL ) :
+		self.value = value
+		self.type = type
+
 class Image( DirtySprite ) :
 	
 	def __init__( self, image, image_handler, align = ALIGN_BOTTOM_CENTER ) :
