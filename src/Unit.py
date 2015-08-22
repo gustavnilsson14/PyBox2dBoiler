@@ -265,7 +265,7 @@ class PlayerCharacter( Unit ) :
 
         if self.immunities.__contains__( damage.type ) == 0 :
             self.scene.screen.shake_time = 1
-            self.scene.game.pause_time = 3
+            #self.scene.game.pause_time = 3'
 
 class Mage( PlayerCharacter ) :
 
