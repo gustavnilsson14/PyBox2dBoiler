@@ -244,7 +244,7 @@ class PlayerCharacter( Unit ) :
     def pickup( self, item, slot, key, body ) :
         if Unit.pickup( self, item, slot, key, body ) == True :
             item.fire_rate_multiplier = self.player.firerate
-        
+
     def handle_accuracy( self ) :
         self.current_accuracy = ( self.current_accuracy[0] + self.current_accuracy[1], self.current_accuracy[1] )
         if self.current_accuracy[0] > self.accuracy :
@@ -277,7 +277,7 @@ class PlayerCharacter( Unit ) :
             self.super_bullet_amount = self.power * 2
             self.super_bullet_mode = 2
         self.power = 0
-            
+
     def fire_super_bullets( self ) :
         from Item import *
         if self.super_bullet_amount <= 0 :
@@ -321,17 +321,18 @@ class PlayerCharacter( Unit ) :
     def take_damage( self, origin, damage ) :
         Unit.take_damage( self, origin, damage )
         if self.immunities.__contains__( damage.type ) == 0 :
-            self.scene.screen.shake_time = 1
+            pass
+            #self.scene.screen.shake_time = 1
             #self.scene.game.pause_time = 3'
         else:
             self.power += 1
             if self.power > self.player.max_power:
                 self.power = self.player.max_power
-                
+
     def die( self, origin ) :
         Unit.die( self, origin )
         self.scene.defeat( DEFEAT_GROUP_PLAYERS )
-            
+
 class Mage( PlayerCharacter ) :
 
     def __init__( self, scene, pos ) :
