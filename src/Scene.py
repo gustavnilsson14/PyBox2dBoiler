@@ -368,7 +368,7 @@ class Screen :
             center_position = ( center_position[0] + position[0], center_position[1] + position[1] )
 
         center_position = ( center_position[0] / len( self.focus_positions ), center_position[1] / len( self.focus_positions ) )
-        
+
         for position in self.focus_positions :
             tempdistance = numpy.sqrt(numpy.power(center_position[0]-position[0],2)+numpy.power(center_position[1]-position[1],2))
             if tempdistance > distance :
@@ -563,9 +563,9 @@ class PlayerHud :
 
         for joystick in scene.game.player_handler.joystick_list :
             if joystick.get_name() == "Controller (XBOX 360 For Windows)" or joystick.get_name() == "Microsoft X-Box 360 pad" :
-                levelup = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] )
+                levelup = joystick.get_button( 4 )
             else :
-                levelup = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] )
+                levelup = joystick.get_button( 4)
             if  levelup == 1:
                 index = 0
                 for p in scene.game.player_handler.player_to_join_list:
