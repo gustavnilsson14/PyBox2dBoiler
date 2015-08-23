@@ -49,13 +49,17 @@ class Game (Framework):
             self.current_scene.destroy()
         self.take_out_garbage()
         self.total_reset()
-        if type == SCENE_TYPE_MENU :
+        if type == SCENE_TYPE_MENU or type == SCENE_TYPE_DEFETED :
             self.player_handler = PlayerHandler( self )
             self.check_joysticks()
             self.current_scene = MenuScene( self )
-            self.current_scene.run_top()
+
+            if type == SCENE_TYPE_MENU:
+                self.current_scene.run_top()
+            elif type == SCENE_TYPE_DEFETED:
+                self.current_scene.run_defeated()
             return True
-            
+
         self.player_handler.check_player_opt_in( self.pressed_keys )
         if os.path.isfile( map_file ) == False :
             self.current_scene = 0

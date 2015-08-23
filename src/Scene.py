@@ -218,6 +218,24 @@ class MenuScene(Scene) :
                     sys.exit()
             pygame.time.wait(8)
 
+    def run_defeated( self ) :
+        surface = pygame.display.set_mode((1280,720))
+        surface.fill((0,0,0))
+        img = pygame.image.load('res/img/defeated.png')
+        surface.blit(img,(0,0))
+        pygame.key.set_repeat(199,69)#(delay,interval)
+        pygame.display.update()
+        self.running = 1
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    self.run_top()
+                    self.running = 0
+                elif event.type == QUIT:
+                    pygame.display.quit()
+                    sys.exit()
+            pygame.time.wait(8)
+
     def joystick_player_exists( self, joystick_id ) :
         for player in self.game.player_handler.player_to_join_list :
             if player == joystick_id :
@@ -361,7 +379,7 @@ class GameScene(Scene) :
                 if player.character.alive == True :
                     return
             print "DEFEAT"
-            self.game.change_scene( SCENE_TYPE_MENU )
+            self.game.change_scene( SCENE_TYPE_DEFETED )
 
 class Screen :
 
