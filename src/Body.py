@@ -208,7 +208,7 @@ class Body :
 			},
 			fixtures=[
 				b2FixtureDef(
-					shape=b2CircleShape(radius=2*size),
+					shape=b2CircleShape(radius=1*size),
 					density=1,
 					filter=b2Filter(
 						groupIndex = 0,
@@ -232,7 +232,7 @@ class Body :
 			},
 			fixtures=[
 				b2FixtureDef(
-					shape=b2CircleShape(radius=2*size),
+					shape=b2CircleShape(radius=1*size),
 					density=1,
 					filter=b2Filter(
 						groupIndex = 0,

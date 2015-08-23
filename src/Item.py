@@ -453,6 +453,9 @@ class FireBallBig( FireBall ) :
         self.damage = Damage( 18, DAMAGE_TYPE_FIRE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/fireboom.png' )
 
+    def create_body( self, pos ) :
+        self.body = self.body_handler.create_pellet( self, pos, 0.25, FILTER_PROJECTILE )
+        
 class Icicle( Projectile ) :
 
     def __init__( self, character, scene, origin, offset = -0.8 ) :
@@ -482,6 +485,9 @@ class IcicleBig( Icicle ) :
         self.damage = Damage( 10, DAMAGE_TYPE_ICE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/iceshower.png' )
 
+    def create_body( self, pos ) :
+        self.body = self.body_handler.create_pellet( self, pos, 0.25, FILTER_PROJECTILE )
+        
 class Bolt( Projectile ) :
 
     def __init__( self, character, scene, origin, offset = -0.8 ) :
@@ -510,6 +516,9 @@ class BoltBig( Bolt ) :
         Bolt.__init__( self, character, scene, origin, offset )
         self.damage = Damage( 30, DAMAGE_TYPE_LIGHTNING )
         self.body_handler.set_image_at( 'main', 'res/img/effect/light_orb.png' )
+
+    def create_body( self, pos ) :
+        self.body = self.body_handler.create_pellet( self, pos, 0.25, FILTER_PROJECTILE )
         
 class Holy( Projectile ) :
 
@@ -531,5 +540,5 @@ class Holy( Projectile ) :
             self.deal_damage( collider )
 
     def create_body( self, pos ) :
-        self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
+        self.body = self.body_handler.create_pellet( self, pos, 0.2, FILTER_PROJECTILE )
 
