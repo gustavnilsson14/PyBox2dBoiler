@@ -1,21 +1,22 @@
 import sys
 import os.path
 import json
+import math
+import time
+import Box2D
 from importlib import import_module
-sys.path.append( "lib" )
-sys.path.append( "src" )
-sys.path.append( "res" )
+sys.path.append( os.path.abspath("./lib") )
+sys.path.append( os.path.abspath("./src") )
+sys.path.append( os.path.abspath("./res") )
 sys.path.insert(0, './lib')
 from framework import *
 from SoundHandler import *
 from Scene import *
 from GameSettings import *
-import math
 from Constants import *
 from PlayerHandler import *
 from Core import *
 from pygame.locals import *
-import time
 
 class Game (Framework):
 
@@ -54,12 +55,12 @@ class Game (Framework):
             self.current_scene = MenuScene( self )
             self.current_scene.run_top()
             return True
-        
+            
         self.player_handler.check_player_opt_in( self.pressed_keys )
         if os.path.isfile( map_file ) == False :
             self.current_scene = 0
             return False
-        
+
         with open (map_file, "r") as myfile :
             map_data = myfile.read().replace('\n', '')
             self.current_scene = GameScene( self, self.world, json.loads( map_data ) )

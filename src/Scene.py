@@ -37,7 +37,7 @@ class MenuScene(Scene) :
     def run_top( self ) :
         surface = pygame.display.set_mode((1280,720))
         surface.fill((51,51,51))
-        img = pygame.image.load('res/img/bg.jpg')
+        img = pygame.image.load('./res/img/bg.jpg')
         surface.blit(img,(0,0))
         menu = Menu()
         menu.init(['Start','Options','Quit'], surface)
