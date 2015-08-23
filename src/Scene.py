@@ -355,8 +355,6 @@ class Screen :
                 self.game.viewZoom = 90
 
 
-        print self.game.viewZoom
-
         self.game.setCenter( center_position )
         '''if self.shake_time > 0 :
             self.shake_offset = ( randint(-self.shake_magnitude,self.shake_magnitude), randint(-self.shake_magnitude,self.shake_magnitude) )
@@ -437,6 +435,9 @@ class Hud :
             self.draw_player( player, hud, pos )
 
     def draw_player( self, player, hud, pos ) :
+        if player.character != 0 :
+            if player.character.alive == False :
+                return
         self.draw_health_bar_bg( pos, hud )
         self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.max_health ) )
         self.draw_power_bar_bg( pos, hud)

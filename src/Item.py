@@ -21,9 +21,6 @@ class Item( Entity ) :
         self.types += [ "item" ]
 
     def update( self, update ) :
-        if self.holder == "abc" :
-            print update
-            print self.cooldown
         if self.cooldown > 0 :
             self.cooldown -= (1 * self.fire_rate_multiplier)
 
@@ -187,7 +184,6 @@ class SpellOrb( ProjectileWeapon ) :
                 owner.orbs += 1
                 self.scene.remove_entity( self )
                 self.destroy_body()
-                print self.types, slot.item.types
                 return True
         owner.orbs = 1
         return False

@@ -281,7 +281,7 @@ class Player :
 						self.add_stats_firerate()
 
 			else :
-				if joystick.get_button( XBOX_KEY_MAP[OYSTICK_BUTTON_START] ) == 1 :
+				if joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_START] ) == 1 :
 					self.respawn()
 		else :
 			if self.character.alive == True :
@@ -325,8 +325,6 @@ class Input :
 		self.repeat = repeat
 
 	def run( self, keys ) :
-		if self.key < -500 :
-			print "HEY", keys
 		if self.key in keys :
 			self.function()
 			if self.repeat == False :
