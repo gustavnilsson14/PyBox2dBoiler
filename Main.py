@@ -3,6 +3,7 @@ import os.path
 import json
 import math
 import time
+import Box2D
 from importlib import import_module
 sys.path.append( os.path.abspath("./lib") )
 sys.path.append( os.path.abspath("./src") )
