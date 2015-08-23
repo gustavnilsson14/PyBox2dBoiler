@@ -113,6 +113,7 @@ class ColorMage( Character ) :
         self.body_handler.attach_item( "spell_orb", item )
         self.set_current_item( 'weapon' )
         self.scene.add_entity( item )
+        self.body_handler.set_image_at( 'head', 'res/img/body/mix_head.png' )
     
     def set_body_images( self ) :
         Unit.set_body_images( self )
@@ -120,7 +121,7 @@ class ColorMage( Character ) :
         self.body_handler.set_image_at( 'left_arm', 'res/img/body/holy_arm.png' )
         self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/holy_shoulder.png' )
         self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/holy_shoulder.png' )
-        self.body_handler.set_image_at( 'head', 'res/img/body/holy_head.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/body/mix_head.png' )
         
     def update( self, update ) :
         Character.update( self, update )
