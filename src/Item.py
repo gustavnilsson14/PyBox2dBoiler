@@ -177,6 +177,8 @@ class SpellOrb( ProjectileWeapon ) :
 
     def picked( self, owner, slot ) :
         Item.picked( self )
+        if slot == 0 :
+            return False
         if slot.item != 0 :
             if self.types[-1] == slot.item.types[-1] :
                 if owner.orbs == 3 :
@@ -302,6 +304,36 @@ class BoltOrb( SpellOrb ) :
 
     def picked( self, owner, slot ) :
         owner.immunities = [ DAMAGE_TYPE_LIGHTNING ]
+        owner.body_handler.set_image_at( 'head', 'res/img/body/storm_head.png' )
+        owner.body_handler.set_image_at( 'right_arm', 'res/img/body/storm_arm.png' )
+        owner.body_handler.set_image_at( 'left_arm', 'res/img/body/storm_arm.png' )
+        owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/storm_shoulder.png' )
+        owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/storm_shoulder.png' )
+        return SpellOrb.picked( self, owner, slot )
+        
+class WhiteOrb( SpellOrb ) :
+
+    def __init__( self, scene, pos = ( 0, 0 ) ) :
+        SpellOrb.__init__( self, scene, pos, 32, (0.15,0), 3 )
+        self.types += [ self.__class__.__name__ ]
+        self.firerate_ = 0
+
+    def create_body( self, pos ) :
+        ProjectileWeapon.create_body( self )
+        self.body = self.body_handler.create_orb( self, self.scene, pos, 1, FILTER_WEAPON )
+        self.body_handler.set_image_at( 'main', 'res/img/weapon/machinegun.png' )
+        return self.body
+
+    def create_projectile( self ) :
+        transform = self.apply_spread()
+        if ProjectileWeapon.holder_is_player( self ) :
+            self.scene.screen.shake_time = 1
+        if self.body != 0 :
+            projectile = Holy( self.holder.get_owner(), self.scene, transform )
+            self.scene.add_entity( projectile )
+
+    def picked( self, owner, slot ) :
+        owner.immunities = [ DAMAGE_TYPE_PHYSICAL ]
         owner.body_handler.set_image_at( 'head', 'res/img/body/storm_head.png' )
         owner.body_handler.set_image_at( 'right_arm', 'res/img/body/storm_arm.png' )
         owner.body_handler.set_image_at( 'left_arm', 'res/img/body/storm_arm.png' )
@@ -479,3 +511,26 @@ class BoltBig( Bolt ) :
         Bolt.__init__( self, character, scene, origin, offset )
         self.damage = Damage( 30, DAMAGE_TYPE_LIGHTNING )
         self.body_handler.set_image_at( 'main', 'res/img/effect/light_orb.png' )
+        
+class Holy( Projectile ) :
+
+    def __init__( self, character, scene, origin, offset = -0.8 ) :
+        Projectile.__init__( self, character, scene, origin, -0.6, 850, 500 )
+        self.damage = Damage( 20, DAMAGE_TYPE_PHYSICAL )
+        self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
+        self.types += [ self.__class__.__name__ ]
+
+    def update( self, update ) :
+        Unit.update( self, update )
+
+    def handle_collision( self, my_fixture, colliding_fixture ) :
+        collider = colliding_fixture.body.userData.get( 'owner' )
+        if "block" in collider.types :
+            self.die( collider )
+        if "unit" in collider.types :
+            self.die( collider )
+            self.deal_damage( collider )
+
+    def create_body( self, pos ) :
+        self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
+

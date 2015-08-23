@@ -90,11 +90,12 @@ class AI :
         self.game = game
         self.spawn_list = []
         self.waves = []
-        for int in range( 0, 1 + level ) :
+        for int in range( 0, 2 + level ) :
             self.waves += [ Wave( self, self.spawn_list, int + 1 ) ]
+        print self.waves
         self.minions = []
-        self.frames_per_action = 200 - ( level * 5 )
-        self.spawn_rate = 30 - ( level * 20 )
+        self.frames_per_action = 200 - ( level * 10 )
+        self.spawn_rate = 300 - ( level * 10 )
         self.max_enemies = 5 + ( level * 2 )
 
     def order_attack( self, minion, target ) :
@@ -153,7 +154,6 @@ class AI :
     
     def add_entity( self, wave, spawn ) :
         entity = wave.get_entity()
-        print "SPAWNING A", entity
         entity = entity( self.scene, spawn.position )
         self.entity = entity
         self.scene.add_entity( entity )
@@ -180,7 +180,11 @@ class Wave :
         self.index = index
         self.wave_pause = 300
         self.spawn_resets = index - 1
-        self.entities_available = [FireMage,IceMage,BoltMage]
+        self.entities_available = [FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,ColorMage]
+        if self.index == 2 :
+            self.entities_available = [FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,ColorMage,ColorMage,WhiteMage]
+        if self.index == 3 :
+            self.entities_available = [FireMage,IceMage,BoltMage,ColorMage,ColorMage,ColorMage,ColorMage,WhiteMage,WhiteMage]
         self.reset_entities()
         
     def get_entity( self ) :
