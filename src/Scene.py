@@ -58,7 +58,7 @@ class MenuScene(Scene) :
                             self.run_select()
                             self.running = 0
                         elif menu.get_position() == 1:
-                            self.run_help()
+                            self.run_howtoplay()
                             self.running = 0
                         elif menu.get_position() == 2:
                             self.run_option()
@@ -194,6 +194,24 @@ class MenuScene(Scene) :
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     self.run_top()
+                    self.running = 0
+                elif event.type == QUIT:
+                    pygame.display.quit()
+                    sys.exit()
+            pygame.time.wait(8)
+
+    def run_howtoplay( self ) :
+        surface = pygame.display.set_mode((1280,720))
+        surface.fill((0,0,0))
+        img = pygame.image.load('res/img/howtoplay.png')
+        surface.blit(img,(0,0))
+        pygame.key.set_repeat(199,69)#(delay,interval)
+        pygame.display.update()
+        self.running = 1
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    self.run_help()
                     self.running = 0
                 elif event.type == QUIT:
                     pygame.display.quit()
