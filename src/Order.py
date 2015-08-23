@@ -84,14 +84,15 @@ class PatrolOrder( Order ) :
 
 class AI :
     
-    def __init__( self, scene, game ) :
+    def __init__( self, scene, game, level = 0 ) :
         self.scene = scene
         self.game = game
         self.spawn_list = []
+        self.waves = 5 + level
         self.minions = []
-        self.frames_per_action = 1
-        self.spawn_rate = 12
-        self.max_enemies = 12
+        self.frames_per_action = 200 - ( level * 5 )
+        self.spawn_rate = 420 - ( level * 20 )
+        self.max_enemies = 3 + ( level * 2 )
 
     def order_attack( self, minion, target ) :
         self.scene.orders.append( AttackOrder( [ minion ], target ) )

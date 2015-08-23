@@ -244,6 +244,7 @@ class BoltOrb( SpellOrb ) :
     def __init__( self, scene, pos = ( 0, 0 ) ) :
         SpellOrb.__init__( self, scene, pos, 32, (0.15,0), 3 )
         self.types += [ self.__class__.__name__ ]
+        self.firerate_ = 0
 
     def create_body( self, pos ) :
         ProjectileWeapon.create_body( self )

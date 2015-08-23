@@ -21,7 +21,10 @@ class Unit( Entity ) :
         self.alive = True
         self.target = 0
         self.types += [ "unit" ]
-
+    
+    def set_body_images( self ) :
+        pass
+    
     def set_health( self, health ) :
         self.max_health = health
         self.health = health
@@ -158,11 +161,7 @@ class Character( Unit ) :
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
         self.set_health( 10 )
-        self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
-        self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
-        self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
-        self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
-        self.body_handler.set_image_at( 'head', 'res/img/body/default_head2.png' )
+        self.set_body_images()
         self.current_item = 0
         #self.body_handler.detach_item( "right_arm" )
         self.target = 0
@@ -171,6 +170,14 @@ class Character( Unit ) :
     def update( self, update ) :
         Unit.update( self, update )
         self.handle_accuracy()
+
+    def set_body_images( self ) :
+        Unit.set_body_images( self )
+        self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/body/default_head2.png' )
 
     def set_current_item( self, type ) :
         self.current_item = self.body_handler.find_item( type )
