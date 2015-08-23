@@ -102,7 +102,7 @@ class Player :
 		self.input_type = input_type
 		self.game = game
 		self.character = character
-		self.max_health = 100
+		self.max_health = 200
 		self.max_power = 50
 		self.firerate = 1
 
@@ -194,7 +194,7 @@ class Player :
 
 	def add_stats_health( self ) :
 		if self.character.orbs > 0:
-			self.max_health += 4*self.character.orbs
+			self.max_health += 8*self.character.orbs
 			self.character.health += self.character.orbs*(self.max_health*0.2)
 			if self.character.health > self.max_health :
 				self.character.health = self.max_health
@@ -208,10 +208,11 @@ class Player :
 			self.character.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
 			self.character.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
 			self.character.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
+			self.game.sound_handler.play_sound( 'lvl_up' )
 
 	def add_stats_power( self ) :
 		if self.character.orbs > 0:
-			self.max_power += self.character.orbs
+			self.max_power += self.character.orbs * 4
 			self.character.orbs = 0
 			self.character.body_handler.detach_item("spell_orb")
 			self.character.current_item = 0
@@ -220,6 +221,7 @@ class Player :
 			self.character.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
 			self.character.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
 			self.character.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
+			self.game.sound_handler.play_sound( 'lvl_up' )
 
 	def add_stats_firerate( self ) :
 		if self.character.orbs > 0:
@@ -232,6 +234,7 @@ class Player :
 			self.character.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
 			self.character.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
 			self.character.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
+			self.game.sound_handler.play_sound( 'lvl_up' )
 
 	def use_item( self ) :
 		if self.character == 0 :

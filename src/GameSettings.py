@@ -1,5 +1,5 @@
 class GameSettings:
 
     def __init__( self ) :
-        self.sound = False
+        self.sound = True
         self.difficulty = 'EASY'

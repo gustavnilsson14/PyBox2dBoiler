@@ -188,7 +188,7 @@ class SpawnPoint( Tile ) :
 class OrbPoint( SpawnPoint ) :
 
     def __init__( self, scene, pos ) :
-        SpawnPoint.__init__( self, scene, pos, 8080 )
+        SpawnPoint.__init__( self, scene, pos, 4080 )
         self.next_spawn = 1
         self.types += [ self.__class__.__name__ ]
 

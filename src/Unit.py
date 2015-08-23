@@ -139,6 +139,8 @@ class Unit( Entity ) :
         if self.alive == False :
             return False
         self.scene.remove_entity( self )
+        if "projectile" not in self.types :
+            self.scene.game.sound_handler.play_sound("death")
         self.alive = False
         return True
 
@@ -146,6 +148,7 @@ class Unit( Entity ) :
         if slot.item != 0 :
             if slot.item.body == body :
                 return 0
+        self.scene.game.sound_handler.play_sound("pick_up")
         if item.picked( self, slot ) == True :
             return True
         self.body_handler.attach_item( key, item )
@@ -325,7 +328,7 @@ class PlayerCharacter( Unit ) :
             #self.scene.screen.shake_time = 1
             #self.scene.game.pause_time = 3'
         else:
-            self.power += 1
+            self.power += 0.2
             if self.power > self.player.max_power:
                 self.power = self.player.max_power
 

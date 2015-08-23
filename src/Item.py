@@ -379,6 +379,9 @@ class Projectile( Unit ) :
             return
         if target.take_damage( self, self.damage ) == True :
             pass
+            
+    def play_sound( self ) :
+        self.scene.game.sound_handler.play_sound( self.sound )
 
 class Pellet( Projectile ) :
 
@@ -408,6 +411,8 @@ class SuperBall( Projectile ) :
         Projectile.__init__( self, character, scene, origin, -0.6, 600, 750 )
         self.damage = Damage( 5, DAMAGE_TYPE_PHYSICAL )
         self.body_handler.set_image_at( 'main', 'res/img/penta/5.png' )
+        self.sound = "fire"
+        self.play_sound()
         self.types += [ self.__class__.__name__ ]
 
     def update( self, update ) :
@@ -431,7 +436,9 @@ class FireBall( Projectile ) :
         self.damage = Damage( 5, DAMAGE_TYPE_FIRE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/fireball.png' )
         self.types += [ self.__class__.__name__ ]
-
+        self.sound = "fire"
+        self.play_sound()
+    
     def update( self, update ) :
         Unit.update( self, update )
 
@@ -452,6 +459,8 @@ class FireBallBig( FireBall ) :
         FireBall.__init__( self, character, scene, origin, offset )
         self.damage = Damage( 18, DAMAGE_TYPE_FIRE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/fireboom.png' )
+        self.sound = "fireboom"
+        self.play_sound()
 
     def create_body( self, pos ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.25, FILTER_PROJECTILE )
@@ -463,6 +472,8 @@ class Icicle( Projectile ) :
         self.damage = Damage( 3, DAMAGE_TYPE_ICE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/icebolt.png' )
         self.types += [ self.__class__.__name__ ]
+        self.sound = "ice"
+        self.play_sound()
 
     def update( self, update ) :
         Unit.update( self, update )
@@ -484,6 +495,8 @@ class IcicleBig( Icicle ) :
         Icicle.__init__( self, character, scene, origin, offset )
         self.damage = Damage( 10, DAMAGE_TYPE_ICE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/iceshower.png' )
+        self.sound = 'icicle'
+        self.play_sound()
 
     def create_body( self, pos ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.25, FILTER_PROJECTILE )
@@ -495,6 +508,8 @@ class Bolt( Projectile ) :
         self.damage = Damage( 9, DAMAGE_TYPE_LIGHTNING )
         self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
         self.types += [ self.__class__.__name__ ]
+        self.sound = "bolt"
+        self.play_sound()
 
     def update( self, update ) :
         Unit.update( self, update )
@@ -516,7 +531,9 @@ class BoltBig( Bolt ) :
         Bolt.__init__( self, character, scene, origin, offset )
         self.damage = Damage( 30, DAMAGE_TYPE_LIGHTNING )
         self.body_handler.set_image_at( 'main', 'res/img/effect/light_orb.png' )
-
+        self.sound = "bigbolt"
+        self.play_sound()
+    
     def create_body( self, pos ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.25, FILTER_PROJECTILE )
         
@@ -526,6 +543,8 @@ class Holy( Projectile ) :
         Projectile.__init__( self, character, scene, origin, -0.6, 850, 500 )
         self.damage = Damage( 20, DAMAGE_TYPE_PHYSICAL )
         self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
+        self.sound = "holy"
+        self.play_sound()
         self.types += [ self.__class__.__name__ ]
 
     def update( self, update ) :
