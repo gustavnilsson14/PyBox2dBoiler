@@ -287,9 +287,30 @@ class GameScene(Scene) :
 
     def defeat( self, type ) :
         if type == DEFEAT_GROUP_AI :
-            if self.game.change_scene( SCENE_TYPE_GAME, self.meta_data.get('next') ) == False :
-                print "VICTORY"
-                self.game.change_scene( SCENE_TYPE_MENU )
+            self.hud.huds[0].sprite_group.add( self.hud.huds[0].victory_text )
+            width = 180
+            bar = pygame.Surface( ( int(width), 50 ) )
+            bar.fill( (255,255,255) )
+            myfont = pygame.font.SysFont("monospace", 35)
+            victory = myfont.render("VICTORY!", 1, (0,0,0))
+            bar.blit(victory, (0,0))
+            self.hud.huds[0].victory_text.image = bar
+            self.hud.huds[0].victory_text.dirty = 1
+            self.hud.huds[0].victory_text.rect = bar.get_rect()
+            self.hud.huds[0].victory_text.rect.x = 550
+            self.hud.huds[0].victory_text.rect.y = 200
+
+            for joystick in self.game.player_handler.joystick_list :
+                next_level = 0
+                if joystick.get_name() == "Controller (XBOX 360 For Windows)" or joystick.get_name() == "Microsoft X-Box 360 pad" :
+                    next_level = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_PICKUP] )
+                else :
+                    next_level = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_PICKUP] )
+                if  next_level == 1:
+                    if self.game.change_scene( SCENE_TYPE_GAME, self.meta_data.get('next') ) == False :
+                        print "VICTORY"
+                        self.game.change_scene( SCENE_TYPE_MENU )
+
             return False
 
 class Screen :
@@ -304,6 +325,7 @@ class Screen :
 
     def update_camera_center( self ) :
         center_position = (0,0)
+        distance = 0
         if len( self.focus_positions ) == 0 :
             self.game.setCenter( (25,25) )
             return
@@ -312,11 +334,28 @@ class Screen :
                 center_position = position
                 continue
             center_position = ( center_position[0] + position[0], center_position[1] + position[1] )
-            distanceX = numpy.sqrt(numpy.power(center_position[0]-position[0]*2,2)+numpy.power(center_position[1]-position[1]*2,2))
-            self.game.viewZoom = 75-distanceX*1.5
-        #    self.current_zoom = -1#numpy.absolute(center_position[0] - position[0]*2)*-1
+
+
+
+
 
         center_position = ( center_position[0] / len( self.focus_positions ), center_position[1] / len( self.focus_positions ) )
+
+        for position in self.focus_positions :
+            tempdistance = numpy.sqrt(numpy.power(center_position[0]-position[0],2)+numpy.power(center_position[1]-position[1],2))
+
+            if tempdistance > distance :
+                distance = numpy.absolute(tempdistance)
+
+        if distance != 0 :
+            self.game.viewZoom = 75-distance*2.5
+            if self.game.viewZoom < 30 :
+                self.game.viewZoom = 30
+            if self.game.viewZoom > 90 :
+                self.game.viewZoom = 90
+
+
+        print self.game.viewZoom
 
         self.game.setCenter( center_position )
         '''if self.shake_time > 0 :
@@ -486,6 +525,7 @@ class PlayerHud :
         self.power_bar = pygame.sprite.DirtySprite()
         self.power_bar_bg = pygame.sprite.DirtySprite()
         self.level_icons = pygame.sprite.DirtySprite()
+        self.victory_text = pygame.sprite.DirtySprite()
         self.sprite_group.add( self.health_bar_bg )
         self.sprite_group.add( self.health_bar )
         self.sprite_group.add( self.power_bar_bg )
@@ -495,7 +535,11 @@ class PlayerHud :
     def update( self, scene, settings ) :
 
         for joystick in scene.game.player_handler.joystick_list :
-            if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) :
+            if joystick.get_name() == "Controller (XBOX 360 For Windows)" or joystick.get_name() == "Microsoft X-Box 360 pad" :
+                levelup = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] )
+            else :
+                levelup = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] )
+            if  levelup == 1:
                 index = 0
                 for p in scene.game.player_handler.player_to_join_list:
                     if joystick.get_id() == p :
