@@ -324,7 +324,7 @@ class PlayerCharacter( Unit ) :
             self.scene.screen.shake_time = 1
             #self.scene.game.pause_time = 3'
         else:
-            self.power += 0.5
+            self.power += 1
             if self.power > self.player.max_power:
                 self.power = self.player.max_power
                 
