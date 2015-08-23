@@ -195,7 +195,7 @@ class Player :
 			self.character.health += self.character.orbs*(self.max_health*0.2)
 			if self.character.health > self.max_health :
 				self.character.health = self.max_health
-			
+
 			self.character.orbs = 0
 			self.character.body_handler.detach_item("spell_orb")
 
@@ -245,6 +245,7 @@ class Player :
 		self.game.current_scene.add_entity( self.character )
 
 	def joystick( self ) :
+
 		if self.character == 0 :
 			return
 		joystick = self.input_type

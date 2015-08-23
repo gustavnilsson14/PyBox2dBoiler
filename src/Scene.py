@@ -325,6 +325,7 @@ class Screen :
 
     def update_camera_center( self ) :
         center_position = (0,0)
+        distance = 0
         if len( self.focus_positions ) == 0 :
             self.game.setCenter( (25,25) )
             return
@@ -333,12 +334,29 @@ class Screen :
                 center_position = position
                 continue
             center_position = ( center_position[0] + position[0], center_position[1] + position[1] )
-            distanceX = numpy.sqrt(numpy.power(center_position[0]-position[0]*2,2)+numpy.power(center_position[1]-position[1]*2,2))
-            self.game.viewZoom = 75-distanceX*1.5
-        #    self.current_zoom = -1#numpy.absolute(center_position[0] - position[0]*2)*-1
+
+
+
+
 
         center_position = ( center_position[0] / len( self.focus_positions ), center_position[1] / len( self.focus_positions ) )
 
+        for position in self.focus_positions :
+            tempdistance = numpy.sqrt(numpy.power(center_position[0]-position[0],2)+numpy.power(center_position[1]-position[1],2))
+
+            if tempdistance > distance :
+                distance = numpy.absolute(tempdistance)
+
+        if distance != 0 :
+            self.game.viewZoom = 75-distance*2.5
+            if self.game.viewZoom < 30 :
+                self.game.viewZoom = 30
+            if self.game.viewZoom > 90 :
+                self.game.viewZoom = 90
+
+
+        print self.game.viewZoom
+		
         self.game.setCenter( center_position )
         '''if self.shake_time > 0 :
             self.shake_offset = ( randint(-self.shake_magnitude,self.shake_magnitude), randint(-self.shake_magnitude,self.shake_magnitude) )
