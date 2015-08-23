@@ -31,7 +31,7 @@ class PlayerHandler :
 		if new_player in self.player_list :
 			return False
 		self.player_list += [ new_player ]
-		
+
 	def add_player_characters( self, scene ) :
 		for player in self.player_list :
 			player.character = PlayerCharacter( scene, scene.get_spawn_point() )
@@ -258,8 +258,22 @@ class Player :
 				if joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_USE] ) == 1 :
 					self.use_item()
 
-				if joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_PICKUP] ) == 1 :
+				if joystick.get_button( 3) == 1 :
 					self.pickup()
+
+				if joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) == 1 :
+
+					if joystick.get_button( 2 ) == 1 :
+						print "h"
+						self.add_stats_health()
+
+					if joystick.get_button( 0 ) == 1 :
+						print "p"
+						self.add_stats_power()
+
+					if joystick.get_button( 1 ) == 1 :
+						print "f"
+						self.add_stats_firerate()
 
 			else :
 				if joystick.get_button( XBOX_KEY_MAP[OYSTICK_BUTTON_START] ) == 1 :

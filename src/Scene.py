@@ -284,6 +284,21 @@ class GameScene(Scene) :
 
     def defeat( self, type ) :
         if type == DEFEAT_GROUP_AI :
+            '''self.hud.huds[0].sprite_group.add( self.hud.huds[0].victory_text )
+            width = 500
+            bar = pygame.Surface( ( int(width), 600 ) )
+            bar.fill( (255,255,255) )
+            myfont = pygame.font.SysFont("monospace", 25)
+            player = myfont.render("Joined", 1, (255,255,255))
+            surface.blit(player, (65+(320*x), 100))
+            self.hud.huds[0].victory_text.image = bar
+            self.hud.huds[0].victory_text.dirty = 1
+            self.hud.huds[0].victory_text.rect = bar.get_rect()
+            self.hud.huds[0].victory_text.rect.x = 100
+            self.hud.huds[0].victory_text.rect.y = 100'''
+
+
+
             if self.game.change_scene( SCENE_TYPE_GAME, self.meta_data.get('next') ) == False :
                 print "VICTORY"
                 self.game.change_scene( SCENE_TYPE_MENU )
@@ -498,6 +513,7 @@ class PlayerHud :
         self.power_bar = pygame.sprite.DirtySprite()
         self.power_bar_bg = pygame.sprite.DirtySprite()
         self.level_icons = pygame.sprite.DirtySprite()
+        self.victory_text = pygame.sprite.DirtySprite()
         self.sprite_group.add( self.health_bar_bg )
         self.sprite_group.add( self.health_bar )
         self.sprite_group.add( self.power_bar_bg )
@@ -507,7 +523,11 @@ class PlayerHud :
     def update( self, scene, settings ) :
 
         for joystick in scene.game.player_handler.joystick_list :
-            if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) :
+            if joystick.get_name() == "Controller (XBOX 360 For Windows)" or joystick.get_name() == "Microsoft X-Box 360 pad" :
+                levelup = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] )
+            else :
+                levelup = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] )
+            if  levelup == 1:
                 index = 0
                 for p in scene.game.player_handler.player_to_join_list:
                     if joystick.get_id() == p :
