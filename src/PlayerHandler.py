@@ -191,7 +191,6 @@ class Player :
 	def add_stats_health( self ) :
 		if self.character.orbs > 0:
 			self.max_health += 2*self.character.orbs
-			print self.max_health
 			self.character.health += self.character.orbs*(self.max_health*0.2)
 			if self.character.health > self.max_health :
 				self.character.health = self.max_health
@@ -245,7 +244,6 @@ class Player :
 		self.game.current_scene.add_entity( self.character )
 
 	def joystick( self ) :
-
 		if self.character == 0 :
 			return
 		joystick = self.input_type
@@ -327,6 +325,8 @@ class Input :
 		self.repeat = repeat
 
 	def run( self, keys ) :
+		if self.key < -500 :
+			print "HEY", keys
 		if self.key in keys :
 			self.function()
 			if self.repeat == False :

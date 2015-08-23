@@ -303,9 +303,9 @@ class GameScene(Scene) :
             for joystick in self.game.player_handler.joystick_list :
                 next_level = 0
                 if joystick.get_name() == "Controller (XBOX 360 For Windows)" or joystick.get_name() == "Microsoft X-Box 360 pad" :
-                    next_level = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] )
+                    next_level = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_PICKUP] )
                 else :
-                    next_level = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] )
+                    next_level = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_PICKUP] )
                 if  next_level == 1:
                     if self.game.change_scene( SCENE_TYPE_GAME, self.meta_data.get('next') ) == False :
                         print "VICTORY"
@@ -356,7 +356,7 @@ class Screen :
 
 
         print self.game.viewZoom
-		
+
         self.game.setCenter( center_position )
         '''if self.shake_time > 0 :
             self.shake_offset = ( randint(-self.shake_magnitude,self.shake_magnitude), randint(-self.shake_magnitude,self.shake_magnitude) )
