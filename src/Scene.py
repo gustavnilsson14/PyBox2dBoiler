@@ -229,6 +229,9 @@ class GameScene(Scene) :
         if self.entity_list.__contains__( entity ) :
             return False
         self.entity_list.append( entity )
+        for update in self.update_list :
+            if update.owner == entity :
+                return
         self.add_update( Update( entity, entity.update ) )
 
     def remove_entity( self, entity ) :
@@ -396,9 +399,9 @@ class Hud :
 
     def draw_player( self, player, hud, pos ) :
         self.draw_health_bar_bg( pos, hud )
-        self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.character.max_health ) )
+        self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.max_health ) )
         self.draw_power_bar_bg( pos, hud)
-        self.draw_power_bar( pos, hud, float( player.character.power ) / float( player.character.max_power ) )
+        self.draw_power_bar( pos, hud, float( player.character.power ) / float( player.max_power ) )
         self.draw_orb_bar( pos, hud )
         #self.draw_orb_bar( pos, hud, float( player.character.power ) / float( player.character.max_power ) )
 

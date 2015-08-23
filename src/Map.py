@@ -188,7 +188,7 @@ class OrbPoint( SpawnPoint ) :
 
     def __init__( self, scene, pos ) :
         SpawnPoint.__init__( self, scene, pos, 1080 )
-        self.next_spawn = 240
+        self.next_spawn = 1
         self.types += [ self.__class__.__name__ ]
 
     def update( self, view_zoom, view_offset, settings ) :
@@ -197,7 +197,7 @@ class OrbPoint( SpawnPoint ) :
 
     def reset_entities( self ) :
         self.entities = [
-            FireOrb,FireOrb,IceOrb,IceOrb,BoltOrb,BoltOrb,
+            FireOrb#,FireOrb,IceOrb,IceOrb,BoltOrb,BoltOrb,
         ]
         random.shuffle( self.entities )
 

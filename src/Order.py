@@ -140,8 +140,6 @@ class AI :
                         if get_distance_between_points( minion.body.transform.position, player.character.body.transform.position) < 8 :
                             self.order_attack( minion, player.character )
                             
-                
-            
     def pick_vulnerable_target( self, minion, player_list ) :
         max_tries = 10
         while max_tries > 0 :
@@ -180,7 +178,7 @@ class Wave :
         self.ai = ai
         self.running = False
         self.index = index
-        self.wave_pause = 30
+        self.wave_pause = 300000000
         self.spawn_resets = index - 1
         self.entities_available = [FireMage,IceMage,BoltMage]
         self.reset_entities()
