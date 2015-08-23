@@ -58,6 +58,7 @@ class Game (Framework):
             return True
             
         self.player_handler.check_player_opt_in( self.pressed_keys )
+        print map_file
         if os.path.isfile( map_file ) == False :
             self.current_scene = 0
             return False

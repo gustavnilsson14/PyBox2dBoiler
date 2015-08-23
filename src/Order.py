@@ -94,7 +94,7 @@ class AI :
             self.waves += [ Wave( self, self.spawn_list, int + 1 ) ]
         self.minions = []
         self.frames_per_action = 200 - ( level * 5 )
-        self.spawn_rate = 230 - ( level * 20 )
+        self.spawn_rate = 30 - ( level * 20 )
         self.max_enemies = 5 + ( level * 2 )
 
     def order_attack( self, minion, target ) :
@@ -154,10 +154,10 @@ class AI :
     def add_entity( self, wave, spawn ) :
         entity = wave.get_entity()
         print "SPAWNING A", entity
-        entity = entity( self.scene, spawn.position )
-        self.entity = entity
-        self.scene.add_entity( entity )
-        self.minions += [ entity ]
+        #entity = entity( self.scene, spawn.position )
+        #self.entity = entity
+        #self.scene.add_entity( entity )
+        #self.minions += [ entity ]
         
     def sort_dead_minions( self ) :
         for minion in self.minions :
@@ -178,7 +178,7 @@ class Wave :
         self.ai = ai
         self.running = False
         self.index = index
-        self.wave_pause = 300
+        self.wave_pause = 30
         self.spawn_resets = index - 1
         self.entities_available = [FireMage,IceMage,BoltMage]
         self.reset_entities()
@@ -210,7 +210,6 @@ class Wave :
             spawn.empty = False
         self.spawn_resets -= 1
         return self.get_spawn()
-        
         
     def get_spawn( self ) :
         random.shuffle( self.spawns )
