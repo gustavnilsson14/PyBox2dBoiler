@@ -1,21 +1,21 @@
 import sys
 import os.path
 import json
+import math
+import time
 from importlib import import_module
-sys.path.append( os.path.abspath("D:\git\PyBox2dBoiler\lib") )
-sys.path.append( os.path.abspath("D:\git\PyBox2dBoiler\src") )
-sys.path.append( os.path.abspath("D:\git\PyBox2dBoiler\res") )
+sys.path.append( os.path.abspath("./lib") )
+sys.path.append( os.path.abspath("./src") )
+sys.path.append( os.path.abspath("./res") )
 sys.path.insert(0, './lib')
 from framework import *
 from SoundHandler import *
 from Scene import *
 from GameSettings import *
-import math
 from Constants import *
 from PlayerHandler import *
 from Core import *
 from pygame.locals import *
-import time
 
 class Game (Framework):
 
