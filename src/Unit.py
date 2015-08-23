@@ -220,11 +220,7 @@ class PlayerCharacter( Unit ) :
         self.vision_range = 40
         self.set_health( 1000 )
         self.set_power( 50 )
-        self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
-        self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
-        self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
-        self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
-        self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
+        self.set_body_images()
         self.current_item = 0
         #self.scene.add_entity( item )
         #self.body_handler.detach_item( "right_arm" )
@@ -233,6 +229,14 @@ class PlayerCharacter( Unit ) :
         self.movement_vector = ( 0, 0 )
         self.set_current_item( 'weapon' )
 
+    def set_body_images( self ) :
+        Unit.set_body_images( self )
+        self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
+        
     def set_power( self, power ) :
         self.max_power = power
         self.power = power
