@@ -154,10 +154,10 @@ class AI :
     def add_entity( self, wave, spawn ) :
         entity = wave.get_entity()
         print "SPAWNING A", entity
-        #entity = entity( self.scene, spawn.position )
-        #self.entity = entity
-        #self.scene.add_entity( entity )
-        #self.minions += [ entity ]
+        entity = entity( self.scene, spawn.position )
+        self.entity = entity
+        self.scene.add_entity( entity )
+        self.minions += [ entity ]
         
     def sort_dead_minions( self ) :
         for minion in self.minions :
@@ -178,7 +178,7 @@ class Wave :
         self.ai = ai
         self.running = False
         self.index = index
-        self.wave_pause = 30
+        self.wave_pause = 300
         self.spawn_resets = index - 1
         self.entities_available = [FireMage,IceMage,BoltMage]
         self.reset_entities()
