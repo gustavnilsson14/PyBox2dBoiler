@@ -1,4 +1,5 @@
 from Unit import *
+from Item import *
 
 class FireMage( Character ) :
     
