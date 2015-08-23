@@ -239,7 +239,7 @@ class PlayerCharacter( Unit ) :
         
     def set_power( self, power ) :
         self.max_power = power
-        self.power = power
+        self.power = 0
 
     def update( self, update ) :
         self.body_handler.update( update )
@@ -277,6 +277,10 @@ class PlayerCharacter( Unit ) :
         if self.immunities.__contains__( damage.type ) == 0 :
             self.scene.screen.shake_time = 1
             #self.scene.game.pause_time = 3'
+        else:
+            self.power += 0.1
+            if self.power > self.max_power:
+                self.power = self.max_power
 
 class Mage( PlayerCharacter ) :
 
