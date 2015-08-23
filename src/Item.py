@@ -376,7 +376,7 @@ class SuperBall( Projectile ) :
     def __init__( self, character, scene, origin, offset = -0.8 ) :
         Projectile.__init__( self, character, scene, origin, -0.6, 600, 750 )
         self.damage = Damage( 5, DAMAGE_TYPE_PHYSICAL )
-        self.body_handler.set_image_at( 'main', 'res/img/effect/fireball.png' )
+        self.body_handler.set_image_at( 'main', 'res/img/penta/5.png' )
         self.types += [ self.__class__.__name__ ]
 
     def update( self, update ) :

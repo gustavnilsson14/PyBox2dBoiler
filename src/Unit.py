@@ -280,7 +280,7 @@ class PlayerCharacter( Unit ) :
             
     def fire_super_bullets( self ) :
         from Item import *
-        if self.super_bullet_amount < 0 :
+        if self.super_bullet_amount <= 0 :
             return
         if self.super_bullet_mode == 2 :
             offset = math.radians( randint( 0, 360 ) )
