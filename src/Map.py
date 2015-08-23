@@ -4,7 +4,6 @@ from pathfinding import *
 from Constants import *
 from Core import *
 from Body import *
-from Enemy import *
 from Item import *
 import time, pygame, random
 
@@ -42,6 +41,7 @@ class Map() :
                 if tile.get( 'collision' ) != None :
                     content += [ Block( scene, (x,y) ) ]
                 if tile.get( 'weaponpoints' ) != None :
+                    from Item import *
                     if randint( 0, 4 ) > 2 :
                         item = Machinegun( self.scene, ( x, y ) )
                     else :
@@ -138,32 +138,33 @@ class Floor( Tile ) :
         Tile.__init__( self, scene, pos )
         #self.image = Image( "res/img/environment/floor.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
         self.types += [ "floor" ]
-
+        
 class SpawnPoint( Tile ) :
-
+    
     def __init__( self, scene, pos, spawn_interval ) :
         Tile.__init__( self, scene, pos )
         self.entity = 0
         self.spawn_interval = spawn_interval
         self.next_spawn = randint( spawn_interval / 2, spawn_interval )
         self.reset_entities()
-
+        
     def update( self, view_zoom, view_offset, settings ) :
+        if self.entity != 0 :
+            return 0
         if self.next_spawn == 0 :
             self.next_spawn = self.spawn_interval
-            if self.entity == 0 :
-                return 1
+            return 1
         self.next_spawn -= 1
         return 0
-
+        
     def create_item( self ) :
         entity = self.get_entity()
         entity = entity( self.scene, self.position )
         entity.create_body( self.position )
         self.entity = entity
         self.scene.add_entity( entity )
-        return
-
+        return entity
+    
     def create_enemy( self ) :
         entity = self.get_entity()
         if entity == 0 :
@@ -172,7 +173,7 @@ class SpawnPoint( Tile ) :
         self.entity = entity
         self.scene.add_entity( entity )
         return entity
-
+    
     def get_entity( self ) :
         if len( self.entities ) == 0 :
             return 0
@@ -180,20 +181,21 @@ class SpawnPoint( Tile ) :
         if len( self.entities ) == 0 :
             self.reset_entities()
         return entity
-
+        
     def reset_entities( self ) :
         pass
 
 class OrbPoint( SpawnPoint ) :
 
     def __init__( self, scene, pos ) :
-        SpawnPoint.__init__( self, scene, pos, 1080 )
-        self.next_spawn = 240
+        SpawnPoint.__init__( self, scene, pos, 8080 )
+        self.next_spawn = 1
         self.types += [ self.__class__.__name__ ]
 
     def update( self, view_zoom, view_offset, settings ) :
-        if SpawnPoint.update( self, view_zoom, view_offset, settings ) == 1 :
-            SpawnPoint.create_item( self )
+        if SpawnPoint.update( self, view_zoom, view_offset, "abc" ) == 1 :
+            item = SpawnPoint.create_item( self )
+            item.spawn_point = self
 
     def reset_entities( self ) :
         self.entities = [
@@ -206,21 +208,5 @@ class EnemySpawn( SpawnPoint ) :
     def __init__( self, scene, pos, ai ) :
         SpawnPoint.__init__( self, scene, pos, 1580 )
         self.ai = ai
-        self.empty = False
-        self.entities = []
-        self.entities = [FireMage, FireMage, FireMage, IceMage, IceMage, IceMage, BoltMage, BoltMage, BoltMage]
-        random.shuffle( self.entities )
         self.ai.add_spawn( self )
         self.types += [ self.__class__.__name__ ]
-
-    def spawn_enemy( self ) :
-        enemy = SpawnPoint.create_enemy( self )
-        if enemy == 0 :
-            self.ai.remove_spawn( self )
-            return 0
-        self.ai.add_entity( enemy )
-        return 1
-
-
-    def reset_entities( self ) :
-        pass

@@ -1,5 +1,6 @@
 import random
 from Constants import *
+from Enemy import *
 
 class Order :
     
@@ -88,40 +89,74 @@ class AI :
         self.scene = scene
         self.game = game
         self.spawn_list = []
-        self.waves = 5 + level
+        self.waves = []
+        for int in range( 0, 1 + level ) :
+            self.waves += [ Wave( self, self.spawn_list, int + 1 ) ]
         self.minions = []
         self.frames_per_action = 200 - ( level * 5 )
-        self.spawn_rate = 420 - ( level * 20 )
-        self.max_enemies = 3 + ( level * 2 )
+        self.spawn_rate = 230 - ( level * 20 )
+        self.max_enemies = 5 + ( level * 2 )
 
     def order_attack( self, minion, target ) :
         self.scene.orders.append( AttackOrder( [ minion ], target ) )
         
     def update( self ) :
         self.sort_dead_minions()
-        if self.game.time % self.spawn_rate == 0 and len( self.minions ) < self.max_enemies :
-            max_tries = 12
-            if len( self.spawn_list ) == 0 and len( self.minions ) == 0 :
-                self.scene.defeat( DEFEAT_GROUP_AI )
+        self.control_minions()
+        if len( self.waves ) == 0 :
+            self.scene.defeat( DEFEAT_GROUP_AI )
+            return
+        wave = self.waves[0]
+        if wave.running == False :
+            print "STARTING WAVE", wave.index
+            wave.start()
+        if wave.wave_start_pause() == 0 :
+            return
+        if self.game.time % ( self.spawn_rate - ( wave.index * 10 ) ) == 0 and len( self.minions ) < self.max_enemies :
+            spawn = wave.get_spawn()
+            if spawn == 0 :
+                if len( self.minions ) == 0 :
+                    self.waves.pop(0)
                 return
-            if len( self.spawn_list ) != 0 :
-                while random.choice( self.spawn_list ).spawn_enemy() == 0 and max_tries != 0:
-                    max_tries -= 1
-                    if len( self.spawn_list ) == 0 :
-                        break
-                    
+            self.add_entity( wave, spawn )
+            
+    def control_minions( self ) :
         if len( self.game.player_handler.player_list ) == 0 :
             return 0
         if len( self.minions ) == 0 : 
             return 0
         if self.game.time % self.frames_per_action == 0 :
+            player_list = self.game.player_handler.player_list
             minion = random.choice( self.minions )
-            target = random.choice( self.game.player_handler.player_list ).character
+            target = self.pick_vulnerable_target( minion, player_list )
+            if target == 0 :
+                target = random.choice( self.game.player_handler.player_list )
+            target = target.character
             self.order_attack( minion, target )
-    
-    def add_entity( self, entity ) :
-        if entity in self.minions :
+        else :
+            for minion in self.minions :
+                if minion.current_order == 0 :
+                    for player in self.game.player_handler.player_list :
+                        if get_distance_between_points( minion.body.transform.position, player.character.body.transform.position) < 8 :
+                            self.order_attack( minion, player.character )
+                            
+    def pick_vulnerable_target( self, minion, player_list ) :
+        max_tries = 10
+        while max_tries > 0 :
+            max_tries -= 0
+            player = random.choice( player_list )
+            if len( player.character.immunities ) == 0 :
+                return player
+            if player.character.immunities[0] != minion.immunities[0] :
+                return player
             return 0
+    
+    def add_entity( self, wave, spawn ) :
+        entity = wave.get_entity()
+        print "SPAWNING A", entity
+        entity = entity( self.scene, spawn.position )
+        self.entity = entity
+        self.scene.add_entity( entity )
         self.minions += [ entity ]
         
     def sort_dead_minions( self ) :
@@ -135,5 +170,55 @@ class AI :
     def remove_spawn( self, spawn ) :
         if spawn in self.spawn_list :
             self.spawn_list.remove( spawn )
+            
+class Wave :
+    
+    def __init__( self, ai, spawns, index ) :
+        self.spawns = spawns
+        self.ai = ai
+        self.running = False
+        self.index = index
+        self.wave_pause = 300
+        self.spawn_resets = index - 1
+        self.entities_available = [FireMage,IceMage,BoltMage]
+        self.reset_entities()
+        
+    def get_entity( self ) :
+        if len( self.current_entity_list ) == 0 :
+            self.reset_entities()
+        entity = self.current_entity_list.pop()
+        return entity 
+        
+    def reset_entities( self ) :
+        self.current_entity_list = self.entities_available[:]
+        
+    def start( self ) :
+        self.running = True
+        for spawn in self.spawns :
+            spawn.empty = False
+            
+    def wave_start_pause( self ) :
+        if self.wave_pause == 0 :
+            return 1
+        self.wave_pause -= 1
+        return 0
+        
+    def spawn_reset( self ) :
+        if self.spawn_resets == 0 :
+            return 0 
+        for spawn in self.spawns :
+            spawn.empty = False
+        self.spawn_resets -= 1
+        return self.get_spawn()
+        
+        
+    def get_spawn( self ) :
+        random.shuffle( self.spawns )
+        for spawn in self.spawns :
+            if spawn.empty == True :
+                continue
+            spawn.empty = True
+            return spawn
+        return self.spawn_reset()
         
         

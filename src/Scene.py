@@ -204,39 +204,7 @@ class GameScene(Scene) :
         image = Image( "res/img/environment/default.png", game.image_handler, ALIGN_BOTTOM_CENTER )
         self.sprite_group.add( image )
         self.hud = Hud( self )
-
-        '''self.target_unit = PlayerCharacter( self, ( 44,40 ) )
-        self.screen.focus_positions += [ self.target_unit.body.transform.position ]
-
-
-        player1 = Player( self.game, self.target_unit )
-        self.hud.add_player( player1 )
-        self.game.player_handler.add_player( player1 )
-        self.game.player_handler.add_input( Input( player1, Keys.K_m, player1.change_scene ) )
-        self.game.player_handler.add_input( Input( player1, Keys.K_w, player1.move_up ) )
-        self.game.player_handler.add_input( Input( player1, Keys.K_s, player1.move_down ) )
-        self.game.player_handler.add_input( Input( player1, Keys.K_a, player1.move_left ) )
-        self.game.player_handler.add_input( Input( player1, Keys.K_d, player1.move_right ) )
-        self.game.player_handler.add_input( Input( player1, Keys.K_e, player1.pickup, False ) )
-        self.game.player_handler.add_input( Input( player1, -100, player1.turn ) )
-        self.game.player_handler.add_input( Input( player1, -101, player1.use_item ) )
-
-        self.add_entity( self.target_unit )
-
-
-        self.target_unit = PlayerCharacter( self, ( 24,40 ) )
-
-lf, ( 24,40 ) )
-
-
-        self.add_entity( self.target_unit )
-        unit = FireMage( self, ( 40,25 ) )
-        self.screen.focus_positions += [ unit.body.transform.position ]
-        self.add_entity( unit )
-
-        self.orders.append( AttackOrder( [ unit ], self.target_unit ) )
-        player2 = Player( self.game, unit )
-        self.hud.add_player( player2 )'''
+        self.game.player_handler.add_player_characters( self )
 
     def get_spawn_point( self ) :
         return random.choice( self.map.spawn_list )
@@ -261,6 +229,9 @@ lf, ( 24,40 ) )
         if self.entity_list.__contains__( entity ) :
             return False
         self.entity_list.append( entity )
+        for update in self.update_list :
+            if update.owner == entity :
+                return
         self.add_update( Update( entity, entity.update ) )
 
     def remove_entity( self, entity ) :
@@ -318,7 +289,7 @@ lf, ( 24,40 ) )
         if type == DEFEAT_GROUP_AI :
             if self.game.change_scene( SCENE_TYPE_GAME, self.meta_data.get('next') ) == False :
                 print "VICTORY"
-
+                self.game.change_scene( SCENE_TYPE_MENU )
             return False
 
 class Screen :
@@ -428,9 +399,9 @@ class Hud :
 
     def draw_player( self, player, hud, pos ) :
         self.draw_health_bar_bg( pos, hud )
-        self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.character.max_health ) )
+        self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.max_health ) )
         self.draw_power_bar_bg( pos, hud)
-        self.draw_power_bar( pos, hud, float( player.character.power ) / float( player.character.max_power ) )
+        self.draw_power_bar( pos, hud, float( player.character.power ) / float( player.max_power ) )
         self.draw_orb_bar( pos, hud )
         #self.draw_orb_bar( pos, hud, float( player.character.power ) / float( player.character.max_power ) )
 

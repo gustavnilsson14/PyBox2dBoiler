@@ -16,14 +16,19 @@ class Item( Entity ) :
         self.max_cooldown = cooldown
         self.cooldown = 0
         self.local_anchor = local_anchor
+        self.fire_rate_multiplier = 1
+        self.spawn_point = 0
         self.types += [ "item" ]
 
     def update( self, update ) :
+        if self.holder == "abc" :
+            print update
+            print self.cooldown
         if self.cooldown > 0 :
-            self.cooldown -= 1
+            self.cooldown -= (1 * self.fire_rate_multiplier) 
 
     def use( self ) :
-        if self.cooldown == 0 :
+        if self.cooldown <= 0 :
             self.cooldown = self.max_cooldown
             return True
         return False
@@ -43,7 +48,9 @@ class Item( Entity ) :
         pass
 
     def picked( self ) :
-        pass
+        if self.spawn_point != 0 :
+            print "HEY"
+            self.spawn_point.entity = 0
 
 class Weapon( Item ) :
 
@@ -167,15 +174,20 @@ class SpellOrb( ProjectileWeapon ) :
         return 0
 
     def dropped( self ) :
+        self.holder = 1
         self.scene.remove_entity( self )
         self.destroy_body()
 
     def picked( self, owner, slot ) :
+        Item.picked( self )
         if slot.item != 0 :
             if self.types[-1] == slot.item.types[-1] :
+                if owner.orbs == 3 :
+                    return True 
                 owner.orbs += 1
                 self.scene.remove_entity( self )
                 self.destroy_body()
+                print self.types, slot.item.types
                 return True
         owner.orbs = 1
         return False
@@ -197,18 +209,28 @@ class FireOrb( SpellOrb ) :
         if ProjectileWeapon.holder_is_player( self ) :
             self.scene.screen.shake_time = 1
         if self.body != 0 :
-
+            if self.get_holder_orbs() == 2 :
+                for spread in [-16,16] :
+                    angle = math.radians( math.degrees( transform.angle ) + spread )
+                    transform = b2Transform( transform.position, b2Rot( angle ) )
+                    projectile = FireBall( self.holder.get_owner(), self.scene, transform )
+                    self.scene.add_entity( projectile )
+                return
+            if self.get_holder_orbs() == 3 :
+                projectile = FireBallBig( self.holder.get_owner(), self.scene, transform )
+                self.scene.add_entity( projectile )
+                return
             projectile = FireBall( self.holder.get_owner(), self.scene, transform )
             self.scene.add_entity( projectile )
-
+                
     def picked( self, owner, slot ) :
-        SpellOrb.picked( self, owner, slot )
         owner.immunities = [ DAMAGE_TYPE_FIRE ]
         owner.body_handler.set_image_at( 'head', 'res/img/body/fire_head.png' )
         owner.body_handler.set_image_at( 'right_arm', 'res/img/body/fire_arm.png' )
         owner.body_handler.set_image_at( 'left_arm', 'res/img/body/fire_arm.png' )
         owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/fire_shoulder.png' )
         owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/fire_shoulder.png' )
+        return SpellOrb.picked( self, owner, slot )
 
 class IceOrb( SpellOrb ) :
 
@@ -227,17 +249,28 @@ class IceOrb( SpellOrb ) :
         if ProjectileWeapon.holder_is_player( self ) :
             self.scene.screen.shake_time = 1
         if self.body != 0 :
+            if self.get_holder_orbs() == 2 :
+                for spread in [-16,16] :
+                    angle = math.radians( math.degrees( transform.angle ) + spread )
+                    transform = b2Transform( transform.position, b2Rot( angle ) )
+                    projectile = Icicle( self.holder.get_owner(), self.scene, transform )
+                    self.scene.add_entity( projectile )
+                return
+            if self.get_holder_orbs() == 3 :
+                projectile = IcicleBig( self.holder.get_owner(), self.scene, transform )
+                self.scene.add_entity( projectile )
+                return
             projectile = Icicle( self.holder.get_owner(), self.scene, transform )
             self.scene.add_entity( projectile )
 
     def picked( self, owner, slot ) :
-        SpellOrb.picked( self, owner, slot )
         owner.immunities = [ DAMAGE_TYPE_ICE ]
         owner.body_handler.set_image_at( 'head', 'res/img/body/ice_head.png' )
         owner.body_handler.set_image_at( 'right_arm', 'res/img/body/ice_arm.png' )
         owner.body_handler.set_image_at( 'left_arm', 'res/img/body/ice_arm.png' )
         owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/ice_shoulder.png' )
         owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/ice_shoulder.png' )
+        return SpellOrb.picked( self, owner, slot )
 
 class BoltOrb( SpellOrb ) :
 
@@ -257,17 +290,28 @@ class BoltOrb( SpellOrb ) :
         if ProjectileWeapon.holder_is_player( self ) :
             self.scene.screen.shake_time = 1
         if self.body != 0 :
+            if self.get_holder_orbs() == 2 :
+                for spread in [-16,16] :
+                    angle = math.radians( math.degrees( transform.angle ) + spread )
+                    transform = b2Transform( transform.position, b2Rot( angle ) )
+                    projectile = Bolt( self.holder.get_owner(), self.scene, transform )
+                    self.scene.add_entity( projectile )
+                return
+            if self.get_holder_orbs() == 3 :
+                projectile = BoltBig( self.holder.get_owner(), self.scene, transform )
+                self.scene.add_entity( projectile )
+                return
             projectile = Bolt( self.holder.get_owner(), self.scene, transform )
             self.scene.add_entity( projectile )
 
     def picked( self, owner, slot ) :
-        SpellOrb.picked( self, owner, slot )
         owner.immunities = [ DAMAGE_TYPE_LIGHTNING ]
         owner.body_handler.set_image_at( 'head', 'res/img/body/storm_head.png' )
         owner.body_handler.set_image_at( 'right_arm', 'res/img/body/storm_arm.png' )
         owner.body_handler.set_image_at( 'left_arm', 'res/img/body/storm_arm.png' )
         owner.body_handler.set_image_at( 'right_shoulder', 'res/img/body/storm_shoulder.png' )
         owner.body_handler.set_image_at( 'left_shoulder', 'res/img/body/storm_shoulder.png' )
+        return SpellOrb.picked( self, owner, slot )
 
 class Projectile( Unit ) :
 
@@ -353,6 +397,13 @@ class FireBall( Projectile ) :
     def create_body( self, pos ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
 
+class FireBallBig( FireBall ) :
+    
+    def __init__( self, character, scene, origin, offset = -0.8 ) :
+        FireBall.__init__( self, character, scene, origin, offset )
+        self.damage = Damage( 18, DAMAGE_TYPE_FIRE )
+        self.body_handler.set_image_at( 'main', 'res/img/effect/fireboom.png' )
+    
 class Icicle( Projectile ) :
 
     def __init__( self, character, scene, origin, offset = -0.8 ) :
@@ -375,6 +426,13 @@ class Icicle( Projectile ) :
     def create_body( self, pos ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
 
+class IcicleBig( Icicle ) :
+    
+    def __init__( self, character, scene, origin, offset = -0.8 ) :
+        Icicle.__init__( self, character, scene, origin, offset )
+        self.damage = Damage( 10, DAMAGE_TYPE_ICE )
+        self.body_handler.set_image_at( 'main', 'res/img/effect/iceshower.png' )
+    
 class Bolt( Projectile ) :
 
     def __init__( self, character, scene, origin, offset = -0.8 ) :
@@ -396,3 +454,10 @@ class Bolt( Projectile ) :
 
     def create_body( self, pos ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
+
+class BoltBig( Bolt ) :
+    
+    def __init__( self, character, scene, origin, offset = -0.8 ) :
+        Icicle.__init__( self, character, scene, origin, offset )
+        self.damage = Damage( 30, DAMAGE_TYPE_LIGHTNING )
+        self.body_handler.set_image_at( 'main', 'res/img/effect/iceshower.png' )
