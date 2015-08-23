@@ -194,7 +194,7 @@ class Player :
 
 	def add_stats_health( self ) :
 		if self.character.orbs > 0:
-			self.max_health += 2*self.character.orbs
+			self.max_health += 4*self.character.orbs
 			self.character.health += self.character.orbs*(self.max_health*0.2)
 			if self.character.health > self.max_health :
 				self.character.health = self.max_health

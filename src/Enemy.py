@@ -1,5 +1,6 @@
 from Unit import *
 from Item import *
+import random
 
 class FireMage( Character ) :
 
@@ -86,11 +87,11 @@ class ColorMage( Character ) :
 
     def __init__( self, scene, pos ) :
         Character.__init__( self, scene, pos )
-        self.immunities = [ DAMAGE_TYPE_LIGHTNING ]
+        self.immunities = [ DAMAGE_TYPE_FIRE ]
         self.speed = 1 * self.body.mass
         self.switch_time = 500
         self.accuracy = 5
-        self.set_health( 40 )
+        self.set_health( 35 )
         self.reset_orbs()
         item = FireOrb( scene )
         self.body_handler.attach_item( "spell_orb", item )
@@ -99,6 +100,7 @@ class ColorMage( Character ) :
 
     def reset_orbs( self ) :
         self.available_orbs = [ FireOrb, IceOrb, BoltOrb ]
+        random.shuffle( self.available_orbs )
     
     def switch_orb( self ) :
         self.switch_time = randint( 200, 1800 )
@@ -107,6 +109,7 @@ class ColorMage( Character ) :
         orb = self.available_orbs.pop()
         item = orb( self.scene )
         item.picked( self, 0 )
+        print self.immunities
         self.body_handler.attach_item( "spell_orb", item )
         self.set_current_item( 'weapon' )
         self.scene.add_entity( item )

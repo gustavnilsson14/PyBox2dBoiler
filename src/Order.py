@@ -182,7 +182,7 @@ class Wave :
         self.index = index
         self.wave_pause = 300
         self.spawn_resets = index + ai.players - 1
-        self.entities_available = [FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,ColorMage]
+        self.entities_available = [ColorMage]#FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,ColorMage]
         if self.index == 2 :
             self.entities_available = [FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,ColorMage,ColorMage,WhiteMage]
         if self.index == 3 :
