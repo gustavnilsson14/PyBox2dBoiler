@@ -150,7 +150,7 @@ class Player :
 			self.character.movement_vector = ( -1, current_vector[1] )
 			return True
 		return False
-		
+
 	def super_attack( self ) :
 		self.character.super_attack()
 
@@ -270,7 +270,10 @@ class Player :
 				if joystick.get_button( 3) == 1 :
 					self.pickup()
 
-				if joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) == 1 :
+				if joystick.get_axis( 2 ) > 0.5 :
+					self.super_attack()
+
+				if joystick.get_button( 4 ) == 1 :
 
 					if joystick.get_button( 2 ) == 1 :
 						print "h"
@@ -305,7 +308,10 @@ class Player :
 				if joystick.get_button( 3 ) == 1 :
 					self.pickup()
 
-				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) == 1 :
+				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_SUPER] ) == 1 :
+					self.super_attack()
+
+				if joystick.get_button( 4 ) == 1 :
 
 					if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_HEALTY] ) == 1 :
 						self.add_stats_health()
