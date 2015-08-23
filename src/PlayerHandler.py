@@ -34,7 +34,7 @@ class PlayerHandler :
 
 	def add_player_characters( self, scene ) :
 		for player in self.player_list :
-			player.character = PlayerCharacter( scene, scene.get_spawn_point() )
+			player.character = PlayerCharacter( scene, scene.get_spawn_point(), player )
 			scene.add_entity( player.character )
 			scene.hud.add_player( player )
 			scene.screen.focus_positions += [ player.character.body.transform.position ]
@@ -101,6 +101,9 @@ class Player :
 		self.input_type = input_type
 		self.game = game
 		self.character = character
+		self.max_health = 100
+		self.max_power = 50
+		self.firerate = 1
 
 	def update( self ) :
 		if self.character != 0 :
@@ -187,9 +190,12 @@ class Player :
 
 	def add_stats_health( self ) :
 		if self.character.orbs > 0:
-			self.character.health += self.character.orbs*(self.character.max_health*0.2)
-			if self.character.health > self.character.max_health :
-				self.character.health = self.character.max_health
+			self.max_health += 2*self.character.orbs
+			print self.max_health
+			self.character.health += self.character.orbs*(self.max_health*0.2)
+			if self.character.health > self.max_health :
+				self.character.health = self.max_health
+			
 			self.character.orbs = 0
 			self.character.body_handler.detach_item("spell_orb")
 
@@ -202,7 +208,7 @@ class Player :
 
 	def add_stats_power( self ) :
 		if self.character.orbs > 0:
-			self.character.max_power += self.character.orbs
+			self.max_power += self.character.orbs
 			self.character.orbs = 0
 			self.character.body_handler.detach_item("spell_orb")
 			self.character.current_item = 0
@@ -214,7 +220,7 @@ class Player :
 
 	def add_stats_firerate( self ) :
 		if self.character.orbs > 0:
-			self.character.firerate -= self.character.orbs
+			self.firerate += self.character.orbs * 0.1
 			self.character.orbs = 0
 			self.character.body_handler.detach_item("spell_orb")
 			self.character.current_item = 0

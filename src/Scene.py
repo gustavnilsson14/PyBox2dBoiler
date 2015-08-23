@@ -37,7 +37,7 @@ class MenuScene(Scene) :
     def run_top( self ) :
         surface = pygame.display.set_mode((1280,720))
         surface.fill((51,51,51))
-        img = pygame.image.load('res/img/bg.jpg')
+        img = pygame.image.load('./res/img/bg.jpg')
         surface.blit(img,(0,0))
         menu = Menu()
         menu.init(['Start','Options','Quit'], surface)
@@ -229,6 +229,9 @@ class GameScene(Scene) :
         if self.entity_list.__contains__( entity ) :
             return False
         self.entity_list.append( entity )
+        for update in self.update_list :
+            if update.owner == entity :
+                return
         self.add_update( Update( entity, entity.update ) )
 
     def remove_entity( self, entity ) :
@@ -322,7 +325,6 @@ class Screen :
 
     def update_camera_center( self ) :
         center_position = (0,0)
-        distance = 0
         if len( self.focus_positions ) == 0 :
             self.game.setCenter( (25,25) )
             return
@@ -331,25 +333,11 @@ class Screen :
                 center_position = position
                 continue
             center_position = ( center_position[0] + position[0], center_position[1] + position[1] )
-
+            distanceX = numpy.sqrt(numpy.power(center_position[0]-position[0]*2,2)+numpy.power(center_position[1]-position[1]*2,2))
+            self.game.viewZoom = 75-distanceX*1.5
+        #    self.current_zoom = -1#numpy.absolute(center_position[0] - position[0]*2)*-1
 
         center_position = ( center_position[0] / len( self.focus_positions ), center_position[1] / len( self.focus_positions ) )
-
-        for position in self.focus_positions :
-            tempdistance = numpy.sqrt(numpy.power(center_position[0]-position[0],2)+numpy.power(center_position[1]-position[1],2))
-
-            if tempdistance > distance :
-                distance = numpy.absolute(tempdistance)
-
-        if distance != 0 :
-            self.game.viewZoom = 75-distance*2.5
-            if self.game.viewZoom < 30 :
-                self.game.viewZoom = 30
-            if self.game.viewZoom > 90 :
-                self.game.viewZoom = 90
-
-
-        print self.game.viewZoom
 
         self.game.setCenter( center_position )
         '''if self.shake_time > 0 :
@@ -432,9 +420,9 @@ class Hud :
 
     def draw_player( self, player, hud, pos ) :
         self.draw_health_bar_bg( pos, hud )
-        self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.character.max_health ) )
+        self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.max_health ) )
         self.draw_power_bar_bg( pos, hud)
-        self.draw_power_bar( pos, hud, float( player.character.power ) / float( player.character.max_power ) )
+        self.draw_power_bar( pos, hud, float( player.character.power ) / float( player.max_power ) )
         self.draw_orb_bar( pos, hud )
         #self.draw_orb_bar( pos, hud, float( player.character.power ) / float( player.character.max_power ) )
 

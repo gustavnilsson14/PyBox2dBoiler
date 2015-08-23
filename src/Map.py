@@ -149,10 +149,11 @@ class SpawnPoint( Tile ) :
         self.reset_entities()
         
     def update( self, view_zoom, view_offset, settings ) :
+        if self.entity != 0 :
+            return 0
         if self.next_spawn == 0 :
             self.next_spawn = self.spawn_interval
-            if self.entity == 0 :
-                return 1
+            return 1
         self.next_spawn -= 1
         return 0
         
@@ -162,7 +163,7 @@ class SpawnPoint( Tile ) :
         entity.create_body( self.position )
         self.entity = entity
         self.scene.add_entity( entity )
-        return
+        return entity
     
     def create_enemy( self ) :
         entity = self.get_entity()
@@ -187,13 +188,14 @@ class SpawnPoint( Tile ) :
 class OrbPoint( SpawnPoint ) :
 
     def __init__( self, scene, pos ) :
-        SpawnPoint.__init__( self, scene, pos, 1080 )
-        self.next_spawn = 240
+        SpawnPoint.__init__( self, scene, pos, 8080 )
+        self.next_spawn = 1
         self.types += [ self.__class__.__name__ ]
 
     def update( self, view_zoom, view_offset, settings ) :
-        if SpawnPoint.update( self, view_zoom, view_offset, settings ) == 1 :
-            SpawnPoint.create_item( self )
+        if SpawnPoint.update( self, view_zoom, view_offset, "abc" ) == 1 :
+            item = SpawnPoint.create_item( self )
+            item.spawn_point = self
 
     def reset_entities( self ) :
         self.entities = [

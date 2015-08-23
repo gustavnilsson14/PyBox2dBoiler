@@ -207,27 +207,22 @@ class Character( Unit ) :
 
 class PlayerCharacter( Unit ) :
 
-    def __init__( self, scene, pos ) :
+    def __init__( self, scene, pos, player ) :
         Unit.__init__( self, scene, pos )
+        self.player = player
         self.body = self.body_handler.create_humanoid( self, scene, pos, 0.3, FILTER_CHARACTER )
         self.speed = 1.5 * self.body.mass
         self.accuracy = 2
-        self.max_power = 0
+        self.health = player.max_health
         self.power = 0
         self.orbs = 0
-        self.firerate = 15
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
-        self.set_health( 1000 )
-        self.set_power( 50 )
         self.set_body_images()
         self.current_item = 0
-        #self.scene.add_entity( item )
-        #self.body_handler.detach_item( "right_arm" )
         self.target = 0
         self.types += [ "player_character" ]
         self.movement_vector = ( 0, 0 )
-        self.set_current_item( 'weapon' )
 
     def set_body_images( self ) :
         Unit.set_body_images( self )
@@ -237,15 +232,15 @@ class PlayerCharacter( Unit ) :
         self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
         self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
 
-    def set_power( self, power ) :
-        self.max_power = power
-        self.power = 0
-
     def update( self, update ) :
         self.body_handler.update( update )
         self.handle_accuracy()
         self.body.linearVelocity = ( self.movement_vector[0] * self.speed, self.movement_vector[1] * self.speed )
 
+    def pickup( self, item, slot, key, body ) :
+        if Unit.pickup( self, item, slot, key, body ) == True :
+            item.fire_rate_multiplier = self.player.firerate
+        
     def handle_accuracy( self ) :
         self.current_accuracy = ( self.current_accuracy[0] + self.current_accuracy[1], self.current_accuracy[1] )
         if self.current_accuracy[0] > self.accuracy :
@@ -267,21 +262,19 @@ class PlayerCharacter( Unit ) :
 
     def use_current_item( self, target ) :
         if self.current_item != 0 :
-            self.current_item.max_cooldown = self.firerate
             return self.current_item.use( target )
         return False
 
     def take_damage( self, origin, damage ) :
         Unit.take_damage( self, origin, damage )
-
         if self.immunities.__contains__( damage.type ) == 0 :
             self.scene.screen.shake_time = 1
             #self.scene.game.pause_time = 3'
         else:
             self.power += 0.5
-            if self.power > self.max_power:
-                self.power = self.max_power
-
+            if self.power > self.player.max_power:
+                self.power = self.player.max_power
+            
 class Mage( PlayerCharacter ) :
 
     def __init__( self, scene, pos ) :

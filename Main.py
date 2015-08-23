@@ -1,18 +1,21 @@
 import sys
 import os.path
 import json
-sys.path.append( 'lib' )
-sys.path.append( 'src' )
+import math
+import time
+from importlib import import_module
+sys.path.append( os.path.abspath("./lib") )
+sys.path.append( os.path.abspath("./src") )
+sys.path.append( os.path.abspath("./res") )
+sys.path.insert(0, './lib')
 from framework import *
 from SoundHandler import *
 from Scene import *
 from GameSettings import *
-import math
 from Constants import *
 from PlayerHandler import *
 from Core import *
 from pygame.locals import *
-import time
 
 class Game (Framework):
 
@@ -40,6 +43,7 @@ class Game (Framework):
 
 
         #-100 is the mouse
+        self.pressed_keys = [ -100 ]
 
     def change_scene( self, type, map_file = False ) :
         if self.current_scene != 0 :
@@ -52,11 +56,13 @@ class Game (Framework):
             self.current_scene = MenuScene( self )
             self.current_scene.run_top()
             return True
-        print map_file
+
         self.player_handler.check_player_opt_in( self.pressed_keys )
+        print map_file
         if os.path.isfile( map_file ) == False :
             self.current_scene = 0
             return False
+
         with open (map_file, "r") as myfile :
             map_data = myfile.read().replace('\n', '')
             self.current_scene = GameScene( self, self.world, json.loads( map_data ) )
@@ -64,15 +70,15 @@ class Game (Framework):
     def reset_zoom( self ) :
         #This property manages zoom level
         self.viewZoom = self.defaultZoom
-    
+
     def total_reset( self ) :
         while len( self.world.joints ) != 0 :
             garbage_joint = self.world.joints[0]
             self.world.DestroyJoint( garbage_joint )
-        while len( self.world.bodies ) != 0 : 
+        while len( self.world.bodies ) != 0 :
             garbage_body = self.world.bodies[0]
             self.world.DestroyBody( garbage_body )
-    
+
     def take_out_garbage( self ) :
         while len( self.garbage_joint_list ) != 0:
             garbage_joint = self.garbage_joint_list[0]
@@ -82,7 +88,7 @@ class Game (Framework):
             garbage_body = self.garbage_body_list[0]
             self.world.DestroyBody( garbage_body )
             self.garbage_body_list.remove( garbage_body )
-        
+
     def Step(self, settings):
         if self.pause_time > 0 :
             self.pause_time -= 1
@@ -228,4 +234,4 @@ class Game (Framework):
         return True
 
 if __name__=="__main__":
-     main(Game)
+    main(Game)
