@@ -183,7 +183,7 @@ class SpellOrb( ProjectileWeapon ) :
 class FireOrb( SpellOrb ) :
 
     def __init__( self, scene, pos = ( 0, 0 ) ) :
-        SpellOrb.__init__( self, scene, pos, 3, (0.15,0), 3 )
+        SpellOrb.__init__( self, scene, pos, 24, (0.15,0), 3 )
         self.types += [ self.__class__.__name__ ]
 
     def create_body( self, pos ) :
@@ -213,7 +213,7 @@ class FireOrb( SpellOrb ) :
 class IceOrb( SpellOrb ) :
 
     def __init__( self, scene, pos = ( 0, 0 ) ) :
-        SpellOrb.__init__( self, scene, pos, 3, (0.15,0), 3 )
+        SpellOrb.__init__( self, scene, pos, 12, (0.15,0), 3 )
         self.types += [ self.__class__.__name__ ]
 
     def create_body( self, pos ) :
@@ -242,7 +242,7 @@ class IceOrb( SpellOrb ) :
 class BoltOrb( SpellOrb ) :
 
     def __init__( self, scene, pos = ( 0, 0 ) ) :
-        SpellOrb.__init__( self, scene, pos, 3, (0.15,0), 3 )
+        SpellOrb.__init__( self, scene, pos, 32, (0.15,0), 3 )
         self.types += [ self.__class__.__name__ ]
 
     def create_body( self, pos ) :
@@ -283,7 +283,7 @@ class Projectile( Unit ) :
         self.body.ApplyForce( vector, self.body.worldCenter, True )
         self.body.transform = [ self.body.transform.position, radians_to_target ]
         self.damage = 1
-        self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
+        #self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
         self.types += [ "projectile" ]
 
     def update( self, update ) :
@@ -332,9 +332,9 @@ class Pellet( Projectile ) :
 
 class FireBall( Projectile ) :
 
-    def __init__( self, character, scene, origin, offset = -0.8, speed = 500, lifetime = 150 ) :
-        Projectile.__init__( self, character, scene, origin, -0.6, 750, 60 )
-        self.damage = Damage( 1, DAMAGE_TYPE_FIRE )
+    def __init__( self, character, scene, origin, offset = -0.8 ) :
+        Projectile.__init__( self, character, scene, origin, -0.6, 600, 750 )
+        self.damage = Damage( 5, DAMAGE_TYPE_FIRE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/fireball.png' )
         self.types += [ self.__class__.__name__ ]
 
@@ -354,9 +354,9 @@ class FireBall( Projectile ) :
 
 class Icicle( Projectile ) :
 
-    def __init__( self, character, scene, origin, offset = -0.8, speed = 500, lifetime = 150 ) :
-        Projectile.__init__( self, character, scene, origin, -0.6, 750, 60 )
-        self.damage = Damage( 1, DAMAGE_TYPE_ICE )
+    def __init__( self, character, scene, origin, offset = -0.8 ) :
+        Projectile.__init__( self, character, scene, origin, -0.6, 500, 750 )
+        self.damage = Damage( 3, DAMAGE_TYPE_ICE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/icebolt.png' )
         self.types += [ self.__class__.__name__ ]
 
@@ -376,9 +376,9 @@ class Icicle( Projectile ) :
 
 class Bolt( Projectile ) :
 
-    def __init__( self, character, scene, origin, offset = -0.8, speed = 500, lifetime = 150 ) :
-        Projectile.__init__( self, character, scene, origin, -0.6, 750, 60 )
-        self.damage = Damage( 1, DAMAGE_TYPE_LIGHTNING )
+    def __init__( self, character, scene, origin, offset = -0.8 ) :
+        Projectile.__init__( self, character, scene, origin, -0.6, 750, 500 )
+        self.damage = Damage( 9, DAMAGE_TYPE_LIGHTNING )
         self.body_handler.set_image_at( 'main', 'res/img/effect/default_bullet.png' )
         self.types += [ self.__class__.__name__ ]
 

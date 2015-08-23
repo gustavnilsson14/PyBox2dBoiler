@@ -99,6 +99,8 @@ class Game (Framework):
         self.player_handler.update( self.pressed_keys )
 
         for contact in self.world.contacts :
+            if contact.touching == False :
+                continue
             fixtureA = contact.fixtureA
             fixtureB = contact.fixtureB
 
