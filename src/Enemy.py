@@ -38,7 +38,7 @@ class IceMage( Character ) :
         self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
         self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
         self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
-        self.body_handler.set_image_at( 'head', 'res/img/body/default_head2.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/enemies/ice_blob.png' )
 
 class BoltMage( Character ) :
 
@@ -58,4 +58,4 @@ class BoltMage( Character ) :
         self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
         self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
         self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
-        self.body_handler.set_image_at( 'head', 'res/img/body/default_head2.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/enemies/storm_blob.png' )
