@@ -46,7 +46,6 @@ class Item( Entity ) :
 
     def picked( self ) :
         if self.spawn_point != 0 :
-            print "HEY"
             self.spawn_point.entity = 0
 
 class Weapon( Item ) :

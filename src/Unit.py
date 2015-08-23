@@ -215,7 +215,7 @@ class PlayerCharacter( Unit ) :
         self.speed = 1.5 * self.body.mass
         self.accuracy = 2
         self.health = player.max_health
-        self.power = 59
+        self.power = 0
         self.orbs = 0
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40

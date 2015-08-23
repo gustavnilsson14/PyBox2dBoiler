@@ -90,9 +90,9 @@ class AI :
         self.game = game
         self.spawn_list = []
         self.waves = []
+        self.players = len( self.game.player_handler.player_list ) + 1
         for int in range( 0, 2 + level ) :
             self.waves += [ Wave( self, self.spawn_list, int + 1 ) ]
-        print self.waves
         self.minions = []
         self.frames_per_action = 200 - ( level * 10 )
         self.spawn_rate = 300 - ( level * 10 )
@@ -114,12 +114,13 @@ class AI :
         if wave.wave_start_pause() == 0 :
             return
         if self.game.time % ( self.spawn_rate - ( wave.index * 10 ) ) == 0 and len( self.minions ) < self.max_enemies :
-            spawn = wave.get_spawn()
-            if spawn == 0 :
-                if len( self.minions ) == 0 :
-                    self.waves.pop(0)
-                return
-            self.add_entity( wave, spawn )
+            for i in range( 0, self.players ) :
+                spawn = wave.get_spawn()
+                if spawn == 0 :
+                    if len( self.minions ) == 0 :
+                        self.waves.pop(0)
+                    return
+                self.add_entity( wave, spawn )
             
     def control_minions( self ) :
         if len( self.game.player_handler.player_list ) == 0 :
@@ -127,13 +128,14 @@ class AI :
         if len( self.minions ) == 0 : 
             return 0
         if self.game.time % self.frames_per_action == 0 :
-            player_list = self.game.player_handler.player_list
-            minion = random.choice( self.minions )
-            target = self.pick_vulnerable_target( minion, player_list )
-            if target == 0 :
-                target = random.choice( self.game.player_handler.player_list )
-            target = target.character
-            self.order_attack( minion, target )
+            for i in range( 0, self.players ) :
+                player_list = self.game.player_handler.player_list
+                minion = random.choice( self.minions )
+                target = self.pick_vulnerable_target( minion, player_list )
+                if target == 0 :
+                    target = random.choice( self.game.player_handler.player_list )
+                target = target.character
+                self.order_attack( minion, target )
         else :
             for minion in self.minions :
                 if minion.current_order == 0 :
@@ -179,7 +181,7 @@ class Wave :
         self.running = False
         self.index = index
         self.wave_pause = 300
-        self.spawn_resets = index - 1
+        self.spawn_resets = index + ai.players - 1
         self.entities_available = [FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,ColorMage]
         if self.index == 2 :
             self.entities_available = [FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,FireMage,IceMage,BoltMage,ColorMage,ColorMage,WhiteMage]
