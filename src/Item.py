@@ -25,7 +25,7 @@ class Item( Entity ) :
             print update
             print self.cooldown
         if self.cooldown > 0 :
-            self.cooldown -= (1 * self.fire_rate_multiplier) 
+            self.cooldown -= (1 * self.fire_rate_multiplier)
 
     def use( self ) :
         if self.cooldown <= 0 :
@@ -183,7 +183,7 @@ class SpellOrb( ProjectileWeapon ) :
         if slot.item != 0 :
             if self.types[-1] == slot.item.types[-1] :
                 if owner.orbs == 3 :
-                    return True 
+                    return True
                 owner.orbs += 1
                 self.scene.remove_entity( self )
                 self.destroy_body()
@@ -222,7 +222,7 @@ class FireOrb( SpellOrb ) :
                 return
             projectile = FireBall( self.holder.get_owner(), self.scene, transform )
             self.scene.add_entity( projectile )
-                
+
     def picked( self, owner, slot ) :
         owner.immunities = [ DAMAGE_TYPE_FIRE ]
         owner.body_handler.set_image_at( 'head', 'res/img/body/fire_head.png' )
@@ -398,12 +398,12 @@ class FireBall( Projectile ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
 
 class FireBallBig( FireBall ) :
-    
+
     def __init__( self, character, scene, origin, offset = -0.8 ) :
         FireBall.__init__( self, character, scene, origin, offset )
         self.damage = Damage( 18, DAMAGE_TYPE_FIRE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/fireboom.png' )
-    
+
 class Icicle( Projectile ) :
 
     def __init__( self, character, scene, origin, offset = -0.8 ) :
@@ -427,12 +427,12 @@ class Icicle( Projectile ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
 
 class IcicleBig( Icicle ) :
-    
+
     def __init__( self, character, scene, origin, offset = -0.8 ) :
         Icicle.__init__( self, character, scene, origin, offset )
         self.damage = Damage( 10, DAMAGE_TYPE_ICE )
         self.body_handler.set_image_at( 'main', 'res/img/effect/iceshower.png' )
-    
+
 class Bolt( Projectile ) :
 
     def __init__( self, character, scene, origin, offset = -0.8 ) :
@@ -456,8 +456,8 @@ class Bolt( Projectile ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
 
 class BoltBig( Bolt ) :
-    
+
     def __init__( self, character, scene, origin, offset = -0.8 ) :
         Icicle.__init__( self, character, scene, origin, offset )
         self.damage = Damage( 30, DAMAGE_TYPE_LIGHTNING )
-        self.body_handler.set_image_at( 'main', 'res/img/effect/iceshower.png' )
+        self.body_handler.set_image_at( 'main', 'res/img/effect/light_orb.png' )
