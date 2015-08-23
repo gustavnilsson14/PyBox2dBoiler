@@ -1,7 +1,7 @@
 from Unit import *
 
 class FireMage( Character ) :
-    
+
     def __init__( self, scene, pos ) :
         Character.__init__( self, scene, pos )
         self.immunities = [ DAMAGE_TYPE_FIRE ]
@@ -11,9 +11,17 @@ class FireMage( Character ) :
         self.body_handler.attach_item( "spell_orb", item )
         self.scene.add_entity( item )
         self.types += [ self.__class__.__name__ ]
-        
+
+    def set_body_images( self ) :
+        Unit.set_body_images( self )
+        self.body_handler.set_image_at( 'right_arm', 'res/img/body/fire_arm.png' )
+        self.body_handler.set_image_at( 'left_arm', 'res/img/body/fire_arm.png' )
+        self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/fire_shoulder.png' )
+        self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/fire_shoulder.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/enemies/fire_blob.png' )
+
 class IceMage( Character ) :
-    
+
     def __init__( self, scene, pos ) :
         Character.__init__( self, scene, pos )
         self.immunities = [ DAMAGE_TYPE_ICE ]
@@ -23,6 +31,14 @@ class IceMage( Character ) :
         self.body_handler.attach_item( "spell_orb", item )
         self.scene.add_entity( item )
         self.types += [ self.__class__.__name__ ]
+
+    def set_body_images( self ) :
+        Unit.set_body_images( self )
+        self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/body/default_head2.png' )
 
 class BoltMage( Character ) :
 
@@ -35,3 +51,11 @@ class BoltMage( Character ) :
         self.body_handler.attach_item( "spell_orb", item )
         self.scene.add_entity( item )
         self.types += [ self.__class__.__name__ ]
+
+    def set_body_images( self ) :
+        Unit.set_body_images( self )
+        self.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+        self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+        self.body_handler.set_image_at( 'head', 'res/img/body/default_head2.png' )
