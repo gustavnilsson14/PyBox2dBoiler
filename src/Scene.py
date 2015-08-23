@@ -310,8 +310,13 @@ class GameScene(Scene) :
                     if self.game.change_scene( SCENE_TYPE_GAME, self.meta_data.get('next') ) == False :
                         print "VICTORY"
                         self.game.change_scene( SCENE_TYPE_MENU )
-
             return False
+        elif type == DEFEAT_GROUP_PLAYERS :
+            for player in self.game.player_handler.player_list :
+                if player.character.alive == True :
+                    return
+            print "DEFEAT"
+            self.game.change_scene( SCENE_TYPE_MENU )
 
 class Screen :
 
@@ -335,15 +340,10 @@ class Screen :
                 continue
             center_position = ( center_position[0] + position[0], center_position[1] + position[1] )
 
-
-
-
-
         center_position = ( center_position[0] / len( self.focus_positions ), center_position[1] / len( self.focus_positions ) )
-
+        
         for position in self.focus_positions :
             tempdistance = numpy.sqrt(numpy.power(center_position[0]-position[0],2)+numpy.power(center_position[1]-position[1],2))
-
             if tempdistance > distance :
                 distance = numpy.absolute(tempdistance)
 
@@ -353,7 +353,6 @@ class Screen :
                 self.game.viewZoom = 30
             if self.game.viewZoom > 90 :
                 self.game.viewZoom = 90
-
 
         self.game.setCenter( center_position )
         '''if self.shake_time > 0 :

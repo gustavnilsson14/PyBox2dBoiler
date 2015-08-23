@@ -371,6 +371,28 @@ class Pellet( Projectile ) :
     def create_body( self, pos ) :
         self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
 
+class SuperBall( Projectile ) :
+
+    def __init__( self, character, scene, origin, offset = -0.8 ) :
+        Projectile.__init__( self, character, scene, origin, -0.6, 600, 750 )
+        self.damage = Damage( 5, DAMAGE_TYPE_PHYSICAL )
+        self.body_handler.set_image_at( 'main', 'res/img/effect/fireball.png' )
+        self.types += [ self.__class__.__name__ ]
+
+    def update( self, update ) :
+        Unit.update( self, update )
+
+    def handle_collision( self, my_fixture, colliding_fixture ) :
+        collider = colliding_fixture.body.userData.get( 'owner' )
+        if "block" in collider.types :
+            self.die( collider )
+        if "unit" in collider.types :
+            self.die( collider )
+            self.deal_damage( collider )
+
+    def create_body( self, pos ) :
+        self.body = self.body_handler.create_pellet( self, pos, 0.1, FILTER_PROJECTILE )
+
 class FireBall( Projectile ) :
 
     def __init__( self, character, scene, origin, offset = -0.8 ) :
