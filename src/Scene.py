@@ -40,7 +40,7 @@ class MenuScene(Scene) :
         img = pygame.image.load('./res/img/bg.jpg')
         surface.blit(img,(0,0))
         menu = Menu()
-        menu.init(['Start','Options','Quit'], surface)
+        menu.init(['Start','Help','Options','Quit'], surface)
         menu.draw()
         pygame.key.set_repeat(199,69)#(delay,interval)
         pygame.display.update()
@@ -58,9 +58,12 @@ class MenuScene(Scene) :
                             self.run_select()
                             self.running = 0
                         elif menu.get_position() == 1:
+                            self.run_help()
+                            self.running = 0
+                        elif menu.get_position() == 2:
                             self.run_option()
                             self.running = 0
-                        elif menu.get_position() == 2:#here is the Menu class function
+                        elif menu.get_position() == 3:#here is the Menu class function
                             pygame.display.quit()
                             sys.exit()
                     if event.key == K_ESCAPE:
@@ -174,6 +177,24 @@ class MenuScene(Scene) :
                             self.game.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_tutorial.js')
                             self.running = 0
                     pygame.display.update()
+                elif event.type == QUIT:
+                    pygame.display.quit()
+                    sys.exit()
+            pygame.time.wait(8)
+
+    def run_help( self ) :
+        surface = pygame.display.set_mode((1280,720))
+        surface.fill((0,0,0))
+        img = pygame.image.load('res/img/help.png')
+        surface.blit(img,(0,0))
+        pygame.key.set_repeat(199,69)#(delay,interval)
+        pygame.display.update()
+        self.running = 1
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    self.run_top()
+                    self.running = 0
                 elif event.type == QUIT:
                     pygame.display.quit()
                     sys.exit()
@@ -300,10 +321,16 @@ class GameScene(Scene) :
             self.hud.huds[0].victory_text.rect.x = 550
             self.hud.huds[0].victory_text.rect.y = 200
 
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if self.game.change_scene( SCENE_TYPE_GAME, self.meta_data.get('next') ) == False :
+                        print "VICTORY"
+                        self.game.change_scene( SCENE_TYPE_MENU )
+
             for joystick in self.game.player_handler.joystick_list :
                 next_level = 0
                 if joystick.get_name() == "Controller (XBOX 360 For Windows)" or joystick.get_name() == "Microsoft X-Box 360 pad" :
-                    next_level = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_PICKUP] )
+                    next_level = joystick.get_button( XBOX_KEY_MAP[JOYSTICK_BUTTON_PICKUP] )
                 else :
                     next_level = joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_PICKUP] )
                 if  next_level == 1:
