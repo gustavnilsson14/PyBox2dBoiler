@@ -21,10 +21,10 @@ class Unit( Entity ) :
         self.alive = True
         self.target = 0
         self.types += [ "unit" ]
-    
+
     def set_body_images( self ) :
         pass
-    
+
     def set_health( self, health ) :
         self.max_health = health
         self.health = health
@@ -236,10 +236,10 @@ class PlayerCharacter( Unit ) :
         self.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
         self.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
         self.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
-        
+
     def set_power( self, power ) :
         self.max_power = power
-        self.power = power
+        self.power = 0
 
     def update( self, update ) :
         self.body_handler.update( update )
@@ -277,6 +277,10 @@ class PlayerCharacter( Unit ) :
         if self.immunities.__contains__( damage.type ) == 0 :
             self.scene.screen.shake_time = 1
             #self.scene.game.pause_time = 3'
+        else:
+            self.power += 0.5
+            if self.power > self.max_power:
+                self.power = self.max_power
 
 class Mage( PlayerCharacter ) :
 

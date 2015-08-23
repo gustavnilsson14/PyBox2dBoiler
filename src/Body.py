@@ -175,7 +175,7 @@ class Body :
 			},
             enableLimit=True,
 		)
-		
+
 		self.main_body = main_body
 		self.main_body_joint = main_body_joint
 		self.all_bodies = {
@@ -503,7 +503,7 @@ class ItemSlot :
 		if owner == None :
 			return 0
 		return owner
-		
+
 	def detach_item( self ) :
 		if self.joint != 0 :
 			self.scene.game.add_garbage_joint( self.joint )

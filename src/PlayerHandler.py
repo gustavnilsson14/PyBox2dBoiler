@@ -49,6 +49,9 @@ class PlayerHandler :
 		self.add_input( Input( player, Keys.K_a, player.move_left ) )
 		self.add_input( Input( player, Keys.K_d, player.move_right ) )
 		self.add_input( Input( player, Keys.K_e, player.pickup, False ) )
+		self.add_input( Input( player, Keys.K_1, player.add_stats_health, False ) )
+		self.add_input( Input( player, Keys.K_2, player.add_stats_power, False ) )
+		self.add_input( Input( player, Keys.K_3, player.add_stats_firerate, False ) )
 		self.add_input( Input( player, -100, player.turn ) )
 		self.add_input( Input( player, -101, player.use_item ) )
 
@@ -180,32 +183,44 @@ class Player :
 			return True
 		return False
 
-	def add_stats( self, stat_type ) :
+	def add_stats_health( self ) :
 		if self.character.orbs > 0:
-			if stat_type == "health":
-				self.character.health += self.character.orbs*(self.character.max_health*0.2)
-				if self.character.health > self.character.max_health :
-					self.character.health = self.character.max_health
-				self.character.orbs = 0
-				self.character.body_handler.detach_item("spell_orb")
-			elif stat_type == "power":
-				self.character.max_power += self.character.orbs
-				self.character.orbs = 0
-				self.character.body_handler.detach_item("spell_orb")
-			elif stat_type == "firerate":
-				self.character.firerate -= self.character.orbs
-				self.character.orbs = 0
-				self.character.body_handler.detach_item("spell_orb")
+			self.character.health += self.character.orbs*(self.character.max_health*0.2)
+			if self.character.health > self.character.max_health :
+				self.character.health = self.character.max_health
+			self.character.orbs = 0
+			self.character.body_handler.detach_item("spell_orb")
 
-		self.character.current_item = 0
-		self.character.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
-		self.character.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
-		self.character.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
-		self.character.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
-		self.character.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
+			self.character.current_item = 0
+			self.character.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+			self.character.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+			self.character.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+			self.character.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+			self.character.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
 
+	def add_stats_power( self ) :
+		if self.character.orbs > 0:
+			self.character.max_power += self.character.orbs
+			self.character.orbs = 0
+			self.character.body_handler.detach_item("spell_orb")
+			self.character.current_item = 0
+			self.character.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+			self.character.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+			self.character.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+			self.character.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+			self.character.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
 
-
+	def add_stats_firerate( self ) :
+		if self.character.orbs > 0:
+			self.character.firerate -= self.character.orbs
+			self.character.orbs = 0
+			self.character.body_handler.detach_item("spell_orb")
+			self.character.current_item = 0
+			self.character.body_handler.set_image_at( 'right_arm', 'res/img/body/default_arm.png' )
+			self.character.body_handler.set_image_at( 'left_arm', 'res/img/body/default_arm.png' )
+			self.character.body_handler.set_image_at( 'right_shoulder', 'res/img/body/default_shoulder.png' )
+			self.character.body_handler.set_image_at( 'left_shoulder', 'res/img/body/default_shoulder.png' )
+			self.character.body_handler.set_image_at( 'head', 'res/img/body/default_head.png' )
 
 	def use_item( self ) :
 		if self.character == 0 :
@@ -268,13 +283,13 @@ class Player :
 				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) == 1 :
 
 					if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_HEALTY] ) == 1 :
-						self.add_stats("health")
+						self.add_stats_health()
 
 					if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_POWER] ) == 1 :
-						self.add_stats("power")
+						self.add_stats_power()
 
 					if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_ADD_FIRERATE] ) == 1 :
-						self.add_stats("firerate")
+						self.add_stats_firerate()
 
 			else :
 				if joystick.get_button( GENERIC_KEY_MAP[OYSTICK_BUTTON_START] ) == 1 :

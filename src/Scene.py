@@ -309,13 +309,18 @@ class Screen :
                 center_position = position
                 continue
             center_position = ( center_position[0] + position[0], center_position[1] + position[1] )
+            distanceX = numpy.sqrt(numpy.power(center_position[0]-position[0]*2,2)+numpy.power(center_position[1]-position[1]*2,2))
+            self.game.viewZoom = 75-distanceX*1.5
+        #    self.current_zoom = -1#numpy.absolute(center_position[0] - position[0]*2)*-1
+
         center_position = ( center_position[0] / len( self.focus_positions ), center_position[1] / len( self.focus_positions ) )
+
         self.game.setCenter( center_position )
-        if self.shake_time > 0 :
+        '''if self.shake_time > 0 :
             self.shake_offset = ( randint(-self.shake_magnitude,self.shake_magnitude), randint(-self.shake_magnitude,self.shake_magnitude) )
             self.game._viewOffset[ 0 ] += self.shake_offset[0]
             self.game._viewOffset[ 1 ] += self.shake_offset[1]
-            self.shake_time -= 1
+            self.shake_time -= 1'''
 
 class Update :
 
@@ -386,12 +391,16 @@ class Hud :
         for index, player in enumerate( self.player_list ) :
             pos = ( self.hud_positions[ index ][0] * ( settings.screenSize[0] - 120 ), self.hud_positions[ index ][1] * ( settings.screenSize[1] - 40 ) )
             hud = self.huds[ index ]
-            hud.update(self.scene, pos)
+            hud.update(self.scene, settings)
             self.draw_player( player, hud, pos )
 
     def draw_player( self, player, hud, pos ) :
+        self.draw_health_bar_bg( pos, hud )
         self.draw_health_bar( pos, hud, float( player.character.health ) / float( player.character.max_health ) )
+        self.draw_power_bar_bg( pos, hud)
         self.draw_power_bar( pos, hud, float( player.character.power ) / float( player.character.max_power ) )
+        self.draw_orb_bar( pos, hud )
+        #self.draw_orb_bar( pos, hud, float( player.character.power ) / float( player.character.max_power ) )
 
     def draw_health_bar( self, pos, hud, percentage ) :
         max_width = 100
@@ -404,6 +413,16 @@ class Hud :
         hud.health_bar.rect.x = pos[0] + 10
         hud.health_bar.rect.y = pos[1] + 10
 
+    def draw_health_bar_bg( self, pos, hud ) :
+        width = 102
+        bar = pygame.Surface( ( int(width), 8 ) )
+        bar.fill( (0,0,0) )
+        hud.health_bar_bg.image = bar
+        hud.health_bar_bg.dirty = 1
+        hud.health_bar_bg.rect = bar.get_rect()
+        hud.health_bar_bg.rect.x = pos[0] + 9
+        hud.health_bar_bg.rect.y = pos[1] + 9
+
     def draw_power_bar( self, pos, hud, percentage ) :
         max_width = 100
         width = max_width * percentage
@@ -414,6 +433,38 @@ class Hud :
         hud.power_bar.rect = bar.get_rect()
         hud.power_bar.rect.x = pos[0] + 10
         hud.power_bar.rect.y = pos[1] + 20
+
+    def draw_power_bar_bg( self, pos, hud ) :
+        width = 102
+        bar = pygame.Surface( ( int(width), 8 ) )
+        bar.fill( (0,0,0) )
+        hud.power_bar_bg.image = bar
+        hud.power_bar_bg.dirty = 1
+        hud.power_bar_bg.rect = bar.get_rect()
+        hud.power_bar_bg.rect.x = pos[0] + 9
+        hud.power_bar_bg.rect.y = pos[1] + 19
+
+    def draw_orb_bar( self, pos, hud ) :
+        width = 100
+        bar = pygame.Surface( ( int(width), 16 ) )
+        bar.fill( (0,0,0) )
+        color = (0,0,0)
+        for item in hud.player.character.body_handler.find_items("SpellOrb"):
+            if item.types[5] == "FireOrb":
+                color = (255,0,0)
+            if item.types[5] == "IceOrb":
+                color = (0,0,255)
+            if item.types[5] == "BoltOrb":
+                color = (255,255,0)
+
+        for orb in range(1,  hud.player.character.orbs+1 ):
+            pygame.draw.circle(bar, color, ((16*orb)+1,8), 8)
+
+        hud.orb_bar.image = bar
+        hud.orb_bar.dirty = 1
+        hud.orb_bar.rect = bar.get_rect()
+        hud.orb_bar.rect.x = pos[0] + 10
+        hud.orb_bar.rect.y = pos[1] + 30
 
     def destroy( self ) :
         while len( self.player_list ) != 0 :
@@ -426,25 +477,34 @@ class PlayerHud :
     def __init__( self, player, sprite_group ) :
         self.sprite_group = sprite_group
         self.player = player
+        self.orb_bar = pygame.sprite.DirtySprite()
         self.health_bar = pygame.sprite.DirtySprite()
+        self.health_bar_bg = pygame.sprite.DirtySprite()
         self.power_bar = pygame.sprite.DirtySprite()
+        self.power_bar_bg = pygame.sprite.DirtySprite()
         self.level_icons = pygame.sprite.DirtySprite()
+        self.sprite_group.add( self.health_bar_bg )
         self.sprite_group.add( self.health_bar )
+        self.sprite_group.add( self.power_bar_bg )
         self.sprite_group.add( self.power_bar )
+        self.sprite_group.add( self.orb_bar )
 
-    def update( self, scene, pos ) :
+    def update( self, scene, settings ) :
 
         for joystick in scene.game.player_handler.joystick_list :
             if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) :
+                index = 0
                 for p in scene.game.player_handler.player_to_join_list:
                     if joystick.get_id() == p :
-                            self.sprite_group.add( self.level_icons )
-                            bar = pygame.Surface( (220, 50 ) )
-                            bar.fill( (0,255,0) )
-                            img = pygame.image.load('res/img/level_up.png')
-                            bar.blit(img,(0,0))
-                            self.level_icons.image = bar
-                            self.level_icons.dirty = 1
-                            self.level_icons.rect = bar.get_rect()
-                            self.level_icons.rect.x = pos[0] + 10
-                            self.level_icons.rect.y = pos[1] + 30
+                        pos = ( scene.hud.hud_positions[ index ][0] * ( settings.screenSize[0] - 120 ), scene.hud.hud_positions[ index ][1] * ( settings.screenSize[1] - 40 ) )
+                        bar = pygame.Surface( (220, 50 ) )
+                        bar.fill( (0,255,0) )
+                        img = pygame.image.load('res/img/level_up.png')
+                        bar.blit(img,(0,0))
+                        self.level_icons.image = bar
+                        self.level_icons.dirty = 1
+                        self.level_icons.rect = bar.get_rect()
+                        self.level_icons.rect.x = pos[0] + 10
+                        self.level_icons.rect.y = pos[1] + 50
+                        self.sprite_group.add( self.level_icons )
+                    index += 1

@@ -99,7 +99,7 @@ class ProjectileWeapon( Weapon ) :
 
     def create_projectile( self ) :
         pass
-        
+
 class Shotgun( ProjectileWeapon ) :
 
     def __init__( self, scene, pos = ( 0, 0 )  ) :
@@ -149,7 +149,7 @@ class SpellOrb( ProjectileWeapon ) :
     def __init__( self, scene, pos, cooldown = 2, local_anchor = (0.45,0), attack_range = 5 ) :
         ProjectileWeapon.__init__( self, scene, pos, cooldown, local_anchor, attack_range )
         self.viable_slots = [ 'spell_orb' ]
-        self.types += [ self.__class__.__name__ ]
+        self.types += [ "SpellOrb" ]
 
     def create_projectile( self ) :
         pass
@@ -197,7 +197,7 @@ class FireOrb( SpellOrb ) :
         if ProjectileWeapon.holder_is_player( self ) :
             self.scene.screen.shake_time = 1
         if self.body != 0 :
-            
+
             projectile = FireBall( self.holder.get_owner(), self.scene, transform )
             self.scene.add_entity( projectile )
 
