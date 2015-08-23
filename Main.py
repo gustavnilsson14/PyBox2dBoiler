@@ -50,6 +50,9 @@ class Game (Framework):
         self.take_out_garbage()
         self.total_reset()
         if type == SCENE_TYPE_MENU or type == SCENE_TYPE_DEFETED :
+            self.sound_handler.stop_music( 'demons_acecream' )
+            self.sound_handler.stop_music( 'default' )
+            self.sound_handler.play_music( 'default' )
             self.player_handler = PlayerHandler( self )
             self.check_joysticks()
             self.current_scene = MenuScene( self )
@@ -67,6 +70,9 @@ class Game (Framework):
 
         with open (map_file, "r") as myfile :
             map_data = myfile.read().replace('\n', '')
+            self.sound_handler.stop_music( 'demons_acecream' )
+            self.sound_handler.stop_music( 'default' )
+            self.sound_handler.play_music( 'demons_acecream' )
             self.current_scene = GameScene( self, self.world, json.loads( map_data ) )
 
     def reset_zoom( self ) :
