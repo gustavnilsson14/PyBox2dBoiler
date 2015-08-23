@@ -458,6 +458,6 @@ class Bolt( Projectile ) :
 class BoltBig( Bolt ) :
 
     def __init__( self, character, scene, origin, offset = -0.8 ) :
-        Icicle.__init__( self, character, scene, origin, offset )
+        Bolt.__init__( self, character, scene, origin, offset )
         self.damage = Damage( 30, DAMAGE_TYPE_LIGHTNING )
         self.body_handler.set_image_at( 'main', 'res/img/effect/light_orb.png' )
