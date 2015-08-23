@@ -1,8 +1,11 @@
 import sys
 import os.path
 import json
-sys.path.append( 'lib' )
-sys.path.append( 'src' )
+from importlib import import_module
+sys.path.append( os.path.abspath("D:\git\PyBox2dBoiler\lib") )
+sys.path.append( os.path.abspath("D:\git\PyBox2dBoiler\src") )
+sys.path.append( os.path.abspath("D:\git\PyBox2dBoiler\res") )
+sys.path.insert(0, './lib')
 from framework import *
 from SoundHandler import *
 from Scene import *
@@ -61,15 +64,15 @@ class Game (Framework):
     def reset_zoom( self ) :
         #This property manages zoom level
         self.viewZoom = self.defaultZoom
-    
+
     def total_reset( self ) :
         while len( self.world.joints ) != 0 :
             garbage_joint = self.world.joints[0]
             self.world.DestroyJoint( garbage_joint )
-        while len( self.world.bodies ) != 0 : 
+        while len( self.world.bodies ) != 0 :
             garbage_body = self.world.bodies[0]
             self.world.DestroyBody( garbage_body )
-    
+
     def take_out_garbage( self ) :
         while len( self.garbage_joint_list ) != 0:
             garbage_joint = self.garbage_joint_list[0]
@@ -79,7 +82,7 @@ class Game (Framework):
             garbage_body = self.garbage_body_list[0]
             self.world.DestroyBody( garbage_body )
             self.garbage_body_list.remove( garbage_body )
-        
+
     def Step(self, settings):
         if self.pause_time > 0 :
             self.pause_time -= 1
@@ -225,4 +228,4 @@ class Game (Framework):
         return True
 
 if __name__=="__main__":
-     main(Game)
+    main(Game)
