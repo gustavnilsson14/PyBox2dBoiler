@@ -178,7 +178,7 @@ class Wave :
         self.ai = ai
         self.running = False
         self.index = index
-        self.wave_pause = 300000000
+        self.wave_pause = 300
         self.spawn_resets = index - 1
         self.entities_available = [FireMage,IceMage,BoltMage]
         self.reset_entities()
