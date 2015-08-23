@@ -149,10 +149,11 @@ class SpawnPoint( Tile ) :
         self.reset_entities()
         
     def update( self, view_zoom, view_offset, settings ) :
-        if self.entity == 0 :
-            return 1
+        if self.entity != 0 :
+            return 0
         if self.next_spawn == 0 :
             self.next_spawn = self.spawn_interval
+            return 1
         self.next_spawn -= 1
         return 0
         
