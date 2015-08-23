@@ -50,6 +50,7 @@ class PlayerHandler :
 		self.add_input( Input( player, Keys.K_s, player.move_down ) )
 		self.add_input( Input( player, Keys.K_a, player.move_left ) )
 		self.add_input( Input( player, Keys.K_d, player.move_right ) )
+		self.add_input( Input( player, Keys.K_q, player.super_attack ) )
 		self.add_input( Input( player, Keys.K_e, player.pickup, False ) )
 		self.add_input( Input( player, Keys.K_1, player.add_stats_health, False ) )
 		self.add_input( Input( player, Keys.K_2, player.add_stats_power, False ) )
@@ -149,6 +150,9 @@ class Player :
 			self.character.movement_vector = ( -1, current_vector[1] )
 			return True
 		return False
+		
+	def super_attack( self ) :
+		self.character.super_attack()
 
 	def pickup( self ) :
 		if self.character == 0 :

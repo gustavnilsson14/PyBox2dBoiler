@@ -3,6 +3,7 @@ from time import sleep
 from Core import *
 from Body import *
 from framework import *
+import math
 
 class Unit( Entity ) :
 
@@ -214,7 +215,7 @@ class PlayerCharacter( Unit ) :
         self.speed = 1.5 * self.body.mass
         self.accuracy = 2
         self.health = player.max_health
-        self.power = 0
+        self.power = 59
         self.orbs = 0
         self.current_accuracy = ( 0, float(self.accuracy/10.0) )
         self.vision_range = 40
@@ -223,6 +224,8 @@ class PlayerCharacter( Unit ) :
         self.target = 0
         self.types += [ "player_character" ]
         self.movement_vector = ( 0, 0 )
+        self.super_bullet_amount = 0
+        self.super_bullet_mode = 0
 
     def set_body_images( self ) :
         Unit.set_body_images( self )
@@ -235,6 +238,7 @@ class PlayerCharacter( Unit ) :
     def update( self, update ) :
         self.body_handler.update( update )
         self.handle_accuracy()
+        self.fire_super_bullets()
         self.body.linearVelocity = ( self.movement_vector[0] * self.speed, self.movement_vector[1] * self.speed )
 
     def pickup( self, item, slot, key, body ) :
@@ -260,6 +264,55 @@ class PlayerCharacter( Unit ) :
         self.body_handler.aim( self.current_item, target, self.current_accuracy )
         return True
 
+    def super_attack( self ) :
+        if self.power < 6 :
+            return
+        if self.power < 20 :
+            self.super_bullet_amount = self.power
+            self.super_bullet_mode = 0
+        elif self.power < 40 :
+            self.super_bullet_amount = self.power * 1.5
+            self.super_bullet_mode = 1
+        elif self.power < 60 :
+            self.super_bullet_amount = self.power * 2
+            self.super_bullet_mode = 2
+        self.power = 0
+            
+    def fire_super_bullets( self ) :
+        from Item import *
+        if self.super_bullet_amount <= 0 :
+            return
+        if self.super_bullet_mode == 2 :
+            offset = math.radians( randint( 0, 360 ) )
+            for i in range(0,19) :
+                self.super_bullet_amount -= 1
+                angle = math.radians( i*20 ) + offset
+                transform = b2Transform( self.body.transform.position, b2Rot( angle ) )
+                projectile = SuperBall( self, self.scene, transform )
+                self.scene.add_entity( projectile )
+            return
+        if self.super_bullet_mode == 1 :
+            for i in range(-1,2) :
+                self.super_bullet_amount -= 1
+                angle = self.body_handler.all_bodies.get('head').transform.angle
+                position = self.body.transform.position
+                if i != 0 :
+                    diff = 90
+                    theta = math.radians( math.degrees( angle ) + diff )
+                    deltax = (i*cos(theta))/3
+                    deltay = (i*sin(theta))/3
+                    position = (self.body.transform.position[0] + deltax,self.body.transform.position[1] + deltay )
+                transform = b2Transform( position, b2Rot( angle ) )
+                projectile = SuperBall( self, self.scene, transform )
+                self.scene.add_entity( projectile )
+            return
+        #mode 0
+        self.super_bullet_amount -= 1
+        angle = math.radians( randint( 0, 360 ) )
+        transform = b2Transform( self.body.transform.position, b2Rot( angle ) )
+        projectile = SuperBall( self, self.scene, transform )
+        self.scene.add_entity( projectile )
+
     def use_current_item( self, target ) :
         if self.current_item != 0 :
             return self.current_item.use( target )
@@ -274,6 +327,10 @@ class PlayerCharacter( Unit ) :
             self.power += 0.5
             if self.power > self.player.max_power:
                 self.power = self.player.max_power
+                
+    def die( self, origin ) :
+        Unit.die( self, origin )
+        self.scene.defeat( DEFEAT_GROUP_PLAYERS )
             
 class Mage( PlayerCharacter ) :
 
