@@ -189,7 +189,6 @@ class GameScene(Scene) :
 
     def __init__( self, game, world, scene_data ) :
         Scene.__init__(self, game)
-        print self.game.player_handler
         self.ai = AI( self, game )
         self.drawn_images = 0
         self.game.sound_handler.play_music('default')
@@ -205,6 +204,7 @@ class GameScene(Scene) :
         image = Image( "res/img/environment/default.png", game.image_handler, ALIGN_BOTTOM_CENTER )
         self.sprite_group.add( image )
         self.hud = Hud( self )
+        self.game.player_handler.add_player_characters( self )
 
     def get_spawn_point( self ) :
         return random.choice( self.map.spawn_list )

@@ -28,14 +28,16 @@ class PlayerHandler :
 		return True
 
 	def add_player( self, new_player ) :
-		for player in self.player_list :
-			if player.character == new_player.character :
-				return False
+		if new_player in self.player_list :
+			return False
 		self.player_list += [ new_player ]
-		new_player.character = PlayerCharacter( self.game.current_scene, self.game.current_scene.get_spawn_point() )
-		self.game.current_scene.add_entity( new_player.character )
-		self.game.current_scene.hud.add_player( new_player )
-		self.game.current_scene.screen.focus_positions += [ new_player.character.body.transform.position ]
+		
+	def add_player_characters( self, scene ) :
+		for player in self.player_list :
+			player.character = PlayerCharacter( scene, scene.get_spawn_point() )
+			scene.add_entity( player.character )
+			scene.hud.add_player( player )
+			scene.screen.focus_positions += [ player.character.body.transform.position ]
 
 	def clear_input( self ) :
 		while len( self.input_list ) != 0 :

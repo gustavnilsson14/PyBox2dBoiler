@@ -94,8 +94,8 @@ class AI :
             self.waves += [ Wave( self, self.spawn_list, int + 1 ) ]
         self.minions = []
         self.frames_per_action = 200 - ( level * 5 )
-        self.spawn_rate = 30 - ( level * 20 )
-        self.max_enemies = 30 + ( level * 2 )
+        self.spawn_rate = 230 - ( level * 20 )
+        self.max_enemies = 5 + ( level * 2 )
 
     def order_attack( self, minion, target ) :
         self.scene.orders.append( AttackOrder( [ minion ], target ) )
@@ -133,6 +133,14 @@ class AI :
                 target = random.choice( self.game.player_handler.player_list )
             target = target.character
             self.order_attack( minion, target )
+        else :
+            for minion in self.minions :
+                if minion.current_order == 0 :
+                    for player in self.game.player_handler.player_list :
+                        if get_distance_between_points( minion.body.transform.position, player.character.body.transform.position) < 8 :
+                            self.order_attack( minion, player.character )
+                            
+                
             
     def pick_vulnerable_target( self, minion, player_list ) :
         max_tries = 10
@@ -148,10 +156,10 @@ class AI :
     def add_entity( self, wave, spawn ) :
         entity = wave.get_entity()
         print "SPAWNING A", entity
-        #entity = entity( self.scene, spawn.position )
-        #self.entity = entity
-        #self.scene.add_entity( entity )
-        #self.minions += [ entity ]
+        entity = entity( self.scene, spawn.position )
+        self.entity = entity
+        self.scene.add_entity( entity )
+        self.minions += [ entity ]
         
     def sort_dead_minions( self ) :
         for minion in self.minions :

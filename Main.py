@@ -32,6 +32,7 @@ class Game (Framework):
         self.world.gravity = (0,0)
         self.image_handler = ImageHandler( self )
 
+        self.pressed_keys = [ -100 ]
         self.change_scene( SCENE_TYPE_MENU )
         #self.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
 
@@ -39,7 +40,6 @@ class Game (Framework):
 
 
         #-100 is the mouse
-        self.pressed_keys = [ -100 ]
 
     def change_scene( self, type, map_file = False ) :
         if self.current_scene != 0 :
@@ -53,6 +53,7 @@ class Game (Framework):
             self.current_scene.run_top()
             return True
         print map_file
+        self.player_handler.check_player_opt_in( self.pressed_keys )
         if os.path.isfile( map_file ) == False :
             self.current_scene = 0
             return False
