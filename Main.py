@@ -35,6 +35,7 @@ class Game (Framework):
         self.world.gravity = (0,0)
         self.image_handler = ImageHandler( self )
 
+        self.pressed_keys = [ -100 ]
         self.change_scene( SCENE_TYPE_MENU )
         #self.change_scene(SCENE_TYPE_GAME, 'res/maps/compiled_map1.js')
 
@@ -55,8 +56,12 @@ class Game (Framework):
             self.current_scene = MenuScene( self )
             self.current_scene.run_top()
             return True
+
+        self.player_handler.check_player_opt_in( self.pressed_keys )
         if os.path.isfile( map_file ) == False :
+            self.current_scene = 0
             return False
+
         with open (map_file, "r") as myfile :
             map_data = myfile.read().replace('\n', '')
             self.current_scene = GameScene( self, self.world, json.loads( map_data ) )
