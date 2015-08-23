@@ -183,7 +183,9 @@ class Player :
 	def add_stats( self, stat_type ) :
 		if self.character.orbs > 0:
 			if stat_type == "health":
-				self.character.max_health += self.character.orbs
+				self.character.health += self.character.orbs*(self.character.max_health*0.2)
+				if self.character.health > self.character.max_health :
+					self.character.health = self.character.max_health
 				self.character.orbs = 0
 				self.character.body_handler.detach_item("spell_orb")
 			elif stat_type == "power":

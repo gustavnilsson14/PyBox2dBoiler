@@ -25,7 +25,7 @@ class Scene :
 
     def destroy( self ) :
         pass
-        
+
     def defeat( self, type ) :
         pass
 
@@ -313,12 +313,12 @@ lf, ( 24,40 ) )
         self.entity_list = 0
         self.orders = 0
         self.world.ClearForces()
-        
+
     def defeat( self, type ) :
         if type == DEFEAT_GROUP_AI :
             if self.game.change_scene( SCENE_TYPE_GAME, self.meta_data.get('next') ) == False :
                 print "VICTORY"
-            
+
             return False
 
 class Screen :
@@ -465,15 +465,18 @@ class PlayerHud :
         self.sprite_group.add( self.power_bar )
 
     def update( self, scene, pos ) :
+
         for joystick in scene.game.player_handler.joystick_list :
             if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_LEVEL_UP] ) :
-                self.sprite_group.add( self.level_icons )
-                bar = pygame.Surface( (220, 50 ) )
-                bar.fill( (0,255,0) )
-                img = pygame.image.load('res/img/level_up.png')
-                bar.blit(img,(0,0))
-                self.level_icons.image = bar
-                self.level_icons.dirty = 1
-                self.level_icons.rect = bar.get_rect()
-                self.level_icons.rect.x = pos[0] + 10
-                self.level_icons.rect.y = pos[1] + 30
+                for p in scene.game.player_handler.player_to_join_list:
+                    if joystick.get_id() == p :
+                            self.sprite_group.add( self.level_icons )
+                            bar = pygame.Surface( (220, 50 ) )
+                            bar.fill( (0,255,0) )
+                            img = pygame.image.load('res/img/level_up.png')
+                            bar.blit(img,(0,0))
+                            self.level_icons.image = bar
+                            self.level_icons.dirty = 1
+                            self.level_icons.rect = bar.get_rect()
+                            self.level_icons.rect.x = pos[0] + 10
+                            self.level_icons.rect.y = pos[1] + 30
