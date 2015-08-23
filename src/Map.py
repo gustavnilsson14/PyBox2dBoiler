@@ -42,7 +42,6 @@ class Map() :
                 if tile.get( 'collision' ) != None :
                     content += [ Block( scene, (x,y) ) ]
                 if tile.get( 'weaponpoints' ) != None :
-                    from Item import *
                     if randint( 0, 4 ) > 2 :
                         item = Machinegun( self.scene, ( x, y ) )
                     else :
@@ -139,16 +138,16 @@ class Floor( Tile ) :
         Tile.__init__( self, scene, pos )
         #self.image = Image( "res/img/environment/floor.png", scene.game.image_handler, ALIGN_CENTER_CENTER )
         self.types += [ "floor" ]
-        
+
 class SpawnPoint( Tile ) :
-    
+
     def __init__( self, scene, pos, spawn_interval ) :
         Tile.__init__( self, scene, pos )
         self.entity = 0
         self.spawn_interval = spawn_interval
         self.next_spawn = randint( spawn_interval / 2, spawn_interval )
         self.reset_entities()
-        
+
     def update( self, view_zoom, view_offset, settings ) :
         if self.next_spawn == 0 :
             self.next_spawn = self.spawn_interval
@@ -156,7 +155,7 @@ class SpawnPoint( Tile ) :
                 return 1
         self.next_spawn -= 1
         return 0
-        
+
     def create_item( self ) :
         entity = self.get_entity()
         entity = entity( self.scene, self.position )
@@ -164,7 +163,7 @@ class SpawnPoint( Tile ) :
         self.entity = entity
         self.scene.add_entity( entity )
         return
-    
+
     def create_enemy( self ) :
         entity = self.get_entity()
         if entity == 0 :
@@ -173,7 +172,7 @@ class SpawnPoint( Tile ) :
         self.entity = entity
         self.scene.add_entity( entity )
         return entity
-    
+
     def get_entity( self ) :
         if len( self.entities ) == 0 :
             return 0
@@ -181,7 +180,7 @@ class SpawnPoint( Tile ) :
         if len( self.entities ) == 0 :
             self.reset_entities()
         return entity
-        
+
     def reset_entities( self ) :
         pass
 
@@ -221,7 +220,7 @@ class EnemySpawn( SpawnPoint ) :
             return 0
         self.ai.add_entity( enemy )
         return 1
-        
+
 
     def reset_entities( self ) :
         pass
