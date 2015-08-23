@@ -17,6 +17,7 @@ class Item( Entity ) :
         self.cooldown = 0
         self.local_anchor = local_anchor
         self.fire_rate_multiplier = 1
+        self.spawn_point = 0
         self.types += [ "item" ]
 
     def update( self, update ) :
@@ -47,7 +48,9 @@ class Item( Entity ) :
         pass
 
     def picked( self ) :
-        pass
+        if self.spawn_point != 0 :
+            print "HEY"
+            self.spawn_point.entity = 0
 
 class Weapon( Item ) :
 
@@ -176,6 +179,7 @@ class SpellOrb( ProjectileWeapon ) :
         self.destroy_body()
 
     def picked( self, owner, slot ) :
+        Item.picked( self )
         if slot.item != 0 :
             if self.types[-1] == slot.item.types[-1] :
                 if owner.orbs == 3 :
