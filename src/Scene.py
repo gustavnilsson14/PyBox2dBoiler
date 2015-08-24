@@ -388,25 +388,32 @@ class Screen :
         self.shake_offset = (0,0)
         self.shake_magnitude = shake_magnitude
         self.focus_positions = []
+        self.players_focus = []
         self.shake_time = 0
         self.current_zoom = -1
 
     def update_camera_center( self ) :
+        index = 0
+        for player in self.players_focus :
+            if player.character.health <= 0:
+                self.players_focus.pop(index)
+            index += 1
+
         center_position = (0,0)
         distance = 0
-        if len( self.focus_positions ) == 0 :
+        if len( self.players_focus ) == 0 :
             self.game.setCenter( (25,25) )
             return
-        for position in self.focus_positions :
+        for player in self.players_focus :
             if center_position == (0,0) :
-                center_position = position
+                center_position = player.character.body.transform.position
                 continue
-            center_position = ( center_position[0] + position[0], center_position[1] + position[1] )
+            center_position = ( center_position[0] + player.character.body.transform.position[0], center_position[1] + player.character.body.transform.position[1] )
 
-        center_position = ( center_position[0] / len( self.focus_positions ), center_position[1] / len( self.focus_positions ) )
+        center_position = ( center_position[0] / len( self.players_focus ), center_position[1] / len( self.players_focus ) )
 
-        for position in self.focus_positions :
-            tempdistance = numpy.sqrt(numpy.power(center_position[0]-position[0],2)+numpy.power(center_position[1]-position[1],2))
+        for player in self.players_focus :
+            tempdistance = numpy.sqrt(numpy.power(center_position[0]-player.character.body.transform.position[0],2)+numpy.power(center_position[1]-player.character.body.transform.position[1],2))
             if tempdistance > distance :
                 distance = numpy.absolute(tempdistance)
 

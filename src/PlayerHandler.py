@@ -38,6 +38,7 @@ class PlayerHandler :
 			scene.add_entity( player.character )
 			scene.hud.add_player( player )
 			scene.screen.focus_positions += [ player.character.body.transform.position ]
+			scene.screen.players_focus += [ player ]
 
 	def clear_input( self ) :
 		while len( self.input_list ) != 0 :
@@ -326,7 +327,7 @@ class Player :
 						self.add_stats_firerate()
 
 			else :
-				if joystick.get_button( GENERIC_KEY_MAP[OYSTICK_BUTTON_START] ) == 1 :
+				if joystick.get_button( GENERIC_KEY_MAP[JOYSTICK_BUTTON_START] ) == 1 :
 					self.respawn()
 
 class Input :
