@@ -248,7 +248,6 @@ class GameScene(Scene) :
         Scene.__init__(self, game)
         self.ai = AI( self, game )
         self.drawn_images = 0
-        self.game.sound_handler.play_music('default')
         self.entity_list = []
         self.orders = []
         self.world = world

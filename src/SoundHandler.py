@@ -47,7 +47,14 @@ class SoundHandler() :
             }
         }
         self.music = {
-            'default': pygame.mixer.Sound( 'res/music/tikk.ogg' )
+            'default': {
+                'sound': pygame.mixer.Sound( 'res/music/tikk.ogg' ),
+                'volume' : 0.7
+            },
+            'demons_acecream' : {
+                'sound': pygame.mixer.Sound( 'res/music/acecream_demoner.ogg' ),
+                'volume' : 0.3
+            }
         }
     
     def get_sound( self, key ) :
@@ -70,7 +77,6 @@ class SoundHandler() :
         return 1
         
     def play_music( self, key ) :
-        return
         #Run almost anywhere!
         #self.game.sound_handler.play_music('default')
         track = self.music.get( key )
@@ -78,7 +84,9 @@ class SoundHandler() :
             return False
         if self.settings.sound == False :
             return 0
-        track.play()
+        sfx = track.get( 'sound' )
+        sfx.play( -1 )
+        sfx.set_volume( track.get( 'volume' ) )
         
     def stop_music( self, key = 0 ) :
         if key == 0 :
@@ -88,5 +96,5 @@ class SoundHandler() :
         track = self.music.get( key )
         if track == None :
             return False
-        track.stop()
+        track.get('sound').stop()
         return True
